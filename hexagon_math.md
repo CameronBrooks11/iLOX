@@ -36,3 +36,5 @@ With `d` given, we can calculate `s`, `x`, and `w` for the regular octagon.
 - `w`: Full length of the diagonal.
 
 The equations provided allow us to calculate all necessary lengths based on the given distance from the center to a vertex of a regular octagon.
+
+[http://mathcentral.uregina.ca 'quandaries & queries'](http://mathcentral.uregina.ca/QQ/database/QQ.09.20/h/sue2.html)
