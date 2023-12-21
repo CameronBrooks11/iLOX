@@ -19,11 +19,13 @@ The width \( w \) is the distance from one side of the octagon to the opposite s
 The segment \( x \) lies within isosceles right triangles, such as triangle \( EBD \). Since the octagon is regular, each of these triangles has two equal sides, which are the segments \( x \) and the side length \( s \). By the Pythagorean theorem:
 
 ![Equation s^2 = 2x^2](https://latex.codecogs.com/svg.image?\inline&space;\large&space;\bg{white}{\color{White}s^{2}=2x^{2}})
+
 ![Equation x = s / √2](https://latex.codecogs.com/svg.image?\inline&space;\large&space;\bg{white}{\color{White}x=\frac{s}{\sqrt{2}}}\frac{}{})
 
 Substituting \( x \) into the width equation:
 
 ![Equation w = s + 2(s / √2)](https://latex.codecogs.com/svg.image?\inline&space;\large&space;\bg{white}{\color{White}w=s&plus;2(\frac{s}{\sqrt{2}})})
+
 ![Equation w = s(1 + √2)](https://latex.codecogs.com/svg.image?\inline&space;\large&space;\bg{white}{\color{White}w=s(1&plus;\sqrt{2})})
 
 ### Final Equations
@@ -31,6 +33,7 @@ Substituting \( x \) into the width equation:
 Substituting \( w \) into the diagonal equation yields:
 
 ![Equation d^2 = s^2 + (s(1 + √2))^2](https://latex.codecogs.com/svg.image?\inline&space;\large&space;\bg{white}{\color{White}d^{2}=s^{2}&plus;(s(1&plus;\sqrt{2}))^{2}})
+
 ![Equation d = s√(4 + 2√2)](https://latex.codecogs.com/svg.image?\inline&space;\large&space;\bg{white}{\color{White}d=s\sqrt{4&plus;2\sqrt{2}}})
 
 With these equations, we can solve for the diagonal length \( d \), width \( w \), and segment \( x \) given the side length \( s \) of a regular octagon.
