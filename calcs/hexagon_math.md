@@ -1,4 +1,5 @@
 ![Regular Octagon Diagram](./octagon_dia.png)
+*Courtesy of Penny Nom [1]*
 
 To determine the key dimensions of a regular octagon, we can derive equations based on the geometric properties of right triangles and isosceles triangles formed within the octagon.
 
@@ -43,4 +44,4 @@ With these equations, we can solve for the diagonal length `d`, width `w`, and s
 - **Segment `x`:** ![Equation x = s / √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}x=\frac{s}{\sqrt{2}}}\frac{}{})
 
 ## References:
-[mathcentral.uregina.ca 'quandaries & queries'](http://mathcentral.uregina.ca/QQ/database/QQ.09.20/h/sue2.html)
+[1] [mathcentral.uregina.ca 'quandaries & queries'](http://mathcentral.uregina.ca/QQ/database/QQ.09.20/h/sue2.html)
