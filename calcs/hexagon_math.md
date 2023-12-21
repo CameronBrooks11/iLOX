@@ -6,7 +6,7 @@ To determine the key dimensions of a regular octagon, we can derive equations ba
 
 The diagonal of the octagon, denoted as \( d \), can be found by considering the right triangle \( ABC \), where \( AB \) is the width \( w \), \( BC \) is the side length \( s \), and \( AC \) is the diagonal \( d \). Using the Pythagorean theorem:
 
-![Equation d^2 = s^2 + w^2](https://latex.codecogs.com/svg.latex?\Large&space;d^2=s^2+w^2)
+![\Large d^2 = s^2 + w^2](https://latex.codecogs.com/svg.latex?\Large&space;d^2=s^2+w^2)
 
 ### Width  \( w \) 
 
