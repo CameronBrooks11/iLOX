@@ -1,5 +1,5 @@
 <p align="center" style="background-color: white;">
-  <img src="http://mathcentral.uregina.ca/QQ/database/QQ.09.20/h/sue2.1.gif" alt="diagram of a regular octagon with labeled vertices and lengths">
+  <img src="./octagon_dia.png" alt="diagram of a regular octagon with labeled vertices and lengths">
 </p>
 <p align="center" style="font-style: italic;">
   Courtesy of Penny Nom [1]
