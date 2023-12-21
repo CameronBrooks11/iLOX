@@ -1,6 +1,11 @@
-![Regular Octagon Diagram](./octagon_dia.png)
+![Regular Octagon Diagram]()
 
-*Courtesy of Penny Nom [1]*
+<p align="center">
+  <img src="http://mathcentral.uregina.ca/QQ/database/QQ.09.20/h/sue2.1.gif" alt="diagram of a regular octagon with labeled vertices and lengths">
+</p>
+<p align="center">
+  *Courtesy of Penny Nom [1]*
+</p>
 
 To determine the key dimensions of a regular octagon, we can derive equations based on the geometric properties of right triangles and isosceles triangles formed within the octagon.
 
