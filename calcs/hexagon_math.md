@@ -39,27 +39,38 @@ Given a regular octagon, we can find the length of chord \( AC \) and the perpen
 
 1. **Length of Chord \( AC \):** The chord \( AC \) spans three sides of the octagon, so the angle \( \theta \) at the center of the octagon subtended by \( AC \) is \( \theta = 3 \times 45^\circ = 135^\circ \).
 
-Using the radius \( R \) of the circumscribed circle, the length of chord \( AC \) is given by the Law of Cosines:
+Using the side length \( s \) of the octagon, the length of chord \( AC \) is given by the Law of Cosines:
 
-![AC = \sqrt{2R^2 - 2R^2\cos(135^\circ)}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=\sqrt{2R^2&space;-&space;2R^2\cos(135^\circ)}}})
+![AC = \sqrt{s^2 + s^2 - 2s^2\cos(135^\circ)}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{AC=\sqrt{s^2&space;&plus;&space;s^2&space;-&space;2s^2\cos(135^\circ)}})
 
-Since \( \cos(135^\circ) = -\frac{\sqrt{2}}{2} \), the expression simplifies to:
+Since \( \cos(135^\circ) = -\frac{\sqrt{2}}{2} \), we can substitute this value into the equation:
 
-![AC = \sqrt{2R^2 + R^2\sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=\sqrt{2R^2&space;&plus;&space;R^2\sqrt{2}}}})
-![AC = R\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=R\sqrt{2&space;&plus;&space;\sqrt{2}}}})
+![AC = \sqrt{2s^2 + 2s^2(-\frac{\sqrt{2}}{2})}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{AC=\sqrt{2s^2&space;&plus;&space;2s^2\left(-\frac{\sqrt{2}}{2}\right)}})
 
-2. **Perpendicular from Midpoint of \( AC \) to \( B \):** Let \( M \) be the midpoint of \( AC \), and \( BM \) is the perpendicular we want to find. Triangle \( ABM \) is a right-angled triangle at \( M \) with \( AB = R \) and \( AM = \frac{AC}{2} \).
+This simplifies to:
 
-Using the Pythagorean theorem to solve for the height \( h \) (or \( BM \)):
+![AC = s\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{AC=s\sqrt{2&space;-&space;\sqrt{2}}})
 
-![h^2 + (\frac{AC}{2})^2 = R^2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h^2&space;&plus;&space;\left(\frac{AC}{2}\right)^2&space;=&space;R^2}})
+2. **Perpendicular from Midpoint of \( AC \) to \( B \):** Let \( M \) be the midpoint of \( AC \), and \( BM \) is the perpendicular we want to find. Triangle \( ABM \) is an isosceles triangle with two sides of length \( s \) (the side length of the octagon) and base \( AC \). The perpendicular \( BM \) will bisect \( AC \) and create two right-angled triangles within \( ABM \).
 
-Substituting \( AC \) from above:
+Using the Pythagorean theorem in one of these right-angled triangles, where \( BM \) is the height \( h \), \( AM \) is half the base, and \( AB \) is the hypotenuse:
 
-![h = \sqrt{R^2 - (\frac{AC}{2})^2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{R^2&space;-&space;\left(\frac{AC}{2}\right)^2}}})
-![h = \sqrt{R^2 - \frac{R^2(2 + \sqrt{2})}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{R^2&space;-&space;\frac{R^2(2&space;&plus;&space;\sqrt{2})}{4}}}})
-![h = \sqrt{\frac{2R^2 - R^2\sqrt{2}}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}{\color{White}h&space;=&space;\sqrt{\frac{2R^2&space;-&space;R^2\sqrt{2}}{4}}}}})
-![h = \frac{R}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{R}{2}\sqrt{2&space;-&space;\sqrt{2}}}})
+![h^2 + (AM)^2 = s^2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h^2&space;&plus;&space;(AM)^2&space;=&space;s^2})
+
+Since \( AM \) is half of \( AC \), we have:
+
+![AM = \frac{AC}{2} = \frac{s\sqrt{2 - \sqrt{2}}}{2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{AM&space;=&space;\frac{AC}{2}&space;=&space;\frac{s\sqrt{2&space;-&space;\sqrt{2}}}{2}})
+
+Now we can find \( h \) by substituting \( AM \) into the Pythagorean theorem:
+
+![h = \sqrt{s^2 - (AM)^2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h&space;=&space;\sqrt{s^2&space;-&space;(AM)^2}})
+
+Substituting \( AM \) from above, we get:
+
+![h = \sqrt{s^2 - (\frac{s\sqrt{2 - \sqrt{2}}}{2})^2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h&space;=&space;\sqrt{s^2&space;-&space;\left(\frac{s\sqrt{2&space;-&space;\sqrt{2}}}{2}\right)^2}})
+
+Solving for \( h \) gives us the length of the perpendicular from the midpoint of \( AC \) to \( B \).
+
 
 Therefore, the length segment AC and that of the perpendicular from the midpoint of \( AC \) to \( B \) is:
 
