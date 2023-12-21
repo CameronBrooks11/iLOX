@@ -41,25 +41,25 @@ Given a regular octagon, we can find the length of chord \( AC \) and the perpen
 
 Using the radius \( R \) of the circumscribed circle, the length of chord \( AC \) is given by the Law of Cosines:
 
-![AC = \sqrt{2R^2 - 2R^2\cos(135^\circ)}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{AC=\sqrt{2R^2&space;-&space;2R^2\cos(135^\circ)}})
+![AC = \sqrt{2R^2 - 2R^2\cos(135^\circ)}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=\sqrt{2R^2&space;-&space;2R^2\cos(135^\circ)}}})
 
 Since \( \cos(135^\circ) = -\frac{\sqrt{2}}{2} \), the expression simplifies to:
 
-![AC = \sqrt{2R^2 + R^2\sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{AC=\sqrt{2R^2&space;&plus;&space;R^2\sqrt{2}}})
-![AC = R\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{AC=R\sqrt{2&space;&plus;&space;\sqrt{2}}})
+![AC = \sqrt{2R^2 + R^2\sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=\sqrt{2R^2&space;&plus;&space;R^2\sqrt{2}}}})
+![AC = R\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=R\sqrt{2&space;&plus;&space;\sqrt{2}}}})
 
 2. **Perpendicular from Midpoint of \( AC \) to \( B \):** Let \( M \) be the midpoint of \( AC \), and \( BM \) is the perpendicular we want to find. Triangle \( ABM \) is a right-angled triangle at \( M \) with \( AB = R \) and \( AM = \frac{AC}{2} \).
 
 Using the Pythagorean theorem to solve for the height \( h \) (or \( BM \)):
 
-![h^2 + (\frac{AC}{2})^2 = R^2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h^2&space;&plus;&space;\left(\frac{AC}{2}\right)^2&space;=&space;R^2})
+![h^2 + (\frac{AC}{2})^2 = R^2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h^2&space;&plus;&space;\left(\frac{AC}{2}\right)^2&space;=&space;R^2}})
 
 Substituting \( AC \) from above:
 
-![h = \sqrt{R^2 - (\frac{AC}{2})^2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h&space;=&space;\sqrt{R^2&space;-&space;\left(\frac{AC}{2}\right)^2}})
-![h = \sqrt{R^2 - \frac{R^2(2 + \sqrt{2})}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h&space;=&space;\sqrt{R^2&space;-&space;\frac{R^2(2&space;&plus;&space;\sqrt{2})}{4}}})
-![h = \sqrt{\frac{2R^2 - R^2\sqrt{2}}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h&space;=&space;\sqrt{\frac{2R^2&space;-&space;R^2\sqrt{2}}{4}}})
-![h = \frac{R}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{h&space;=&space;\frac{R}{2}\sqrt{2&space;-&space;\sqrt{2}}})
+![h = \sqrt{R^2 - (\frac{AC}{2})^2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{R^2&space;-&space;\left(\frac{AC}{2}\right)^2}}})
+![h = \sqrt{R^2 - \frac{R^2(2 + \sqrt{2})}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{R^2&space;-&space;\frac{R^2(2&space;&plus;&space;\sqrt{2})}{4}}}})
+![h = \sqrt{\frac{2R^2 - R^2\sqrt{2}}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}{\color{White}h&space;=&space;\sqrt{\frac{2R^2&space;-&space;R^2\sqrt{2}}{4}}}}})
+![h = \frac{R}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{R}{2}\sqrt{2&space;-&space;\sqrt{2}}}})
 
 Therefore, the length of the perpendicular from the midpoint of \( AC \) to \( B \) is \( h = \frac{R}{2}\sqrt{2 - \sqrt{2}} \).
 
