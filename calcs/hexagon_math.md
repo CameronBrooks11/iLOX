@@ -61,12 +61,12 @@ Substituting \( AC \) from above:
 ![h = \sqrt{\frac{2R^2 - R^2\sqrt{2}}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}{\color{White}h&space;=&space;\sqrt{\frac{2R^2&space;-&space;R^2\sqrt{2}}{4}}}}})
 ![h = \frac{R}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{R}{2}\sqrt{2&space;-&space;\sqrt{2}}}})
 
-Therefore, the length of the perpendicular from the midpoint of \( AC \) to \( B \) is \( h = \frac{R}{2}\sqrt{2 - \sqrt{2}} \).
+Therefore, the length segment AC and that of the perpendicular from the midpoint of \( AC \) to \( B \) is:
 
 
 ![Equation y = d/2 √(2 + √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}y=\frac{d}{2}\sqrt{2&plus;\sqrt{2}}})
 
-![Equation h = d/4 √(2 - √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}h=\frac{R}{2}\sqrt{2-\sqrt{2}}})
+![Equation h = d/4 √(2 - √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}h=\frac{d}{4}\sqrt{2-\sqrt{2}}})
 
 
 ### Final Equations
