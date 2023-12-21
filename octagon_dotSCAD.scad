@@ -4,10 +4,11 @@ module octagons(radius, spacing, levels, rotate=true, order=1) {
     tips = rotate ? 22.5 : 0;
     // Adjusting for octagon geometry
     r_octagon = radius - spacing / 2;
-    side_length = radius * sin(22.5);
-    side_length_adjacent = side_length / sqrt(2) * 2;
-    offset_x = radius * cos(tips) + side_length;
-    offset_y = radius * cos(tips) * 2 - side_length_adjacent;
+    side_length = (radius * 2) / (sqrt(4+2*sqrt(2)));
+    segment_length = side_length / sqrt(2);
+    total_width = side_length*(1+sqrt(2));
+    offset_x = total_width - segment_length;
+    offset_y = total_width - segment_length;
     echo(side_length);
 
     echo(side_length_adjacent);

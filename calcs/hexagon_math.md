@@ -30,6 +30,13 @@ Substituting `x` into the width equation:
 <br>
 ![Equation w = s(1 + √2)](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}w=s(1&plus;\sqrt{2})})
 
+Now for the case of the rotated octagon we will need the length of the cord AC in the below diagram which we will refer to as `y`:
+
+![Regular Octagon Diagram 2](./octagon_dia2.png)
+
+
+![Equation y = d/2 √(2 + √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{Teal}y=\frac{d}{2}\sqrt{2&plus;\sqrt{2}}})
+
 ### Final Equations
 
 Substituting `w` into the diagonal equation yields:
