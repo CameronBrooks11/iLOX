@@ -2,7 +2,7 @@
 
 To determine the key dimensions of a regular octagon, we can derive equations based on the geometric properties of right triangles and isosceles triangles formed within the octagon.
 
-### Diagonal Length  'd' 
+### Diagonal Length  '''d''' 
 
 The diagonal of the octagon, denoted as d', can be found by considering the right triangle 'ABC, where 'AB' is the width 'w', 'BC' is the side length 's', and 'AC' is the diagonal 'd'. Using the Pythagorean theorem:
 
