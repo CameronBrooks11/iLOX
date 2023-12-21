@@ -45,8 +45,8 @@ Using the side length \( s \) of the octagon, the length of chord \( AC \) is gi
 
 Since \( \cos(135^\circ) = -\frac{\sqrt{2}}{2} \), the expression simplifies to:
 
-![AC = \sqrt{2s^2 + 2s^2(-\frac{\sqrt{2}}{2})}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=\sqrt{2s^2&space;&plus;&space;2s^2\left(-\frac{\sqrt{2}}{2}\right)}}})
-![AC = s\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=s\sqrt{2&space;-&space;\sqrt{2}}}})
+![AC = \sqrt{2s^2 - 2s^2(-\frac{\sqrt{2}}{2})}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=\sqrt{2s^2&space;&-&space;2s^2\left(-\frac{\sqrt{2}}{2}\right)}}})
+![AC = s\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=s\sqrt{2&space;+&space;\sqrt{2}}}})
 
 2. **Perpendicular from Midpoint of \( AC \) to \( B \):** Let \( M \) be the midpoint of \( AC \), and \( BM \) is the perpendicular we want to find. Triangle \( ABM \) is an isosceles triangle with \( AB = s \) and \( AM = \frac{AC}{2} \).
 
