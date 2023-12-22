@@ -35,27 +35,27 @@ Now for the case of the rotated octagon we will need the length of the chord AC 
 
 ![Regular Octagon Diagram 2](./octagon_dia2.png)
 
-Given a regular octagon, we can find the length of chord \( AC \) and the perpendicular from the midpoint of \( AC \) to \( B \) as follows:
+Given a regular octagon, we can find the length of chord `AC` and the perpendicular from the midpoint of `AC` to `B` as follows:
 
-1. **Length of Chord \( AC \):** The chord \( AC \) spans three sides of the octagon, so the angle \( \theta \) at the center of the octagon subtended by \( AC \) is \( \theta = 3 \times 45^\circ = 135^\circ \).
+1. **Length of Chord `AC`:** The chord `AC` spans three sides of the octagon, so the angle `\theta` at the center of the octagon subtended by `AC` is `\theta = 3 \times 45^\circ = 135^\circ`.
 
-Using the side length \( s \) of the octagon, the length of chord \( AC \) is given by the Law of Cosines:
+Using the side length `s` of the octagon, the length of chord `AC` is given by the Law of Cosines:
 
 ![AC = \sqrt{2s^2 - 2s^2\cos(135^\circ)}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}AC=\sqrt{2s^2&space;-&space;2s^2\cos(135^\circ)}}})
 
-Since \( \cos(135^\circ) = -\frac{\sqrt{2}}{2} \), the expression simplifies to:
+Since `\cos(135^\circ) = -\frac{\sqrt{2}}{2}`, the expression simplifies to:
 
 ![AC = \sqrt{2s^2 - 2s^2(-\frac{\sqrt{2}}{2})}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}AC=\sqrt{2s^2-2s^2(-\frac{\sqrt{2}}{2})}})
 <br>
 ![AC = s\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}AC=s\sqrt{2&plus;\sqrt{2}}})
 
-2. **Perpendicular from Midpoint of \( AC \) to \( B \):** Let \( M \) be the midpoint of \( AC \), and \( BM \) is the perpendicular we want to find. Triangle \( ABM \) is an isosceles triangle with \( AB = s \) and \( AM = \frac{AC}{2} \).
+2. **Perpendicular from Midpoint of `AC` to `B`:** Let `M` be the midpoint of `AC`, and `BM` is the perpendicular we want to find. Triangle `ABM` is an isosceles triangle with `AB = s` and `AM = \frac{AC}{2}`.
 
-Using the Pythagorean theorem to solve for the height \( h \) (or \( BM \)):
+Using the Pythagorean theorem to solve for the height `h` (or `BM`):
 
 ![h^2 + (\frac{AC}{2})^2 = s^2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h^2&space;&plus;&space;\left(\frac{AC}{2}\right)^2&space;=&space;s^2}})
 
-Substituting \( AC \) from above:
+Substituting `AC` from above:
 
 ![h = \sqrt{s^2 - (\frac{AC}{2})^2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{s^2&space;-&space;\left(\frac{AC}{2}\right)^2}}})
 <br>
@@ -67,18 +67,15 @@ Substituting \( AC \) from above:
 <br>
 ![h = \frac{s}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{s}{2}\sqrt{2&space;-&space;\sqrt{2}}}})
 
-Therefore, the length of the perpendicular from the midpoint of \( AC \) to \( B \), denoted as \( h \), is:
+Therefore, the length of the perpendicular from the midpoint of `AC` to `B`, denoted as `h`, is:
 
 ![h = \frac{s}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{s}{2}\sqrt{2&space;-&space;\sqrt{2}}}})
 
-And the length of the chord \( AC \), denoted as \( y \), is:
+And the length of the chord `AC`, denoted as `y`, is:
 
 ![y = s\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}y&space;=&space;s\sqrt{2&plus;\sqrt{2}}}})
 
-Summarizing, for a regular octagon with side length \( s \):
 
-- The length of chord \( AC \) is \( y = s\sqrt{2 + \sqrt{2}} \).
-- The length of the perpendicular from the midpoint of \( AC \) to \( B \) is \( h = \frac{s}{2}\sqrt{2 - \sqrt{2}} \).
 
 ### Final Equations
 
