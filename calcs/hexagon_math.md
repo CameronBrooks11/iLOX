@@ -93,3 +93,4 @@ With these equations, we can solve for the diagonal length `d`, width `w`, and s
 
 ## References:
 [1] [mathcentral.uregina.ca 'quandaries & queries'](http://mathcentral.uregina.ca/QQ/database/QQ.09.20/h/sue2.html)
+[2] [CueMath>Geometry>Octagon](https://www.cuemath.com/geometry/octagon/)
