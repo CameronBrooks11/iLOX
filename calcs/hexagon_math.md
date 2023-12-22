@@ -31,7 +31,7 @@ Substituting `x` into the width equation:
 ![Equation w = s(1 + √2)](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}w=s(1&plus;\sqrt{2})})
 
 ### AC Perpendicular Section
-Now for the case of the rotated octagon we will need the length of the cord AC in the below diagram which we will refer to as `y`:
+Now for the case of the rotated octagon we will need the length of the chord AC in the below diagram which we will refer to as `y`:
 
 ![Regular Octagon Diagram 2](./octagon_dia2.png)
 
@@ -49,7 +49,7 @@ Since \( \cos(135^\circ) = -\frac{\sqrt{2}}{2} \), the expression simplifies to:
 <br>
 ![AC = s\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}AC=s\sqrt{2&plus;\sqrt{2}}})
 
-1. **Perpendicular from Midpoint of \( AC \) to \( B \):** Let \( M \) be the midpoint of \( AC \), and \( BM \) is the perpendicular we want to find. Triangle \( ABM \) is an isosceles triangle with \( AB = s \) and \( AM = \frac{AC}{2} \).
+2. **Perpendicular from Midpoint of \( AC \) to \( B \):** Let \( M \) be the midpoint of \( AC \), and \( BM \) is the perpendicular we want to find. Triangle \( ABM \) is an isosceles triangle with \( AB = s \) and \( AM = \frac{AC}{2} \).
 
 Using the Pythagorean theorem to solve for the height \( h \) (or \( BM \)):
 
@@ -58,20 +58,27 @@ Using the Pythagorean theorem to solve for the height \( h \) (or \( BM \)):
 Substituting \( AC \) from above:
 
 ![h = \sqrt{s^2 - (\frac{AC}{2})^2}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{s^2&space;-&space;\left(\frac{AC}{2}\right)^2}}})
-![h = \sqrt{s^2 - \frac{s^2(2 - \sqrt{2})}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{s^2&space;-&space;\frac{s^2(2&space;-&space;\sqrt{2})}{4}}}})
-![h = \sqrt{\frac{4s^2 - s^2(2 - \sqrt{2})}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{\frac{4s^2&space;-&space;s^2(2&space;-&space;\sqrt{2})}{4}}}})
-![h = \frac{s}{2}\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{s}{2}\sqrt{2&space;&plus;&space;\sqrt{2}}}})
+<br>
+![h = \sqrt{s^2 - \frac{s^2(2 + \sqrt{2})}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{s^2&space;-&space;\frac{s^2(2&space;&plus;&space;\sqrt{2})}{4}}}})
+<br>
+![h = \sqrt{\frac{4s^2 - s^2(2 + \sqrt{2})}{4}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\sqrt{\frac{4s^2&space;-&space;s^2(2&space;&plus;&space;\sqrt{2})}{4}}}})
+<br>
+![h = \frac{s}{2}\sqrt{4 - (2 + \sqrt{2})}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{s}{2}\sqrt{4&space;-&space;(2&space;&plus;&space;\sqrt{2})}}})
+<br>
+![h = \frac{s}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{s}{2}\sqrt{2&space;-&space;\sqrt{2}}}})
 
-Therefore, the length of the perpendicular from the midpoint of \( AC \) to \( B \) is \( h = \frac{s}{2}\sqrt{2 + \sqrt{2}} \).
+Therefore, the length of the perpendicular from the midpoint of \( AC \) to \( B \), denoted as \( h \), is:
 
+![h = \frac{s}{2}\sqrt{2 - \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}h&space;=&space;\frac{s}{2}\sqrt{2&space;-&space;\sqrt{2}}}})
 
-Therefore, the length segment AC and that of the perpendicular from the midpoint of \( AC \) to \( B \) is:
+And the length of the chord \( AC \), denoted as \( y \), is:
 
+![y = s\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}y&space;=&space;s\sqrt{2&plus;\sqrt{2}}}})
 
-![Equation y = d/2 √(2 + √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}y=\frac{d}{2}\sqrt{2&plus;\sqrt{2}}})
+Summarizing, for a regular octagon with side length \( s \):
 
-![Equation h = d/4 √(2 - √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}h=\frac{d}{4}\sqrt{2-\sqrt{2}}})
-
+- The length of chord \( AC \) is \( y = s\sqrt{2 + \sqrt{2}} \).
+- The length of the perpendicular from the midpoint of \( AC \) to \( B \) is \( h = \frac{s}{2}\sqrt{2 - \sqrt{2}} \).
 
 ### Final Equations
 
