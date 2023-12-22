@@ -45,7 +45,7 @@ Using the side length \( s \) of the octagon, the length of chord \( AC \) is gi
 
 Since \( \cos(135^\circ) = -\frac{\sqrt{2}}{2} \), the expression simplifies to:
 
-![AC = \sqrt{2s^2 - 2s^2(-\frac{\sqrt{2}}{2})}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}\AC=sqrt{2s^2-2s^2(-\frac{\sqrt{2}}{2})}})
+![AC = \sqrt{2s^2 - 2s^2(-\frac{\sqrt{2}}{2})}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}AC=\sqrt{2s^2-2s^2(-\frac{\sqrt{2}}{2})}})
 <br>
 ![AC = s\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}AC=s\sqrt{2&plus;\sqrt{2}}})
 
