@@ -93,20 +93,20 @@ module hexagons(radius, spacing, levels=undef, hexagon_centers=[]) {
 }
 
 // Example usage of the hexagons module with levels
-rad = 10;
-space = 1;
-lvls = 5;
+// rad = 10;
+// space = 1;
+// lvls = 5;
 // centers_levels = calculate_hexagon_centers_levels(radius=rad, spacing=space, levels=lvls);
 // filtered_centers_levels = filter_hexagon_centers(centers_levels, [[0, 0]]);
 // hexagons(radius=rad, spacing=space, levels=lvls, hexagon_centers=filtered_centers_levels);
 
 // Example usage of the hexagons module with n x m grid placement
-n = 6;
-m = 6;
-centers_grid = calculate_hexagon_centers_grid(radius=rad, spacing=space, n=n, m=m);
-filtered_centers_grid = filter_hexagon_centers(centers_grid, [[0, 0]]);
-hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers_grid);
+// n = 6;
+// m = 6;
+// centers_grid = calculate_hexagon_centers_grid(radius=rad, spacing=space, n=n, m=m);
+// filtered_centers_grid = filter_hexagon_centers(centers_grid, [[0, 0]]);
+// hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers_grid);
 
 // Displaying the hexagon centers for verification
 // echo("Filtered Hexagon centers with levels: ", filtered_centers_levels);
-echo("Filtered Hexagon centers with n x m grid: ", filtered_centers_grid);
+// echo("Filtered Hexagon centers with n x m grid: ", filtered_centers_grid);

@@ -6,7 +6,7 @@ sep2 = 125;
 
 // Example usage with pre-calculated centers in a grid pattern for octagons
 rad_oct = 10;
-space_oct = 1;
+space_oct = 0;
 n_oct = 6;
 m_oct = 6;
 rot_oct = true;
@@ -33,7 +33,7 @@ echo("Filtered Octagon centers with grid: ", filtered_centers_grid_oct);
 
 // Example usage with pre-calculated centers in a grid pattern for hexagons
 rad_hex = 10;
-space_hex = 1;
+space_hex = 0;
 n_hex = 6;
 m_hex = 6;
 lvls_hex = 4;
