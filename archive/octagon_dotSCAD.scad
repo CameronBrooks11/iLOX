@@ -12,7 +12,7 @@
 
 
 // Function to calculate octagon centers
-function calculate_octagon_centers(radius, spacing, levels, rotate=true, order=1) = 
+function calculate_octagon_centers(radius, spacing, levels, rotate=true) = 
     let(
         beginning_n = 2 * levels - 1,
         rot = rotate ? 22.5 : 0,
@@ -78,8 +78,12 @@ module octagons(radius, spacing, levels, rotate=true, order=1, octagon_centers=u
 //octagons(radius = 10, spacing = 0.5, levels = 5, rotate=true, order=1);
 
 // Example usage with pre-calculated centers
-centers = calculate_octagon_centers(radius = 10, spacing = 0.5, levels = 5, rotate=true, order=1);
-octagons(radius = 10, spacing = 0.5, levels = 5, rotate=true, order=1,octagon_centers=centers);
+rad = 10;
+space = 1;
+lvls = 5;
+rot = true;
+centers = calculate_octagon_centers(radius=rad, spacing=space, levels=lvls, rotate=rot);
+octagons(radius = rad, spacing = space, levels = lvls, rotate=rot,octagon_centers=centers);
 
 // Displaying the octagon centers for verification
 echo("Octagon centers: ", centers);
