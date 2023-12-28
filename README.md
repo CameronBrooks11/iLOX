@@ -1,9 +1,9 @@
-![SnapTessCAD Logo](branding/logo/logo_strip_v1.0.png)
+<img src="branding/logo/logo_strip_v1.0.png" alt="SnapTessCAD Logo">
 
 # SnapTessSCAD
 *An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing*
 
-#Cover
+# Cover
 Student Name: Cameron Brooks
 Student Number: 251148664
 Submission Date: Friday, December 22, 2023
