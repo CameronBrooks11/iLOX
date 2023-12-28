@@ -3,11 +3,11 @@
 *An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing*
 
 # Cover
-Student Name: Cameron Brooks
-Student Number: 251148664
-Submission Date: Friday, December 22, 2023
-Supervisor Name: Prof. Joshua M. Pearce
-In Fulfillment of the Requirements for John M. Thompson Centre for Engineering Leadership Undergraduate Research Integrated Engineering 4490 Course
+Student Name: Cameron Brooks.
+Student Number: 251148664.
+Submission Date: Friday, December 22, 2023.
+Supervisor Name: Prof. Joshua M. Pearce.
+In Fulfillment of the Requirements for John M. Thompson Centre for Engineering Leadership Undergraduate Research Integrated Engineering 4490 Course.
 
 # Abstract
 ...fill at end
@@ -26,3 +26,4 @@ In Fulfillment of the Requirements for John M. Thompson Centre for Engineering L
 # 5. Conclusion
 
 # References
+s
