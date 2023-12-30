@@ -51,5 +51,7 @@ filtered_centers_grid_hex = filter_hexagon_centers(centers_grid_hex, filter_list
 translate([-sep1,sep2,0]) hexagons(radius=rad_hex, spacing=space_hex, hexagon_centers=filtered_centers_grid_hex);
 
 // Displaying the hexagon centers for verification
+echo("Hexagon centers with levels: ", centers_levels_hex);
 echo("Filtered Hexagon centers with levels: ", filtered_centers_levels_hex);
+echo("Hexagon centers with grid: ", centers_grid_hex);
 echo("Filtered Hexagon centers with n x m grid: ", filtered_centers_grid_hex);
