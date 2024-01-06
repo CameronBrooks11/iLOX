@@ -1,5 +1,5 @@
-use <..\octagons_tess.scad>
-use <..\hexagons_tess.scad>
+use <..\src\octagons_tess.scad>
+use <..\src\hexagons_tess.scad>
 
 sep1 = 175;
 sep2 = 125;

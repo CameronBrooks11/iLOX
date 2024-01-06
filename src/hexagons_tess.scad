@@ -74,7 +74,7 @@ function get_gradient_color(normalized_x, normalized_y, color_scheme) =
     color_scheme == "scheme4" ? [1 - normalized_x, normalized_x, 1 - normalized_y] : // Cyan to Red
     color_scheme == "scheme5" ? [normalized_x, normalized_x * normalized_y, 1 - normalized_x] : // Purple to Green
     color_scheme == "scheme6" ? [1 - normalized_x * normalized_y, normalized_y, normalized_x] : // Orange to Blue
-    [0, 0, 0]; // Default color (black) if no valid color scheme is provided
+    [0.9, 0.9, 0.9]; // Default color (black) if no valid color scheme is provided
 
 // Module to create hexagons with optional color gradient
 module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_scheme=undef, alpha=0.5) {
@@ -98,7 +98,7 @@ module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_schem
 
         // Apply color gradient only if color_scheme is specified
         if (!is_undef(color_scheme)) {
-            color_val = [0, 0, 0];
+            color_val = [.9, .9, .9];
         }
 
         color(color_val, alpha=alpha)
@@ -110,7 +110,7 @@ module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_schem
 
 
 // Module to print points as text
-module print_points(points, text_size=2, color=[0, 0, 0]) {
+module print_points(points, text_size=2, color=[0.1, 0.1, 0.1]) {
     for (point = points) {
         color(color)
         translate([point[0], point[1], 1]) // Translated +1 in Z-axis
