@@ -2,21 +2,17 @@
 
 *An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing*
 
-# Abstract
-...fill at end
 
-# Table of Contents
-..fill at end
-
-# 1. Introduction
+# Introduction
 
 
-# 2. Materials and Methods
+# Materials and Methods
 
-# 3. Results
 
-# 4. Discussion
+# Results
 
-# 5. Conclusion
+
+# Discussion / Future Work
+
 
 # References

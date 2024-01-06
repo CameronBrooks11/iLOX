@@ -1,5 +1,5 @@
 // Function to check if two points are equal within a tolerance
-function points_equal(p1, p2, tolerance=1e-4) =
+function points_equal(p1, p2, tolerance=1e-3) =
     let(
         comparisons = [for(i = [0:len(p1)-1]) abs(p1[i] - p2[i]) < tolerance]
     )
@@ -7,21 +7,25 @@ function points_equal(p1, p2, tolerance=1e-4) =
     len([for(comp = comparisons) if (comp) true]) == len(comparisons);
 
 // Function to check if any point in a list equals the given point
-function is_point_in_list(point, list, tolerance=1e-4) =
+function is_point_in_list(point, list, tolerance=1e-3) =
     let(
         equal_points = [for(p = list) points_equal(p, point, tolerance)]
     )
     len([for(eq = equal_points) if (eq) true]) > 0;
 
 // Function to filter out certain hexagon centers
-function filter_hexagon_centers(centers, filter_list, tolerance=1e-4) =
+function filter_hexagon_centers(centers, filter_list, tolerance=1e-3) =
     [for(center = centers) if (!is_point_in_list(center, filter_list, tolerance)) center];
 
+
 // Function to calculate hexagon centers
-function calculate_hexagon_centers_levels(radius, spacing, levels, n=undef, m=undef) =
+function hexagon_centers(radius, spacing, levels=undef, n=undef, m=undef) =
     let(
         offset_x = radius * cos(30),
         offset_y = radius + radius * sin(30),
+        levels = is_undef(levels) ? 0 : levels,
+        dx = -(levels - 1) * offset_x * 2,  //center x shift
+        dy = 0,    //center y shift, not req due to nature of generation algo
         offset_step = 2 * offset_x,
         generate_rectangular_points = function(n, m, offset_step, offset_y) 
             [for(i = [0:n-1], j = [0:m-1]) 
@@ -29,8 +33,8 @@ function calculate_hexagon_centers_levels(radius, spacing, levels, n=undef, m=un
 
         hexagons_pts = function(hex_datum) 
             let(
-                tx = hex_datum[0][0],
-                ty = hex_datum[0][1],
+                tx = hex_datum[0][0] + dx,
+                ty = hex_datum[0][1] + dy,
                 n_pts = hex_datum[1],
                 offset_xs = [for(i = 0; i < n_pts; i = i + 1) i * offset_step]
             )
@@ -62,17 +66,6 @@ function calculate_hexagon_centers_levels(radius, spacing, levels, n=undef, m=un
         ) concat([for(c = centers) each c]);
 
 
-// Function to calculate hexagon centers in a grid pattern
-function calculate_hexagon_centers_grid(radius, spacing, n, m) =
-    let(
-        offset_x = radius * cos(30),
-        offset_y = radius + radius * sin(30),
-        offset_step_x = 2 * offset_x,
-        offset_step_y = offset_y
-    )
-    [for(i = [0:n-1], j = [0:m-1]) 
-        [i * offset_step_x + (j % 2) * (offset_step_x / 2), j * offset_step_y]];
-
 // Module to create hexagons
 module hexagons(radius, spacing, levels=undef, hexagon_centers=[]) {
     r_hexagon = radius - spacing / 2;
@@ -82,7 +75,7 @@ module hexagons(radius, spacing, levels=undef, hexagon_centers=[]) {
     }
 
     if (len(hexagon_centers) == 0 && !is_undef(levels)) {
-        hexagon_centers = calculate_hexagon_centers_levels(radius, spacing, levels);
+        hexagon_centers = hexagon_centers(radius, spacing, levels);
     } else if (len(hexagon_centers) == 0) {
         echo("No hexagon centers provided and 'levels' is undefined.");
     }
@@ -92,21 +85,63 @@ module hexagons(radius, spacing, levels=undef, hexagon_centers=[]) {
     }
 }
 
-// Example usage of the hexagons module with levels
-// rad = 10;
-// space = 1;
-// lvls = 5;
-// centers_levels = calculate_hexagon_centers_levels(radius=rad, spacing=space, levels=lvls);
-// filtered_centers_levels = filter_hexagon_centers(centers_levels, [[0, 0]]);
-// hexagons(radius=rad, spacing=space, levels=lvls, hexagon_centers=filtered_centers_levels);
 
-// Example usage of the hexagons module with n x m grid placement
-// n = 6;
-// m = 6;
-// centers_grid = calculate_hexagon_centers_grid(radius=rad, spacing=space, n=n, m=m);
-// filtered_centers_grid = filter_hexagon_centers(centers_grid, [[0, 0]]);
-// hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers_grid);
+// Module to print points as text
+module print_points(points, text_size=2, color=[0, 0, 0]) {
+    for (point = points) {
+        color(color)
+        translate([point[0], point[1], 1]) // Translated +1 in Z-axis
+        text(str("[", point[0], ", ", point[1], "]"), size=text_size, valign="center", halign="center");
+    }
+}
 
-// Displaying the hexagon centers for verification
-// echo("Filtered Hexagon centers with levels: ", filtered_centers_levels);
-// echo("Filtered Hexagon centers with n x m grid: ", filtered_centers_grid);
+// Define the mode: 
+// 1 for levels, 
+// 2 for filtered levels, 
+// 3 for grid, 
+// 4 for filtered grid
+mode = 4; // Change this number to switch between different examples
+
+rad = 10;
+space = 1;
+lvls = 5;
+
+filter_points_levels = [
+    [51.962, 0], [-34.641, 0], [-17.3205, 0], [0.0, 0], [17.3205, 0], [34.641, 0], [51.962, 0], 
+    [-25.9807, 15], [-8.6602, 15], [8.6603, 15], [25.9808, 15], [43.301, 15], [60.622, 15], 
+    [-17.3205, 30], [0.0, 30], [17.3205, 30], [-25.9807, -15], [-8.6602, -15], [8.6603, -15], 
+    [25.9808, -15], [43.301, -15], [60.622, -15], [-17.3205, -30], [0.0, -30], [17.3205, -30]
+]; // forms a ring
+
+n = 6;
+m = 5;
+filter_points_grid = [
+    [95.2628, 15], [95.2628, 45], [43.3013, 45], [51.9615, 60], [34.641, 60], [34.641, 0], 
+    [51.9615, 0], [43.3013, 15]
+];
+
+if (mode == 1) {
+    centers = hexagon_centers(radius=rad, spacing=space, levels=lvls);
+    echo("Unfiltered Centers:", centers);
+    hexagons(radius=rad, spacing=space, hexagon_centers=centers);
+    print_points(centers, color="red");
+} else if (mode == 2) {
+    centers = hexagon_centers(radius=rad, spacing=space, levels=lvls);
+    filtered_centers = filter_hexagon_centers(centers, filter_points_levels);
+    echo("Unfiltered Centers:", centers);
+    echo("Filtered Centers:", filtered_centers);
+    print_points(filtered_centers, color="red");
+    hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers);
+} else if (mode == 3) {
+    centers_grid = hexagon_centers(radius=rad, spacing=space, n=n, m=m);
+    echo("Unfiltered Centers Grid:", centers_grid);
+    hexagons(radius=rad, spacing=space, hexagon_centers=centers_grid);
+    print_points(centers_grid, color="red");
+} else if (mode == 4) {
+    centers_grid = hexagon_centers(radius=rad, spacing=space, n=n, m=m);
+    filtered_centers_grid = filter_hexagon_centers(centers_grid, filter_points_grid);
+    echo("Unfiltered Centers Grid:", centers_grid);
+    echo("Filtered Centers Grid:", filtered_centers_grid);
+    hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers_grid);
+    print_points(filtered_centers_grid, color="red");
+}
