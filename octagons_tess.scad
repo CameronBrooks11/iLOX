@@ -30,7 +30,7 @@ function filter_octagon_centers(centers, filter_list, tolerance=1e-3) =
     [for(center = centers) if (!is_point_in_list(center, filter_list, tolerance)) center];
 
 // Function to calculate octagon centers for both levels and grid
-function octagon_centers(radius, spacing, levels=undef, n=undef, m=undef, rotate=true) =
+function octagon_centers(radius, levels, spacing=undef, n=undef, m=undef, rotate=true) =
     let(
         // Common calculations
         side_length = (radius * 2) / (sqrt(4 + 2 * sqrt(2))),
@@ -106,18 +106,47 @@ function octagon_centers(radius, spacing, levels=undef, n=undef, m=undef, rotate
     ) concat([for(c = centers) each c]);    
 
     
-// Module to create octagons
-module octagons(radius, spacing, levels, rotate=true, order=1, octagon_centers=undef) {
+// Module to create octagons with optional color gradient
+module octagons(radius,levels,  spacing=0, rotate=true, order=1, octagon_centers=undef, color_scheme=undef, alpha=undef) {
     if (is_undef(octagon_centers)) {
-        octagon_centers = calculate_octagon_centers(radius, spacing, levels, rotate, order);
+        octagon_centers = calculate_octagon_centers(radius, levels, spacing, rotate, order);
     }
 
+    // Determine the range of the center points for normalization
+    min_x = min([for(center = octagon_centers) center[0]]);
+    max_x = max([for(center = octagon_centers) center[0]]);
+    min_y = min([for(center = octagon_centers) center[1]]);
+    max_y = max([for(center = octagon_centers) center[1]]);
+
     for(center = octagon_centers) {
-        translate([center[0], center[1], 0]) {
-            rotate([0,0,rotate ? 22.5 : 0]) circle(radius - spacing / 2, $fn = 8*order);
+        normalized_x = (center[0] - min_x) / (max_x - min_x);
+        normalized_y = (center[1] - min_y) / (max_y - min_y);
+
+        color_val = get_gradient_color(normalized_x, normalized_y, color_scheme);
+
+        // Apply color gradient only if color_scheme is specified
+        if (!is_undef(color_scheme)) {
+            color_val = [0, 0, 0];
         }
+
+        color(color_val, alpha = alpha)
+        translate([center[0], center[1], 0]) 
+            rotate([0, 0, rotate ? 22.5 : 0]) circle(radius - spacing / 2, $fn = 8*order);
+        
     }
 }
+
+// Function to get gradient color based on the color scheme
+function get_gradient_color(normalized_x, normalized_y, color_scheme) = 
+    color_scheme == "scheme1" ? [normalized_x, 1 - normalized_x, normalized_y] : // Red to Blue
+    color_scheme == "scheme2" ? [1 - normalized_y, normalized_x, normalized_y] : // Green to Magenta
+    color_scheme == "scheme3" ? [normalized_y, 1 - normalized_y, normalized_x] : // Blue to Yellow
+    color_scheme == "scheme4" ? [1 - normalized_x, normalized_x, 1 - normalized_y] : // Cyan to Red
+    color_scheme == "scheme5" ? [normalized_x, normalized_x * normalized_y, 1 - normalized_x] : // Purple to Green
+    color_scheme == "scheme6" ? [1 - normalized_x * normalized_y, normalized_y, normalized_x] : // Orange to Blue
+    [0, 0, 0]; // Default color (black) if no valid color scheme is provided
+
+
 
 // Module to print points as text
 module print_points(points, text_size=2, color=[0, 0, 0]) {
@@ -157,91 +186,23 @@ filter_points_grid = [
     [0, 0], [110.866, 0], [0, 110.866], [110.866, 110.866],  [55.4328, 55.4328]
 ]; // Your filter points for grid
 
-// Module to create octagons with color gradient
-module octagonsss(radius, spacing, levels, rotate=true, order=1, octagon_centers=undef) {
-    if (is_undef(octagon_centers)) {
-        octagon_centers = calculate_octagon_centers(radius, spacing, levels, rotate, order);
-    }
-
-    // Determine the range of the center points for normalization
-    min_x = min([for(center = octagon_centers) center[0]]);
-    max_x = max([for(center = octagon_centers) center[0]]);
-    min_y = min([for(center = octagon_centers) center[1]]);
-    max_y = max([for(center = octagon_centers) center[1]]);
-
-    for(center = octagon_centers) {
-        // Normalize the center coordinates to [0, 1] range
-        normalized_x = (center[0] - min_x) / (max_x - min_x);
-        normalized_y = (center[1] - min_y) / (max_y - min_y);
-
-        // Create a color gradient based on normalized center coordinates
-        color_val = [normalized_x, 1 - normalized_x, normalized_y];
-        color(color_val)
-        translate([center[0], center[1], 0]) {
-            rotate([0, 0, rotate ? 22.5 : 0]) circle(radius - spacing / 2, $fn = 8*order);
-        }
-    }
-}
-
-// Module to create octagons with optional color gradient
-module octagonzzz(radius, spacing, levels, rotate=true, order=1, octagon_centers=undef, color_scheme=undef) {
-    if (is_undef(octagon_centers)) {
-        octagon_centers = calculate_octagon_centers(radius, spacing, levels, rotate, order);
-    }
-
-    // Determine the range of the center points for normalization
-    min_x = min([for(center = octagon_centers) center[0]]);
-    max_x = max([for(center = octagon_centers) center[0]]);
-    min_y = min([for(center = octagon_centers) center[1]]);
-    max_y = max([for(center = octagon_centers) center[1]]);
-
-    for(center = octagon_centers) {
-        normalized_x = (center[0] - min_x) / (max_x - min_x);
-        normalized_y = (center[1] - min_y) / (max_y - min_y);
-
-        color_val = get_gradient_color(normalized_x, normalized_y, color_scheme);
-
-        // Apply color gradient only if color_scheme is specified
-        if (!is_undef(color_scheme)) {
-            color_val = [0, 0, 0];
-        }
-
-        color(color_val)
-        translate([center[0], center[1], 0]) 
-            rotate([0, 0, rotate ? 22.5 : 0]) circle(radius - spacing / 2, $fn = 8*order);
-        
-    }
-}
-
-// Function to get gradient color based on the color scheme
-function get_gradient_color(normalized_x, normalized_y, color_scheme) = 
-    color_scheme == "scheme1" ? [normalized_x, 1 - normalized_x, normalized_y] : // Red to Blue
-    color_scheme == "scheme2" ? [1 - normalized_y, normalized_x, normalized_y] : // Green to Magenta
-    color_scheme == "scheme3" ? [normalized_y, 1 - normalized_y, normalized_x] : // Blue to Yellow
-    color_scheme == "scheme4" ? [1 - normalized_x, normalized_x, 1 - normalized_y] : // Cyan to Red
-    color_scheme == "scheme5" ? [normalized_x, normalized_x * normalized_y, 1 - normalized_x] : // Purple to Green
-    color_scheme == "scheme6" ? [1 - normalized_x * normalized_y, normalized_y, normalized_x] : // Orange to Blue
-    [0, 0, 0]; // Default color (black) if no valid color scheme is provided
-
 
 if (mode == 1) {
     centers = octagon_centers(radius=rad, spacing=space, levels=lvls, rotate=rotate);
-    octagons(radius=rad, spacing=space, levels=lvls, rotate=rotate, octagon_centers=centers);
-    print_points(centers, text_size=1, color="red"); // Add labels
+    octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=centers, color_scheme="scheme1", alpha = 0.5);
+    print_points(centers, text_size=1, color="Azure"); // Add labels
 } else if (mode == 2) {
     centers = octagon_centers(radius=rad, spacing=space, levels=lvls, rotate=rotate);
     filtered_centers = filter_octagon_centers(centers, filter_points_levels);
-    octagons(radius=rad, spacing=space, levels=lvls, rotate=rotate, octagon_centers=filtered_centers);
-    print_points(filtered_centers, text_size=1, color="red"); // Add labels for filtered centers
+    octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=filtered_centers, color_scheme="scheme2", alpha = 0.5);
+    print_points(filtered_centers, text_size=1, color="Azure"); // Add labels for filtered centers
 } else if (mode == 3) {
     centers_grid = octagon_centers(radius=rad, spacing=space, n=n, m=m, rotate=rotate);
-    octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=centers_grid);
-    print_points(centers_grid, text_size=1, color="red"); // Add labels for grid centers
+    octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=centers_grid, color_scheme="scheme3", alpha = 0.5);
+    print_points(centers_grid, text_size=1, color="Azure"); // Add labels for grid centers
 } else if (mode == 4) {
     centers_grid = octagon_centers(radius=rad, spacing=space, n=n, m=m, rotate=rotate);
     filtered_centers_grid = filter_octagon_centers(centers_grid, filter_points_grid);
-    //octagonsss(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=filtered_centers_grid);
-    octagonzzz(radius=rad, spacing=space, levels=undef, rotate=rotate, 
-    octagon_centers=filtered_centers_grid, color_scheme="scheme2");
-    print_points(filtered_centers_grid, text_size=1, color="red"); // Add labels for filtered grid centers
+    octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=filtered_centers_grid, color_scheme="scheme4", alpha = 0.5);
+    print_points(filtered_centers_grid, text_size=1, color="Azure"); // Add labels for filtered grid centers
 }

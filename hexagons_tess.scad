@@ -19,7 +19,7 @@ function filter_hexagon_centers(centers, filter_list, tolerance=1e-3) =
 
 
 // Function to calculate hexagon centers
-function hexagon_centers(radius, spacing, levels=undef, n=undef, m=undef) =
+function hexagon_centers(radius, levels, spacing=undef, n=undef, m=undef) =
     let(
         offset_x = radius * cos(30),
         offset_y = radius + radius * sin(30),
@@ -66,22 +66,45 @@ function hexagon_centers(radius, spacing, levels=undef, n=undef, m=undef) =
         ) concat([for(c = centers) each c]);
 
 
-// Module to create hexagons
-module hexagons(radius, spacing, levels=undef, hexagon_centers=[]) {
-    r_hexagon = radius - spacing / 2;
+// Function to get gradient color based on the color scheme
+function get_gradient_color(normalized_x, normalized_y, color_scheme) = 
+    color_scheme == "scheme1" ? [normalized_x, 1 - normalized_x, normalized_y] : // Red to Blue
+    color_scheme == "scheme2" ? [1 - normalized_y, normalized_x, normalized_y] : // Green to Magenta
+    color_scheme == "scheme3" ? [normalized_y, 1 - normalized_y, normalized_x] : // Blue to Yellow
+    color_scheme == "scheme4" ? [1 - normalized_x, normalized_x, 1 - normalized_y] : // Cyan to Red
+    color_scheme == "scheme5" ? [normalized_x, normalized_x * normalized_y, 1 - normalized_x] : // Purple to Green
+    color_scheme == "scheme6" ? [1 - normalized_x * normalized_y, normalized_y, normalized_x] : // Orange to Blue
+    [0, 0, 0]; // Default color (black) if no valid color scheme is provided
 
-    module hexagon() {
-        rotate(30) circle(r_hexagon, $fn = 6);     
-    }
-
+// Module to create hexagons with optional color gradient
+module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_scheme=undef, alpha=0.5) {
     if (len(hexagon_centers) == 0 && !is_undef(levels)) {
-        hexagon_centers = hexagon_centers(radius, spacing, levels);
+        hexagon_centers = hexagon_centers(radius, levels, spacing);
     } else if (len(hexagon_centers) == 0) {
         echo("No hexagon centers provided and 'levels' is undefined.");
     }
 
+    // Determine the range of the center points for normalization
+    min_x = min([for(center = hexagon_centers) center[0]]);
+    max_x = max([for(center = hexagon_centers) center[0]]);
+    min_y = min([for(center = hexagon_centers) center[1]]);
+    max_y = max([for(center = hexagon_centers) center[1]]);
+
     for(center = hexagon_centers) {
-        translate([center[0], center[1], 0]) hexagon();
+        normalized_x = (center[0] - min_x) / (max_x - min_x);
+        normalized_y = (center[1] - min_y) / (max_y - min_y);
+
+        color_val = get_gradient_color(normalized_x, normalized_y, color_scheme);
+
+        // Apply color gradient only if color_scheme is specified
+        if (!is_undef(color_scheme)) {
+            color_val = [0, 0, 0];
+        }
+
+        color(color_val, alpha=alpha)
+        translate([center[0], center[1], 0]) {
+            rotate(30) circle(radius - spacing / 2, $fn = 6);
+        }
     }
 }
 
@@ -100,48 +123,50 @@ module print_points(points, text_size=2, color=[0, 0, 0]) {
 // 2 for filtered levels, 
 // 3 for grid, 
 // 4 for filtered grid
-mode = 4; // Change this number to switch between different examples
+mode = 2; // Change this number to switch between different examples
 
 rad = 10;
 space = 1;
 lvls = 5;
 
 filter_points_levels = [
-    [51.962, 0], [-34.641, 0], [-17.3205, 0], [0.0, 0], [17.3205, 0], [34.641, 0], [51.962, 0], 
-    [-25.9807, 15], [-8.6602, 15], [8.6603, 15], [25.9808, 15], [43.301, 15], [60.622, 15], 
+    [-34.641, 0], [-17.3205, 0], [0.0, 0], [17.3205, 0], [34.641, 0], 
+    [-25.9807, 15], [-8.6602, 15], [8.6603, 15], [25.9808, 15], 
     [-17.3205, 30], [0.0, 30], [17.3205, 30], [-25.9807, -15], [-8.6602, -15], [8.6603, -15], 
-    [25.9808, -15], [43.301, -15], [60.622, -15], [-17.3205, -30], [0.0, -30], [17.3205, -30]
-]; // forms a ring
+    [25.9808, -15], [-17.3205, -30], [0.0, -30], [17.3205, -30]
+];
 
 n = 6;
 m = 5;
+
 filter_points_grid = [
-    [95.2628, 15], [95.2628, 45], [43.3013, 45], [51.9615, 60], [34.641, 60], [34.641, 0], 
+    [95.2628, 15], [95.2628, 45], [43.3013, 45], 
+    [51.9615, 60], [34.641, 60], [34.641, 0], 
     [51.9615, 0], [43.3013, 15]
 ];
 
 if (mode == 1) {
     centers = hexagon_centers(radius=rad, spacing=space, levels=lvls);
     echo("Unfiltered Centers:", centers);
-    hexagons(radius=rad, spacing=space, hexagon_centers=centers);
-    print_points(centers, color="red");
+    hexagons(radius=rad, spacing=space, hexagon_centers=centers, color_scheme="scheme1");
+    print_points(centers, text_size=1, color="Azure");
 } else if (mode == 2) {
     centers = hexagon_centers(radius=rad, spacing=space, levels=lvls);
     filtered_centers = filter_hexagon_centers(centers, filter_points_levels);
     echo("Unfiltered Centers:", centers);
     echo("Filtered Centers:", filtered_centers);
-    print_points(filtered_centers, color="red");
-    hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers);
+    print_points(filtered_centers, text_size=1, color="Azure");
+    hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers, color_scheme="scheme2");
 } else if (mode == 3) {
     centers_grid = hexagon_centers(radius=rad, spacing=space, n=n, m=m);
     echo("Unfiltered Centers Grid:", centers_grid);
-    hexagons(radius=rad, spacing=space, hexagon_centers=centers_grid);
-    print_points(centers_grid, color="red");
+    hexagons(radius=rad, spacing=space, hexagon_centers=centers_grid, color_scheme="scheme3");
+    print_points(centers_grid, text_size=1, color="Azure");
 } else if (mode == 4) {
     centers_grid = hexagon_centers(radius=rad, spacing=space, n=n, m=m);
     filtered_centers_grid = filter_hexagon_centers(centers_grid, filter_points_grid);
     echo("Unfiltered Centers Grid:", centers_grid);
     echo("Filtered Centers Grid:", filtered_centers_grid);
-    hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers_grid);
-    print_points(filtered_centers_grid, color="red");
+    hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers_grid, color_scheme="scheme4");
+    print_points(filtered_centers_grid, text_size=1, color="Azure");
 }
