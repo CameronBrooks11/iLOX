@@ -1,4 +1,35 @@
-
+/*
+ * Title: Vizualization Utilities
+ * Author: [Your Name]
+ * Organization: [Your Organization]
+ *
+ * License: [Specify License]
+ *
+ * Description:
+ *   This OpenSCAD script offers visualization utility functions for color manipulation and visual representation of points.
+ *   The 'get_gradient_color' function generates gradient colors based on normalized coordinates and predefined
+ *   color schemes. It supports multiple schemes, allowing for a variety of color transitions. The 'print_points'
+ *   module is designed to visually represent points in a 3D space by printing their coordinates as text, which
+ *   is useful for debugging and visualizing point data.
+ *
+ * Usage Notes:
+ *   - Use 'get_gradient_color' to obtain gradient colors for visualizations, animations, or any graphical representation.
+ *   - 'print_points' can be utilized to display the coordinates of points in 3D models for debugging or presentation purposes.
+ *   - Customize the 'print_points' module by adjusting the text size and color as needed.
+ *
+ * Parameters:
+ *   - For 'get_gradient_color':
+ *       normalized_x, normalized_y: Normalized x and y values (0 to 1).
+ *       color_scheme: Predefined color schemes for gradient generation.
+ *   - For 'print_points':
+ *       points: Array of points to be printed.
+ *       text_size: Size of the text for printed points.
+ *       color: Color of the text.
+ *
+ * Revision History:
+ *   [YYYY-MM-DD] - Initial version.
+ *   [YYYY-MM-DD] - Subsequent updates with details.
+ */
 
 
 
