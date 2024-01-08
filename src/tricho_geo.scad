@@ -72,10 +72,11 @@ module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
     beta_vector = [beta_height, beta_r1, beta_r2];
     omega_vector = [omega_height, omega_r1, omega_r2];
 
-    echo("Section: Beta, Radius 1:", beta_vector[1], "Radius 2:", beta_vector[2], "Height:", beta_vector[0], "Angle:", beta_angle);
-    echo("Section: Alpha, Radius 1:", alpha_vector[1], "Radius 2:", alpha_vector[2], "Height:", alpha_vector[0], "Angle:", alpha_angle);
-    echo("Section: Interstitial, Radius 1:", alpha_vector[2], "Radius 2:", omega_vector[1], "Height:", inter_height, "Angle: -");
-    echo("Section: Omega, Radius 1:", omega_vector[1], "Radius 2:", omega_vector[2], "Height:", omega_vector[0], "Angle:", omega_angle);
+
+    //echo("Section: Beta, Radius 1:", beta_vector[1], "Radius 2:", beta_vector[2], "Height:", beta_vector[0], "Angle:", beta_angle);
+    //echo("Section: Alpha, Radius 1:", alpha_vector[1], "Radius 2:", alpha_vector[2], "Height:", alpha_vector[0], "Angle:", alpha_angle);
+    //echo("Section: Interstitial, Radius 1:", alpha_vector[2], "Radius 2:", omega_vector[1], "Height:", inter_height, "Angle: -");
+    //echo("Section: Omega, Radius 1:", omega_vector[1], "Radius 2:", omega_vector[2], "Height:", omega_vector[0], "Angle:", omega_angle);
 
 
     tricho_geo(alpha_vector, beta_vector, inter_height, omega_vector, segments);

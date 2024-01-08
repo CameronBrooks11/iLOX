@@ -44,7 +44,7 @@ function get_gradient_color(normalized_x, normalized_y, color_scheme) =
     [0.9, 0.9, 0.9]; // Default color (black) if no valid color scheme is provided
 
 // Module to print points as text
-module print_points(points, text_size=2, color=[0.1, 0.1, 0.1]) {
+module print_points(points, text_size=1, color=[0.1, 0.1, 0.1]) {
     for (point = points) {
         color(color)
         translate([point[0], point[1], 1]) // Translated +1 in Z-axis

@@ -91,7 +91,7 @@ function hexagon_centers(radius, levels, spacing=undef, n=undef, m=undef) =
 
 
 // Module to create hexagons with optional color gradient
-module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_scheme=undef, alpha=0.5) {
+module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_scheme=undef, alpha=undef) {
     if (len(hexagon_centers) == 0 && !is_undef(levels)) {
         hexagon_centers = hexagon_centers(radius, levels, spacing);
     } else if (len(hexagon_centers) == 0) {
@@ -122,3 +122,35 @@ module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_schem
     }
 }
 
+// Module to create hexagons with optional color gradient
+module hexagonsSolid(radius, height, levels=undef, spacing=0, hexagon_centers=[], color_scheme=undef, alpha=undef) {
+    if (len(hexagon_centers) == 0 && !is_undef(levels)) {
+        hexagon_centers = hexagon_centers(radius, levels, spacing);
+    } else if (len(hexagon_centers) == 0) {
+        echo("No hexagon centers provided and 'levels' is undefined.");
+    }
+
+    // Determine the range of the center points for normalization
+    min_x = min([for(center = hexagon_centers) center[0]]);
+    max_x = max([for(center = hexagon_centers) center[0]]);
+    min_y = min([for(center = hexagon_centers) center[1]]);
+    max_y = max([for(center = hexagon_centers) center[1]]);
+
+    for(center = hexagon_centers) {
+        normalized_x = (center[0] - min_x) / (max_x - min_x);
+        normalized_y = (center[1] - min_y) / (max_y - min_y);
+
+        color_val = get_gradient_color(normalized_x, normalized_y, color_scheme);
+
+        // Apply color gradient only if color_scheme is specified
+        if (!is_undef(color_scheme)) {
+            color_val = [.9, .9, .9];
+        }
+
+        color(color_val, alpha=alpha)
+        translate([center[0], center[1], 0]) {
+            linear_extrude(height = height, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) 
+            rotate(30) circle(radius - spacing / 2, $fn = 6);
+        }
+    }
+}

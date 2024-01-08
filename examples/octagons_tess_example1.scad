@@ -1,3 +1,9 @@
+use <..\src\viz-utils.scad>
+use <..\src\point-utils.scad>
+use <..\src\hexagons_tess.scad>
+use <..\src\octagons_tess.scad>
+use <..\src\tricho_geo.scad>
+
 
 
 // Define the mode: 
@@ -35,7 +41,7 @@ if (mode == 1) {
     print_points(centers, text_size=1, color="Azure"); // Add labels
 } else if (mode == 2) {
     centers = octagon_centers(radius=rad, spacing=space, levels=lvls, rotate=rotate);
-    filtered_centers = filter_octagon_centers(centers, filter_points_levels);
+    filtered_centers = filter_center_points(centers, filter_points_levels);
     octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=filtered_centers, color_scheme="scheme2", alpha = 0.5);
     print_points(filtered_centers, text_size=1, color="Azure"); // Add labels for filtered centers
 } else if (mode == 3) {
@@ -44,7 +50,7 @@ if (mode == 1) {
     print_points(centers_grid, text_size=1, color="Azure"); // Add labels for grid centers
 } else if (mode == 4) {
     centers_grid = octagon_centers(radius=rad, spacing=space, n=n, m=m, rotate=rotate);
-    filtered_centers_grid = filter_octagon_centers(centers_grid, filter_points_grid);
+    filtered_centers_grid = filter_center_points(centers_grid, filter_points_grid);
     octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=filtered_centers_grid, color_scheme="scheme4", alpha = 0.5);
     print_points(filtered_centers_grid, text_size=1, color="Azure"); // Add labels for filtered grid centers
 }

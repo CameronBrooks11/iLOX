@@ -100,3 +100,27 @@ function is_point_in_list(point, list, tolerance=EPSILON) =
 // Function to filter out certain centers
 function filter_center_points(centers, filter_list, tolerance=EPSILON) =
     [for(center = centers) if (!is_point_in_list(center, filter_list, tolerance)) center];
+
+// Function to calculate the distance between two points
+function distance(p1, p2) = sqrt(pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2));
+
+// Function to check if a point is within a certain radius of any point in a given array
+function is_within_radius(point, radius, removal_points) =
+  let(
+    n = len(removal_points)
+  )
+  [for(i = [0:n-1])
+    if (distance(point, removal_points[i]) < radius)
+      true
+  ][0];
+
+// Main function to remove points
+function filter_triangulated_center_points(r, centers, filter_list) = 
+  let(
+    n = len(centers)
+  )
+  [for(i = [0:n-1])
+    if (!is_within_radius(centers[i], r, filter_list))
+      centers[i]
+  ];
+

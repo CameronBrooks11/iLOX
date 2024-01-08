@@ -1,4 +1,10 @@
 
+use <..\src\viz-utils.scad>
+use <..\src\point-utils.scad>
+use <..\src\hexagons_tess.scad>
+use <..\src\octagons_tess.scad>
+use <..\src\tricho_geo.scad>
+
 
 // Define the mode: 
 // 1 for levels, 
@@ -34,7 +40,7 @@ if (mode == 1) {
     print_points(centers, text_size=1, color="Azure");
 } else if (mode == 2) {
     centers = hexagon_centers(radius=rad, spacing=space, levels=lvls);
-    filtered_centers = filter_hexagon_centers(centers, filter_points_levels);
+    filtered_centers = filter_center_points(centers, filter_points_levels);
     echo("Unfiltered Centers:", centers);
     echo("Filtered Centers:", filtered_centers);
     print_points(filtered_centers, text_size=1, color="Azure");
@@ -46,7 +52,7 @@ if (mode == 1) {
     print_points(centers_grid, text_size=1, color="Azure");
 } else if (mode == 4) {
     centers_grid = hexagon_centers(radius=rad, spacing=space, n=n, m=m);
-    filtered_centers_grid = filter_hexagon_centers(centers_grid, filter_points_grid);
+    filtered_centers_grid = filter_center_points(centers_grid, filter_points_grid);
     echo("Unfiltered Centers Grid:", centers_grid);
     echo("Filtered Centers Grid:", filtered_centers_grid);
     hexagons(radius=rad, spacing=space, hexagon_centers=filtered_centers_grid, color_scheme="scheme4");
