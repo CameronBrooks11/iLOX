@@ -2,16 +2,6 @@ use <hex-center-utils.scad>;
 use <hexagons_tess.scad>;
 use <tricho_geo.scad>;
 
-// Place a tricho at each hexagon center
-module place_trichos_at_centers(centers, r, beta_angle, beta_height, alpha_angle, 
-            alpha_height, omega_angle, omega_height, inter_height) {
-    for (center = centers) {
-        translate([center[0], center[1], 0]) 
-        tricho(r=r, beta=beta_angle, beta_h=beta_height, alpha=alpha_angle, 
-            alpha_h=alpha_height, omega=omega_angle, omega_h=omega_height, inter_h=inter_height); 
-    }
-}
-
 module main() {
     // Tricho Params
     radius = 1.5;

@@ -1,13 +1,20 @@
 use <sorted-nop\sorted.scad>
 
-EPSILON = 1e-3;
+/*
+
+This script is for functions related to point calculations
+
+*/
+
+
+EPSILON = EPSILON;
 
 // Function to sort hexagon centers
 function sort_centers(centers) =
     sorted(centers, key = function(p) [p[1], p[0]]);  // Sort by y, then x
 
-// Function to calculate row height
-function calculate_row_height(sorted_centers) =
+// Function to calculate the point row's height
+function point_row_height(sorted_centers) =
     let (
         row_heights = [
             for (i = [1 : len(sorted_centers) - 1])
@@ -18,9 +25,9 @@ function calculate_row_height(sorted_centers) =
     (len(row_heights) > 0) ? row_heights[0] : undef;
 
 // Function to calculate triangulated centers
-function calculate_triangulated_centers(sorted_centers) =
+function triangulated_center_points(sorted_centers) =
     let (
-        row_height = calculate_row_height(sorted_centers)
+        row_height = point_row_height(sorted_centers)
     )
     let (
         tri_centers = []
@@ -39,10 +46,21 @@ function calculate_triangulated_centers(sorted_centers) =
         ]
     );
 
-// Place a tricho at each hexagon center
-module place_trichos_at_centers(centers, alpha_vector, beta_vector, inter_height, omega_vector, segments) {
-    for (center = centers) {
-        translate([center[0], center[1], 0]) 
-        tricho(alpha_vector, beta_vector, inter_height, omega_vector, segments);
-    }
-}
+// Function to check if two points are equal within a tolerance
+function points_equal(p1, p2, tolerance=EPSILON) =
+    let(
+        comparisons = [for(i = [0:len(p1)-1]) abs(p1[i] - p2[i]) < tolerance]
+    )
+    // Manually check if all comparisons are true
+    len([for(comp = comparisons) if (comp) true]) == len(comparisons);
+
+// Function to check if any point in a list equals the given point
+function is_point_in_list(point, list, tolerance=EPSILON) =
+    let(
+        equal_points = [for(p = list) points_equal(p, point, tolerance)]
+    )
+    len([for(eq = equal_points) if (eq) true]) > 0;
+
+// Function to filter out certain hexagon centers
+function filter_center_points(centers, filter_list, tolerance=EPSILON) =
+    [for(center = centers) if (!is_point_in_list(center, filter_list, tolerance)) center];

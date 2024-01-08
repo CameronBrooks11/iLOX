@@ -77,6 +77,14 @@ module tricho_geo(alpha_vec, beta_vec, inter_h, omega_vec, segs) {
 }
 
 
+// Place a tricho at each hexagon center
+module place_trichos_at_centers(centers, alpha_vector, beta_vector, inter_height, omega_vector, segments) {
+    for (center = centers) {
+        translate([center[0], center[1], 0]) 
+        tricho(alpha_vector, beta_vector, inter_height, omega_vector, segments);
+    }
+}
+
 
 // Tricho Params
 radius = 1.5;
