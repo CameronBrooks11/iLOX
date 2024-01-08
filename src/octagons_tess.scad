@@ -1,94 +1,82 @@
-/**
-* octagons.scad
-*
-* Adapted from the hexagons module by Justin Lin, 2017
-* Modifications made by Cameron K. Brooks, 2024
-*
-* License: https://opensource.org/licenses/lgpl-3.0.html
-*
-* Original hexagons module at: https://openhome.cc/eGossip/OpenSCAD/lib3x-hexagons.html
-*
-**/
+/*
+ * Title: Octagon Pattern Generator
+ * Author: Cameron K. Brooks
+ * Organization: FAST Research
+ * 
+ * License: LGPL 3.0 or later
+ *
+ * Description:
+ *   This OpenSCAD script, named 'octagons.scad', generates patterns of octagons. 
+ *   It provides functionality to create both grid-based and level-based octagon layouts.
+ *   Users can specify various parameters such as radius, levels, spacing, and rotation
+ *   to customize the octagon pattern. Additionally, a color gradient can be applied to the octagons.
+ *
+ * Dependencies:
+ *   viz-utils.scad - Visualisation utilities
+ *   point-utils.scad - Point calculation utilities
+ *
+ * Usage Notes:
+ *   To use this script, include it in your OpenSCAD project. Customize the octagon pattern 
+ *   by modifying the parameters of the 'octagons' module or the 'octagon_centers' function.
+ *   Ensure that 'viz-utils.scad' and 'point-utils.scad' are in the same directory or adjust the import paths.
+ *
+ * Parameters:
+ *   radius - Radius of the octagons.
+ *   levels - Number of levels in the pattern.
+ *   spacing - Spacing between each octagon.
+ *   rotate - Boolean value to rotate octagons.
+ *   order - Determines the fineness of the circle approximation for octagons.
+ *   color_scheme - Array defining color gradient.
+ *   alpha - Alpha value for color transparency.
+ *
+ * Revision History:
+ *   2024-01-07 - Initial version inspired by Justin Lin's hexagon module (2017).
+ *   [YYYY-MM-DD] - Subsequent updates with details.
+ */
 
 
+use <viz-utils.scad>;
+use <point-utils.scad>;
 
+
+    
 // Function to calculate octagon centers for both levels and grid
 function octagon_centers(radius, levels, spacing=undef, n=undef, m=undef, rotate=true) =
     let(
-        // Common calculations
         side_length = (radius * 2) / (sqrt(4 + 2 * sqrt(2))),
         segment_length = side_length / sqrt(2),
         total_width = side_length * (1 + sqrt(2)),
         tip = rotate ? segment_length : (side_length / 2) * sqrt(2 - sqrt(2)) * 2,
         shift = rotate ? total_width : radius * 2,
         offset = shift - tip,
-
-        // Function for generating points in a grid pattern
-        generate_grid_points = function(n, m, offset_step) 
-            [for(i = [0:n-1], j = [0:m-1]) [i * offset_step, j * offset_step]],
+        
+        // Function for generating grid points
+        generate_grid_points = function(n, m, step) 
+            [for(i = [0:n-1], j = [0:m-1]) [i * step, j * step]],
 
         // Function for generating points based on levels
-        octagons_pts = function(oct_datum, offset_step, center_offset) 
+        generate_level_points = function(levels, step, center_offset, beginning_n) 
             let(
-                tx = oct_datum[0][0],
-                ty = oct_datum[0][1],
-                n_pts = oct_datum[1],
-                offset_xs = [for(i = 0; i < n_pts; i = i + 1) i * offset_step + center_offset]
+                upper_points = [for(i = [1:levels * 2]) 
+                    let(n = beginning_n - i) 
+                    [for(j = [0:n-1]) [(i + j) * step + center_offset, i * step]]
+                ],
+                lower_points = [for(pts = upper_points) [for(pt = pts) [pt[0], -pt[1]]]]
             )
-            [for(x = offset_xs) [x + tx, ty]]
+            concat(upper_points, lower_points)
     )
+    // Determine which pattern to use
     (!is_undef(n) && !is_undef(m)) ?
-        // Grid pattern case
         generate_grid_points(n, m, total_width) :
-        // Levels case
-    let(
-        beginning_n = 2 * levels - 1,
-        rot = rotate ? 22.5 : 0,
-        r_octagon = radius - spacing / 2,
-        side_length = (radius * 2) / (sqrt(4+2*sqrt(2))),
-        segment_length = side_length / sqrt(2),
-        total_width = side_length*(1+sqrt(2)),
-        tip = rotate ? segment_length : (side_length / 2) * sqrt(2 - sqrt(2)) * 2,
-        shift = rotate ? total_width : radius * 2,
-        offset = shift - tip,
-        offset_step = 2 * offset,
-        center_offset = -(offset * 2 * (levels - 1)),
+        let(
+            beginning_n = 2 * levels - 1,
+            center_offset = -(offset * (levels - 1))
+        )
+        generate_level_points(levels, offset, center_offset, beginning_n);
 
-        octagons_pts = function(oct_datum) 
-            let(
-                tx = oct_datum[0][0],
-                ty = oct_datum[0][1],
-                n = oct_datum[1],
-                offset_xs = [for(i = 0; i < n; i = i + 1) i * offset_step + center_offset]
-            )
-            [for(x = offset_xs) [x + tx, ty]],
 
-        upper_oct_data = levels > 1 ? 
-            [for(i = [1:levels * 2])
-                let(
-                    x = offset * i,
-                    y = offset * i,
-                    n = beginning_n - i
-                ) [[x, y], n]
-            ] : [],
 
-        lower_oct_data = levels > 1 ? 
-            [for(oct_datum = upper_oct_data)
-                [[oct_datum[0][0], -oct_datum[0][1]], oct_datum[1]]
-            ] : [],
 
-        total_oct_data = [[[0, 0], beginning_n], each upper_oct_data, each lower_oct_data],
-
-        local_hexagon_centers = []
-    )
-    let(
-        centers = [for(oct_datum = total_oct_data)
-            let(pts = octagons_pts(oct_datum))
-            [for(pt = pts) pt]
-        ]
-    ) concat([for(c = centers) each c]);    
-
-    
 // Module to create octagons with optional color gradient
 module octagons(radius,levels,  spacing=0, rotate=true, order=1, octagon_centers=undef, color_scheme=undef, alpha=undef) {
     if (is_undef(octagon_centers)) {
