@@ -38,10 +38,10 @@ module snap(
         centers = hexagon_centers(radius=rad, levels=lvls);
         
         union(){
-            echo("Centers: ", centers);
+            //echo("Centers: ", centers);
             hexagonsSolid(radius=rad, height=h,hexagon_centers=centers, color_scheme=color_scheme, alpha=1);
             
-            color("blue", alpha=0.5) 
+            color("DarkSlateBlue", alpha=0.5) 
             place_trichos_at_centers(centers=centers, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
                     alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height); 
         }
