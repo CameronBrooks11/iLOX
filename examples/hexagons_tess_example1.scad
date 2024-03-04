@@ -1,9 +1,9 @@
 
-use <..\src\viz-utils.scad>
-use <..\src\point-utils.scad>
-use <..\src\hexagons_tess.scad>
-use <..\src\octagons_tess.scad>
-use <..\src\tricho_geo.scad>
+use <..\src\utils_points.scad>
+use <..\src\utils_viz.scad>
+use <..\src\tess_hex.scad>
+use <..\src\tess_oct.scad>
+use <..\src\geo_tricho.scad>
 
 
 // Define the mode: 
@@ -18,10 +18,7 @@ space = 1;
 lvls = 5;
 
 filter_points_levels = [
-    [-34.641, 0], [-17.3205, 0], [0.0, 0], [17.3205, 0], [34.641, 0], 
-    [-25.9807, 15], [-8.6602, 15], [8.6603, 15], [25.9808, 15], 
-    [-17.3205, 30], [0.0, 30], [17.3205, 30], [-25.9807, -15], [-8.6602, -15], [8.6603, -15], 
-    [25.9808, -15], [-17.3205, -30], [0.0, -30], [17.3205, -30]
+
 ];
 
 n = 6;

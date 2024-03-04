@@ -1,7 +1,7 @@
-use <..\src\hexagons_tess.scad>;
+use <..\src\tess_hex.scad>;
 use <..\src\snap_hex.scad>;
-use <..\src\viz-utils.scad>;
-use <..\src\point-utils.scad>;
+use <..\src\utils_viz.scad>;
+use <..\src\utils_points.scad>;
 
 // Params
 radius = 1.5;

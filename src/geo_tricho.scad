@@ -37,7 +37,7 @@
  */
 
 
-use <math-utils.scad>;
+use <utils_math.scad>;
 
 
 module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
@@ -113,7 +113,7 @@ module place_trichos_at_centers(centers, r, beta_angle, beta_height, alpha_angle
     }
 }
 
-
+/*
 // Tricho Params
 radius = 1.5;
 
@@ -131,3 +131,4 @@ inter_height = radius / 10;
 
 
 tricho(r=radius, beta=beta_angle, beta_h=beta_height, alpha=alpha_angle, alpha_h=alpha_height, omega=omega_angle, omega_h=omega_height, inter_h=inter_height); 
+*/

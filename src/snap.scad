@@ -1,8 +1,12 @@
-use <viz-utils.scad>;
-use <point-utils.scad>;
-use <hexagons_tess.scad>;
-use <tricho_geo.scad>;
+use <utils_viz.scad>;
+use <utils_points.scad>;
+use <tess_hex.scad>;
+use <geo_tricho.scad>;
 
+// TODO:
+// remove everything related to the tricho geo and make a completely generalized version of this module
+// evemtually, the snap_[geo] modules will be merged into this one by defining the geo as a parameter 
+// and offloading the geo-specific stuff to that geo module
 
 module snap(
     lvls, ol, 
@@ -108,4 +112,3 @@ module cloneSnap(centers, h, r, beta_angle, beta_height, alpha_angle, alpha_heig
     }
 
 }
-

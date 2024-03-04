@@ -12,13 +12,13 @@
  *   to customize the octagon pattern. Additionally, a color gradient can be applied to the octagons.
  *
  * Dependencies:
- *   viz-utils.scad - Visualisation utilities
- *   point-utils.scad - Point calculation utilities
+ *   utils_viz.scad - Visualisation utilities
+ *   utils_points.scad - Point calculation utilities
  *
  * Usage Notes:
  *   To use this script, include it in your OpenSCAD project. Customize the octagon pattern 
  *   by modifying the parameters of the 'octagons' module or the 'octagon_centers' function.
- *   Ensure that 'viz-utils.scad' and 'point-utils.scad' are in the same directory or adjust the import paths.
+ *   Ensure that 'utils_viz.scad' and 'utils_points.scad' are in the same directory or adjust the import paths.
  *
  * Parameters:
  *   radius - Radius of the octagons.
@@ -35,8 +35,8 @@
  */
 
 
-use <viz-utils.scad>;
-use <point-utils.scad>;
+use <utils_viz.scad>;
+use <utils_points.scad>;
 
 
     
@@ -73,8 +73,6 @@ function octagon_centers(radius, levels, spacing=undef, n=undef, m=undef, rotate
             center_offset = -(offset * (levels - 1))
         )
         generate_level_points(levels, offset, center_offset, beginning_n);
-
-
 
 
 // Module to create octagons with optional color gradient

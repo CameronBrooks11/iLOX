@@ -1,8 +1,8 @@
-use <..\src\viz-utils.scad>
-use <..\src\point-utils.scad>
-use <..\src\hexagons_tess.scad>
-use <..\src\octagons_tess.scad>
-use <..\src\tricho_geo.scad>
+use <..\src\utils_viz.scad>
+use <..\src\utils_points.scad>
+use <..\src\tess_hex.scad>
+use <..\src\tess_oct.scad>
+use <..\src\geo_tricho.scad>
 
 
 

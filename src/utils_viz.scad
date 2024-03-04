@@ -51,4 +51,3 @@ module print_points(points, text_size=1, color=[0.1, 0.1, 0.1]) {
         text(str("[", point[0], ", ", point[1], "]"), size=text_size, valign="center", halign="center");
     }
 }
-

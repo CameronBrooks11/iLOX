@@ -13,14 +13,14 @@
  *   Additionally, an optional color gradient can be applied to the hexagons.
  *
  * Dependencies:
- *   viz-utils.scad - Used for visualization utilities.
- *   point-utils.scad - Utilized for point calculation utilities.
+ *   utils_viz.scad - Used for visualization utilities.
+ *   utils_points.scad - Utilized for point calculation utilities.
  *
  * Usage Notes:
  *   To utilize this script, include it in your OpenSCAD project. You can customize 
  *   the hexagon pattern by adjusting the parameters in the 'hexagons' module or 
- *   the 'hexagon_centers' function. Ensure that the 'viz-utils.scad' and 
- *   'point-utils.scad' files are located in the same directory or modify the import paths accordingly.
+ *   the 'hexagon_centers' function. Ensure that the 'utils_viz.scad' and 
+ *   'utils_points.scad' files are located in the same directory or modify the import paths accordingly.
  *
  * Parameters:
  *   radius - Specifies the radius of the hexagons.
@@ -36,8 +36,8 @@
  */
 
 
-use <viz-utils.scad>;
-use <point-utils.scad>;
+use <utils_viz.scad>;
+use <utils_points.scad>;
 
 
 // Function to calculate hexagon centers

@@ -2,17 +2,17 @@
 
 *An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing*
 
+# SnapTessSCAD Docs
 
-# Introduction
+# Simple Usage
+- Using the `snap` module
+- Using `utils_viz` module
 
+# Intermediate Usage
+- Using the `geo_` and `tess_` modules
 
-# Materials and Methods
+# Advanced Usage
+- Manipulating and extending the `geo_` and `tess_` modules
 
-
-# Results
-
-
-# Discussion / Future Work
-
-
-# References
+# Developer Notes
+[Library Walkthrough](docs/lib-walkthru.md)
