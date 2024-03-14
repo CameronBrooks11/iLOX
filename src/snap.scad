@@ -9,7 +9,7 @@ use <geo_tricho.scad>;
 // and offloading the geo-specific stuff to that geo module
 
 module snap(
-    lvls, ol, 
+    lvls=undef, ol, 
     h,
     r=undef, 
     centers_pts=undef, 

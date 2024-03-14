@@ -65,7 +65,7 @@ module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
     beta_r1 = calculateRadFromAngle(beta_angle_ref, alpha_r1, beta_height);
     beta_r2 = alpha_r1;
     omega_r1 = r;
-    omega_r2 = calculateRadFromAngle(omega_angle_ref, radius, omega_height);
+    omega_r2 = calculateRadFromAngle(omega_angle_ref, r, omega_height);
 
     // Vectors for parameters
     alpha_vector = [alpha_height, alpha_r1, alpha_r2];
