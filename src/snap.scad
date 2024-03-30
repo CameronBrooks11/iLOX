@@ -1,6 +1,6 @@
 use <utils_viz.scad>;
 use <utils_points.scad>;
-use <tess_hex.scad>;
+use <tess.scad>;
 use <geo_tricho.scad>;
 
 // TODO:
@@ -10,7 +10,7 @@ use <geo_tricho.scad>;
 
 module snap(
     lvls=undef, ol, 
-    h,
+    h=1,
     r=undef, 
     centers_pts=undef, 
     beta_angle=undef, alpha_angle=undef, omega_angle=undef, 
@@ -18,11 +18,10 @@ module snap(
     segments=undef,
     filter_points=undef,
     color_scheme=undef,
-    clone_xyz=undef
+    clone_xyz=[0,0,2]
     ) {
 
 
-    filtered_centers = filter_center_points(centers_pts, filter_points);
 
     if(is_undef(centers_pts)){
 
@@ -39,20 +38,19 @@ module snap(
         omega_height = is_undef(omega_height) ? (r * 2 / 3) : omega_height;
         inter_height = is_undef(inter_height) ? (r / 10) : inter_height;
 
-        centers = hexagon_centers(radius=rad, levels=lvls);
+        centers = hexagon_centers_lvls(radius=rad, levels=lvls);
         
         union(){
-            //echo("Centers: ", centers);
-            hexagonsSolid(radius=rad, height=h,hexagon_centers=centers, color_scheme=color_scheme, alpha=1);
+            hexagonsSolid(radius=rad, height=h, hexagon_centers=centers, color_scheme=color_scheme, alpha=1);
             
             color("DarkSlateBlue", alpha=0.5) 
             place_trichos_at_centers(centers=centers, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
                     alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height); 
         }
-            cloneSnap(centers=centers, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
-                    alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height, lvls=lvls, ol=ol, clone_xyz=clone_xyz);
-
+    cloneSnap(centers=centers, h=h, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
+                    alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height, ol=ol, filter_pts=filter_points, color_scheme=color_scheme, clone_xyz=clone_xyz);
     } else {
+        filtered_centers = filter_center_points(centers_pts, filter_points);
 
         row_h = point_row_height(centers_pts);
         
@@ -83,19 +81,22 @@ module snap(
             place_trichos_at_centers(centers=filtered_centers, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
                     alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height); 
         }
-            cloneSnap(centers=centers_pts, h=h, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
-                    alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height, lvls=lvls, ol=ol, filter_pts=filter_points, color_scheme=color_scheme, clone_xyz=clone_xyz);
+        
+        cloneSnap(centers=centers_pts, h=h, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
+                    alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height, ol=ol, filter_pts=filter_points, color_scheme=color_scheme, clone_xyz=clone_xyz);
 
     }
 
 }
 
 
-module cloneSnap(centers, h, r, beta_angle, beta_height, alpha_angle, alpha_height, omega_angle, omega_height, inter_height, lvls, ol, filter_pts=undef, color_scheme=undef, clone_xyz=undef){
+module cloneSnap(centers, h, r, beta_angle, beta_height, alpha_angle, alpha_height, omega_angle, omega_height, inter_height, ol, filter_pts=undef, color_scheme=undef, clone_xyz=undef){
     rad = r * sqrt(3) - ol;
 
     tri_centers = triangulated_center_points(centers);
-    filtered_tri_centers = filter_triangulated_center_points(((r+ ol) / sqrt(3)*4), tri_centers, filter_pts);
+    if(!is_undef(filter_pts)){
+        tri_centers = filter_triangulated_center_points(((r+ ol) / sqrt(3)*4), tri_centers, filter_pts);
+    }
     
     default_z_offs = 2*h+beta_height+alpha_height+omega_height+inter_height;
 
@@ -103,11 +104,11 @@ module cloneSnap(centers, h, r, beta_angle, beta_height, alpha_angle, alpha_heig
     rotate([180, 0, 0])
     union(){
         //echo("Triangulated Centers:", tri_centers);
-        hexagonsSolid(radius=rad, height=h, hexagon_centers=filtered_tri_centers, color_scheme=color_scheme, alpha=1);
+        hexagonsSolid(radius=rad, height=h, hexagon_centers=tri_centers, color_scheme=color_scheme, alpha=1);
 
         color("DarkSlateGray", alpha=0.5) 
         translate([0, 0, h]) 
-        place_trichos_at_centers(centers=filtered_tri_centers, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
+        place_trichos_at_centers(centers=tri_centers, r=r, beta_angle=beta_angle, beta_height=beta_height, alpha_angle=alpha_angle, 
                 alpha_height=alpha_height, omega_angle=omega_angle, omega_height=omega_height, inter_height=inter_height); 
     }
 

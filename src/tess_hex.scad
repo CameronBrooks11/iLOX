@@ -41,7 +41,7 @@ use <utils_points.scad>;
 
 
 // Function to calculate hexagon centers
-function hexagon_centers(radius, levels, spacing=undef, n=undef, m=undef) =
+function hexagon_centers(radius, levels=undef, spacing=undef, n=undef, m=undef) =
     let(
         offset_x = radius * cos(30),
         offset_y = radius + radius * sin(30),
@@ -49,6 +49,7 @@ function hexagon_centers(radius, levels, spacing=undef, n=undef, m=undef) =
         dx = -(levels - 1) * offset_x * 2,  //center x shift
         dy = 0,    //center y shift, not req due to nature of generation algo
         offset_step = 2 * offset_x,
+        
         generate_rectangular_points = function(n, m, offset_step, offset_y) 
             [for(i = [0:n-1], j = [0:m-1]) 
                 [i * offset_step + (j % 2) * (offset_step / 2), j * offset_y]],
@@ -62,8 +63,8 @@ function hexagon_centers(radius, levels, spacing=undef, n=undef, m=undef) =
             )
             [for(x = offset_xs) [x + tx, ty]]
     )
-    (!is_undef(n) && !is_undef(m)) ?
-        generate_rectangular_points(n, m, offset_step, offset_y) : 
+
+    (!is_undef(n) && !is_undef(m)) ? generate_rectangular_points(n, m, offset_step, offset_y) : 
         let(
             beginning_n = 2 * levels - 1,
             upper_hex_data = levels > 1 ? 
@@ -80,6 +81,7 @@ function hexagon_centers(radius, levels, spacing=undef, n=undef, m=undef) =
                 ] : [],
             total_hex_data = [[[0, 0], beginning_n], each upper_hex_data, each lower_hex_data]
         )
+
         let(
             centers = [for(hex_datum = total_hex_data)
                 let(pts = hexagons_pts(hex_datum))
@@ -125,7 +127,7 @@ module hexagons(radius, levels=undef, spacing=0, hexagon_centers=[], color_schem
 // Module to create hexagons with optional color gradient
 module hexagonsSolid(radius, height, levels=undef, spacing=0, hexagon_centers=[], color_scheme=undef, alpha=undef) {
     if (len(hexagon_centers) == 0 && !is_undef(levels)) {
-        hexagon_centers = hexagon_centers(radius, levels, spacing);
+        hexagon_centers = hexagon_centers(radius, levels, spacing); // \TODO add ability to specify n and m
     } else if (len(hexagon_centers) == 0) {
         echo("No hexagon centers provided and 'levels' is undefined.");
     }
@@ -154,3 +156,9 @@ module hexagonsSolid(radius, height, levels=undef, spacing=0, hexagon_centers=[]
         }
     }
 }
+
+
+
+
+
+//=======================

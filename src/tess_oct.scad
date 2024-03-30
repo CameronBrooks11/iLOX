@@ -38,7 +38,6 @@
 use <utils_viz.scad>;
 use <utils_points.scad>;
 
-
     
 // Function to calculate octagon centers for both levels and grid
 function octagon_centers(radius, levels, spacing=undef, n=undef, m=undef, rotate=true) =
@@ -76,9 +75,9 @@ function octagon_centers(radius, levels, spacing=undef, n=undef, m=undef, rotate
 
 
 // Module to create octagons with optional color gradient
-module octagons(radius,levels,  spacing=0, rotate=true, order=1, octagon_centers=undef, color_scheme=undef, alpha=undef) {
+module octagons(radius, levels, spacing=0, rotate=true, order=1, octagon_centers=undef, color_scheme=undef, alpha=undef) {
     if (is_undef(octagon_centers)) {
-        octagon_centers = calculate_octagon_centers(radius, levels, spacing, rotate, order);
+        octagon_centers = octagon_centers(radius, levels, spacing, rotate, order);
     }
 
     // Determine the range of the center points for normalization

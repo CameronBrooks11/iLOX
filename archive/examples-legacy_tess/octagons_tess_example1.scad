@@ -11,7 +11,7 @@ use <..\src\geo_tricho.scad>
 // 2 for filtered levels, 
 // 3 for grid, 
 // 4 for filtered grid
-mode = 4; // Change this number to switch between different examples
+mode = 3; // Change this number to switch between different examples
 
 rad = 10;
 space = 1;
@@ -36,13 +36,13 @@ filter_points_grid = [
 
 
 if (mode == 1) {
-    centers = octagon_centers(radius=rad, spacing=space, levels=lvls, rotate=rotate);
-    octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=centers, color_scheme="scheme1", alpha = 0.5);
+    centers = octagon_centers(radius=rad, levels=lvls, spacing=space, rotate=rotate);
+    octagons(radius=rad, spacing=space, levels=lvls, rotate=rotate, octagon_centers=centers, color_scheme="scheme1", alpha = 0.5);
     print_points(centers, text_size=1, color="Azure"); // Add labels
 } else if (mode == 2) {
     centers = octagon_centers(radius=rad, spacing=space, levels=lvls, rotate=rotate);
     filtered_centers = filter_center_points(centers, filter_points_levels);
-    octagons(radius=rad, spacing=space, levels=undef, rotate=rotate, octagon_centers=filtered_centers, color_scheme="scheme2", alpha = 0.5);
+    octagons(radius=rad, spacing=space, levels=lvls, rotate=rotate, octagon_centers=filtered_centers, color_scheme="scheme2", alpha = 0.5);
     print_points(filtered_centers, text_size=1, color="Azure"); // Add labels for filtered centers
 } else if (mode == 3) {
     centers_grid = octagon_centers(radius=rad, spacing=space, n=n, m=m, rotate=rotate);
