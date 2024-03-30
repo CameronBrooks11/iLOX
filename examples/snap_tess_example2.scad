@@ -13,7 +13,7 @@ stem_height = 2;
 
 color_scheme="scheme1";
 
-gap = 4;
+gap = 5;
 ani = gap * (1 + sin($t * 360)); // Use sine function for smooth up and down animation (30-60 fps at 60 steps is good)
 
 // Positioning of generated side
