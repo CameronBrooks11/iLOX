@@ -42,22 +42,23 @@ use <utils_math.scad>;
 
 module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
 
+
+
+    beta_angle = is_undef(beta_angle) ? 90 : beta;
+    alpha_angle = is_undef(alpha_angle) ? 30 : alpha;
+    omega_angle = is_undef(omega_angle) ? 60 : omega;
+    
     ref = 270;
-
-    beta_angle = beta;
     beta_angle_ref = ref - beta_angle;
-    beta_height = beta_h;   // by default it is radius / 4;
-
-    alpha_angle = alpha;
     alpha_angle_ref = ref - alpha_angle;
-    alpha_height = alpha_h; //  by default it is radius / 3
-
-    omega_angle = omega;
     omega_angle_ref = ref - omega_angle;
-    omega_height = omega_h; //  by default it is radius * 2 / 3;
-    inter_height = inter_h; //  by default it is radius / 10;
 
-    segments = 6;
+    segments = is_undef(segments) ? 6 : segments;
+    
+    beta_height = is_undef(beta_height) ? (r / 2) : beta_h;
+    alpha_height = is_undef(alpha_height) ? ( r / 3) : alpha_h;
+    omega_height = is_undef(omega_height) ? (r * 2 / 3) : omega_h;
+    inter_height = is_undef(inter_height) ? (r / 10) : inter_h;
 
     // Calculating radii
     alpha_r1 = calculateRadFromAngle(alpha_angle_ref, r, alpha_height);
