@@ -14,6 +14,8 @@ module snap(
     h,
     centers_pts=undef, 
     lvls=undef,
+    n=undef,
+    m=undef,
     segments=undef,
     filter_points=undef,
     color_scheme=undef,
@@ -21,7 +23,6 @@ module snap(
     ) {
 
     if(is_undef(centers_pts)){
-
         rad = r * sqrt(3) - ol;
 
         centers = hexagon_centers_lvls(radius=rad, levels=lvls);
@@ -44,12 +45,11 @@ module snap(
 
         union(){
             hexagonsSolid(radius=rad, height=h, hexagon_centers=filtered_centers, color_scheme=color_scheme, alpha=1);
-            
             color("DarkSlateBlue", alpha=0.5) 
             translate([0, 0, h]) 
             place_trichos_at_centers(centers=filtered_centers, r=r); 
+
         }
-        
         cloneSnap(centers=centers_pts, h=h, r=r, ol=ol, filter_pts=filter_points, color_scheme=color_scheme, clone_xyz=clone_xyz);
     }
 }

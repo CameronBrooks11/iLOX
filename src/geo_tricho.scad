@@ -40,25 +40,37 @@
 use <utils_math.scad>;
 
 
+
 module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
 
+    // DEFAULT DEFINITIONS
+    def_beta_height = (r / 2); //stem
+    def_alpha_height = (r / 3); //lower face
+    def_omega_height = (r * 2 / 3); //upper face
+    def_inter_height = (r / 3); //interstitial portion
 
+    def_beta_angle = 90;
+    def_alpha_angle = 30;
+    def_omega_angle = 60;
 
-    beta_angle = is_undef(beta_angle) ? 90 : beta;
-    alpha_angle = is_undef(alpha_angle) ? 30 : alpha;
-    omega_angle = is_undef(omega_angle) ? 60 : omega;
+    def_segments = 6;
+
+    // Parameter switches
+    beta_angle = is_undef(beta_angle) ? def_beta_angle : beta;
+    alpha_angle = is_undef(alpha_angle) ? def_alpha_angle : alpha;
+    omega_angle = is_undef(omega_angle) ? def_omega_angle : omega;
     
     ref = 270;
     beta_angle_ref = ref - beta_angle;
     alpha_angle_ref = ref - alpha_angle;
     omega_angle_ref = ref - omega_angle;
 
-    segments = is_undef(segments) ? 6 : segments;
+    segments = is_undef(segments) ? def_segments : segments;
     
-    beta_height = is_undef(beta_height) ? (r / 2) : beta_h;
-    alpha_height = is_undef(alpha_height) ? ( r / 3) : alpha_h;
-    omega_height = is_undef(omega_height) ? (r * 2 / 3) : omega_h;
-    inter_height = is_undef(inter_height) ? (r / 10) : inter_h;
+    beta_height = is_undef(beta_height) ? def_beta_height : beta_h;
+    alpha_height = is_undef(alpha_height) ? def_alpha_height : alpha_h;
+    omega_height = is_undef(omega_height) ? def_omega_height : omega_h;
+    inter_height = is_undef(inter_height) ? def_inter_height : inter_h;
 
     // Calculating radii
     alpha_r1 = calculateRadFromAngle(alpha_angle_ref, r, alpha_height);
@@ -72,13 +84,6 @@ module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
     alpha_vector = [alpha_height, alpha_r1, alpha_r2];
     beta_vector = [beta_height, beta_r1, beta_r2];
     omega_vector = [omega_height, omega_r1, omega_r2];
-
-
-    //echo("Section: Beta, Radius 1:", beta_vector[1], "Radius 2:", beta_vector[2], "Height:", beta_vector[0], "Angle:", beta_angle);
-    //echo("Section: Alpha, Radius 1:", alpha_vector[1], "Radius 2:", alpha_vector[2], "Height:", alpha_vector[0], "Angle:", alpha_angle);
-    //echo("Section: Interstitial, Radius 1:", alpha_vector[2], "Radius 2:", omega_vector[1], "Height:", inter_height, "Angle: -");
-    //echo("Section: Omega, Radius 1:", omega_vector[1], "Radius 2:", omega_vector[2], "Height:", omega_vector[0], "Angle:", omega_angle);
-
 
     tricho_geo(alpha_vector, beta_vector, inter_height, omega_vector, segments);
 }
@@ -113,23 +118,3 @@ module place_trichos_at_centers(centers, r, beta_angle, beta_height, alpha_angle
             alpha_h=alpha_height, omega=omega_angle, omega_h=omega_height, inter_h=inter_height); 
     }
 }
-
-/*
-// Tricho Params
-radius = 1.5;
-
-// Angle paramters
-beta_angle = 90;
-alpha_angle = 30;
-omega_angle = 60;
-segments = 6;
-
-// Derived example parameters
-beta_height = radius / 4;
-alpha_height = radius / 3;
-omega_height = radius * 2 / 3;
-inter_height = radius / 10;
-
-
-tricho(r=radius, beta=beta_angle, beta_h=beta_height, alpha=alpha_angle, alpha_h=alpha_height, omega=omega_angle, omega_h=omega_height, inter_h=inter_height); 
-*/

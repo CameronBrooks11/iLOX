@@ -61,8 +61,9 @@ function point_row_height(sorted_centers) =
     (len(row_heights) > 0) ? row_heights[0] : undef;
 
 // Function to calculate triangulated centers
-function triangulated_center_points(sorted_centers) =
+function triangulated_center_points(centers) =
     let (
+        sorted_centers = sort_centers(centers),
         row_height = point_row_height(sorted_centers)
     )
     let (
