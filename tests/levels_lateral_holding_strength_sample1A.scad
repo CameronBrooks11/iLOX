@@ -49,7 +49,6 @@ union() {
             [min_x, max_y],
         ]);
 }
-
 /*
 color("DarkSlateGray", alpha=1) 
 union() {
@@ -68,8 +67,4 @@ union() {
             [0, max_y]
         ]);
 }
-        
-
-
-
 */
