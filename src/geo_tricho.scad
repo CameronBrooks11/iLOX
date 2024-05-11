@@ -56,9 +56,9 @@ module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
     def_segments = 6;
 
     // Parameter switches
-    beta_angle = is_undef(beta_angle) ? def_beta_angle : beta;
-    alpha_angle = is_undef(alpha_angle) ? def_alpha_angle : alpha;
-    omega_angle = is_undef(omega_angle) ? def_omega_angle : omega;
+    beta_angle = is_undef(beta) ? def_beta_angle : beta;
+    alpha_angle = is_undef(alpha) ? def_alpha_angle : alpha;
+    omega_angle = is_undef(omega) ? def_omega_angle : omega;
     
     ref = 270;
     beta_angle_ref = ref - beta_angle;
@@ -67,10 +67,10 @@ module tricho(r, beta, beta_h, alpha, alpha_h, omega, omega_h, inter_h) {
 
     segments = is_undef(segments) ? def_segments : segments;
     
-    beta_height = is_undef(beta_height) ? def_beta_height : beta_h;
-    alpha_height = is_undef(alpha_height) ? def_alpha_height : alpha_h;
-    omega_height = is_undef(omega_height) ? def_omega_height : omega_h;
-    inter_height = is_undef(inter_height) ? def_inter_height : inter_h;
+    beta_height = is_undef(beta_h) ? def_beta_height : beta_h;
+    alpha_height = is_undef(alpha_h) ? def_alpha_height : alpha_h;
+    omega_height = is_undef(omega_h) ? def_omega_height : omega_h;
+    inter_height = is_undef(inter_h) ? def_inter_height : inter_h;
 
     // Calculating radii
     alpha_r1 = calculateRadFromAngle(alpha_angle_ref, r, alpha_height);

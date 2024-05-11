@@ -5,7 +5,7 @@ use <..\src\utils_viz.scad>;
 use <..\src\utils_points.scad>;
 
 // Params
-radius = 2.4;
+radius = 3.6;
 overlap = 0.2;
 substrate_height = 1;
 levels = 3;
