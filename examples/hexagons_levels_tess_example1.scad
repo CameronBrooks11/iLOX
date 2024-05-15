@@ -9,8 +9,8 @@ use <..\src\geo_tricho.scad>
 mode = 1; // Change this number to switch between different levels examples
 
 rad = 10;
-space = 1;
-lvls = 5;
+space = 0;
+lvls = 3;
 
 filter_points_levels = [
     // Define your filtering points here
