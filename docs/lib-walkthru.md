@@ -102,12 +102,15 @@ This formula indicates a quadratic growth rate with respect to the number of lev
 ## Unit Geometry
 
 The unit geometry refers to how the surface is bisected from +y to -y to form the latching structure of to fix the position of the +y and -y faces. The simplest example is given in the below figure.
+
 ![](unit1.png)
 
 Adding a tolerance on this line:
+
 ![](unit2.png)
 
 Looking forward we can also remove the upper edge where the now separate surfaces will make initial contact during engagement:
+
 ![](unit3.png)
 
 
