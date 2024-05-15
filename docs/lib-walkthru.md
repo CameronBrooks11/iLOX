@@ -57,7 +57,7 @@ Triangles:
 Squares:
 - A technically valid solution
 - No offset
-  - Decreased oacking density
+  - Decreased packing density
   - Concentration of shear forces
 
 Hexagons:
