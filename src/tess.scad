@@ -170,8 +170,9 @@ module hexagonsSolid(radius, height, spacing=0, hexagon_centers=[], levels=undef
 
         color(color_val, alpha=alpha)
         translate([center[0], center[1], 0]) {
-            linear_extrude(height = height, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) 
-            rotate(30) circle(radius - spacing / 2, $fn = 6);
+            linear_extrude(height = height, center = false, convexity = 10, twist = 0, slices = 0, scale = 1.0) 
+            rotate(30) 
+            circle(radius - spacing / 2, $fn = 6);
         }
     }
 }

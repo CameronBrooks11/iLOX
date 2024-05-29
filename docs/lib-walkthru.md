@@ -57,7 +57,7 @@ Triangles:
 Squares:
 - A technically valid solution
 - No offset
-  - Decreased oacking density
+  - Decreased packing density
   - Concentration of shear forces
 
 Hexagons:
@@ -97,7 +97,21 @@ Finally, we get the quadratic formula representing the total number of hexagons 
 
 This formula indicates a quadratic growth rate with respect to the number of levels.
 
-## Geo
+![](hexagons_3levels.png)
+
+## Unit Geometry
+
+The unit geometry refers to how the surface is bisected from +y to -y to form the latching structure of to fix the position of the +y and -y faces. The simplest example is given in the below figure.
+
+![](unit1.png)
+
+Adding a tolerance on this line:
+
+![](unit2.png)
+
+Looking forward we can also remove the upper edge where the now separate surfaces will make initial contact during engagement:
+
+![](unit3.png)
 
 
-## Snap
+The surface to be bisected must consider leaving sufficient substrate on the +y and -y for each of the surfaces to remain intact during manufacturing. In the above example there is symmetry, so it is arbitrary to specify which segment will occupy the center points or the vertices but if it isn't then this detail becomes relevant how the bisection is defined with respect to +y and -y depending on the application of what occupies that space.
