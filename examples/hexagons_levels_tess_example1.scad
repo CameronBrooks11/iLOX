@@ -1,7 +1,5 @@
-use <..\src\utils_points.scad>
-use <..\src\utils_viz.scad>
+use <..\src\utils.scad>
 use <..\src\tess.scad>
-use <..\src\geo_tricho.scad>
 
 // Define the mode: 
 // 1 for levels, 

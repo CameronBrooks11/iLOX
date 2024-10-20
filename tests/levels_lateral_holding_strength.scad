@@ -1,8 +1,6 @@
-use <..\src\snap.scad>;
 use <..\src\geo_tricho.scad>;
 use <..\src\tess.scad>;
-use <..\src\utils_viz.scad>;
-use <..\src\utils_points.scad>;
+use <..\src\utils.scad>;
 
 // Params
 radius = 3.6;

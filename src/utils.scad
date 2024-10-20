@@ -34,7 +34,7 @@
  */
 
 
-use <sorted-nop\sorted.scad>
+use <sorted-NopSCADlib\sorted.scad>
 
 /*
 
@@ -138,10 +138,15 @@ function get_gradient_color(normalized_x, normalized_y, color_scheme) =
     [0.9, 0.9, 0.9]; // Default color (black) if no valid color scheme is provided
 
 // Module to print points as text
-module print_points(points, text_size=1, color=[0.1, 0.1, 0.1]) {
+module print_points(points, text_size=1, color=[0.1, 0.1, 0.1], pointD=undef, point_color=[0.1, 0.1, 0.1], fn=8) {
     for (point = points) {
-        color(color)
         translate([point[0], point[1], 1]) // Translated +1 in Z-axis
-        text(str("[", point[0], ", ", point[1], "]"), size=text_size, valign="center", halign="center");
+        
+            color(color) text(str("[", point[0], ", ", point[1], "]"), size=text_size, valign="center", halign="center");
+            if (pointD != undef) {
+                color(point_color)
+                translate([point[0], point[1], 1]) // Translated +1 in Z-axis
+                sphere(pointD, $fn=fn);
+            }
     }
-}
+    }

@@ -1,9 +1,5 @@
-use <..\src\utils_viz.scad>
-use <..\src\utils_points.scad>
+use <..\src\utils.scad>
 use <..\src\tess.scad>
-use <..\src\geo_tricho.scad>
-
-
 
 // Define the mode: 
 // 1 for grid, 
@@ -28,7 +24,6 @@ filter_points_levels = [
 filter_points_grid = [
     [0, 0], [110.866, 0], [0, 110.866], [110.866, 110.866],  [55.4328, 55.4328]
 ]; // Your filter points for grid
-
 
 if (mode == 1) {
     centers_grid = octagon_centers_grid(radius=rad,, n=n, m=m);

@@ -8,6 +8,8 @@
 - Using the `snap` module
 - Using `utils_viz` module
 
+![](examples\example2-gif\PNGs\frame00029.png)
+
 # Intermediate Usage
 - Using the `geo_` and `tess_` modules
 

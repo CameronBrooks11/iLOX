@@ -37,8 +37,7 @@
  */
 
 
-use <utils_viz.scad>;
-use <utils_points.scad>;
+use <utils.scad>;
 
 
 function hexagon_centers_lvls(radius, levels) = 
