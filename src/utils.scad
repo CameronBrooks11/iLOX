@@ -6,7 +6,7 @@
  * License: [Specify License]
  *
  * Description:
- *   This OpenSCAD script, named 'point-calculation-utils.scad', includes a collection 
+ *   This OpenSCAD script, named 'utils.scad', includes a collection 
  *   of functions designed for calculating and manipulating points. The script offers 
  *   functionalities such as sorting points, calculating row heights, generating 
  *   triangulated center points, and filtering points. These utilities are essential 
@@ -34,14 +34,11 @@
  */
 
 
-use <sorted-NopSCADlib\sorted.scad>
+use <sorted.scad>
 
 /*
-
-This script is for functions related to point calculations
-
+This file contains utility functions related to point operations in OpenSCAD.
 */
-
 
 EPSILON = 1e-3;
 
@@ -125,7 +122,7 @@ function filter_triangulated_center_points(r, centers, filter_list) =
       centers[i]
   ];
 
-
+function max_x(points, width) = max([for (p = points) p[0] * width]);
 
 // Function to get gradient color based on the color scheme
 function get_gradient_color(normalized_x, normalized_y, color_scheme) = 

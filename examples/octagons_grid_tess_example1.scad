@@ -4,7 +4,7 @@ use <..\src\utils.scad>
 // Define the mode:
 // 1 for grid,
 // 2 for filtered grid
-mode = 1; // Change this number to switch between different examples
+mode = 2; // Change this number to switch between different examples
 
 rad = 10;
 space = 1;
