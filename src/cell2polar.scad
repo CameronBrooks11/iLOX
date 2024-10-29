@@ -31,8 +31,8 @@ module cells2polarpos(cells, n, radius, colors = [ "Green", "Blue" ])
     echo("cells[2]: ", cells[2]);
     echo("cells[3]: ", cells[3]);
 
-    // Calculate the apothem translation
-    apo_trans = radius_apothem_diff(radius, n);
+    // Calculate the apothem 
+    apo = apothem(radius, n);
 
     // First shape ('a' cell)
     color(colors[0]) translate([ 0, 0, 0 ]) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
@@ -42,7 +42,7 @@ module cells2polarpos(cells, n, radius, colors = [ "Green", "Blue" ])
     }
 
     // Second shape ('b' cell)
-    color(colors[1]) translate([ radius * 2 - apo_trans * 2, 0, 0 ]) rotate([ 0, 0, half_central_angle(n) ])
+    color(colors[1]) translate([ apo*2, 0, 0 ]) rotate([ 0, 0, half_central_angle(n) ])
         rotate_extrude($fn = n) translate([ -radius * 2, 0, 0 ]) difference()
     {
         polygon(points = cells[1]);
