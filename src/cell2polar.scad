@@ -70,10 +70,11 @@ module cellB2polar(cells, n, radius, color = "Blue")
 }
 
 // Module to place either cellA2polar or cellB2polar at given positions
-module place_polar_cells(cells, positions, n, radius, cell_type="A", color="CadetBlue") {
+module place_polar_cells(cells, positions, n, radius, rotate = false, cell_type="A", color="CadetBlue") {
     // Iterate over the array of positions and place a cell at each point
+    rot = rotate ? half_central_angle(n) : 0;
     for (pos = positions) {
-        translate([pos[0], pos[1], 0]) {
+        translate([pos[0], pos[1], 0]) rotate([ 0, 0, rot ]) {
             if (cell_type == "A") {
                 cellA2polar(cells = cells, n = n, radius = radius, color = color);
             } else if (cell_type == "B") {

@@ -1,4 +1,4 @@
-use <../src/utils.scad>;
+use <../../src/utils.scad>;
 
 // Define input variables
 width_x = 5;
@@ -18,7 +18,7 @@ example_neg_poly = [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ];
 // Color options
 example_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
 
-use <../src/ucell.scad>;
+use <../../src/ucell.scad>;
 
 // Calculate cells using the defined variables
 example_cells = calc_ucells(width = width_x, height = height_y, div = example_div, neg_poly = example_neg_poly);
@@ -39,7 +39,7 @@ rotate([ 90, 0, 0 ])
     place_spheres(points = example_cells[1], d = 0.05, color = "Violet", fn = 12);
 }
 
-use <../src/cell2polar.scad>;
+use <../../src/cell2polar.scad>;
 
 degree_n = 6;
 
@@ -84,7 +84,7 @@ positions_B = [
 ];
 
 // Apply translation and place the cells
-translate([width_x * 8, height_y / 2, 0]) {
+translate([width_x * 8, height_y / 2, 0]) rotate([ 0, 0, half_central_angle(degree_n) ]) {
     // Place cell A at the specified position
     place_polar_cells(cells = example_cells, positions = positions_A, n = degree_n, radius = example_radius, cell_type="A", color="OliveDrab");
 
@@ -93,15 +93,22 @@ translate([width_x * 8, height_y / 2, 0]) {
 }
 
 
-use <../src/tess.scad>;
+use <../../src/tess.scad>;
 
-tess_points = hexagon_centers_lvls(example_radius*2*sqrt(3), 4);
+tess_tol = example_radius * 0.5;
+example_gridrad = example_radius * 2 - radius_apothem_diff(example_radius, degree_n) * 2 + tess_tol;
+
+tess_points = hexagon_centers_lvls(example_gridrad, 4);
+
+substrate_height = 1;
 
 // Apply translation and place the cells
 translate([-width_x * 11, height_y / 2, 0]) {
     // Place cell A at the specified position
-    place_polar_cells(cells = example_cells, positions = tess_points, n = degree_n, radius = example_radius, cell_type="A", color="OliveDrab");
+    place_polar_cells(cells = example_cells, positions = tess_points, n = degree_n, radius = example_radius, rotate = true, cell_type="A", color="OliveDrab");
 
     // Place cell B at the specified positions
     //place_polar_cells(cells = example_cells, positions = positions_B, n = degree_n, radius = example_radius, cell_type="B", color="CadetBlue");
+    translate([0,0,-substrate_height])hexagonsSolid(hexagon_centers = tess_points, radius = example_gridrad, height = substrate_height);
 }
+
