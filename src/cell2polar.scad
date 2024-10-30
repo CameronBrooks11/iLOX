@@ -2,7 +2,9 @@
  * @file cell2polar.scad
  * @brief Functions and modules for converting cell patterns into polar coordinate 3D models.
  *
- * This library provides functions to generate 3D representations of cell pairs by rotating 2D cell patterns around an axis. It includes utilities for calculating geometric properties like the apothem and central angles of regular polygons, as well as modules to render and place cells in polar coordinates.
+ * This library provides functions to generate 3D representations of cell pairs by rotating 2D cell patterns around an
+ * axis. It includes utilities for calculating geometric properties like the apothem and central angles of regular
+ * polygons, as well as modules to render and place cells in polar coordinates.
  */
 
 /**
@@ -57,7 +59,7 @@ function half_central_angle(n) = central_angle(n) / 2;
  * @param radius The radius from the center to the largest x-value in the cell division.
  * @param colors (Optional) An array of colors for the cells, default is ["Green", "Blue"].
  */
-module cells2polarpos(cells, n, radius, colors = ["Green", "Blue"])
+module cells2polarpos(cells, n, radius, colors = [ "Green", "Blue" ])
 {
     n = n;
     echo("n: ", n);
@@ -71,26 +73,19 @@ module cells2polarpos(cells, n, radius, colors = ["Green", "Blue"])
     apo = apothem(radius, n);
 
     // First shape ('A' cell)
-    color(colors[0])
-        rotate([0, 0, half_central_angle(n)])
-        rotate_extrude($fn = n)
-        difference()
-        {
-            polygon(points = cells[0]); // Main cell polygon
-            polygon(points = cells[2]); // Optional negative polygon
-        }
+    color(colors[0]) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
+    {
+        polygon(points = cells[0]); // Main cell polygon
+        polygon(points = cells[2]); // Optional negative polygon
+    }
 
     // Second shape ('B' cell)
-    color(colors[1])
-        translate([apo * 2, 0, 0])
-        rotate([0, 0, half_central_angle(n)])
-        rotate_extrude($fn = n)
-        translate([-radius * 2, 0, 0])
-        difference()
-        {
-            polygon(points = cells[1]); // Main cell polygon
-            polygon(points = cells[3]); // Optional negative polygon
-        }
+    color(colors[1]) translate([ apo * 2, 0, 0 ]) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n)
+        translate([ -radius * 2, 0, 0 ]) difference()
+    {
+        polygon(points = cells[1]); // Main cell polygon
+        polygon(points = cells[3]); // Optional negative polygon
+    }
 }
 
 /**
@@ -105,14 +100,11 @@ module cells2polarpos(cells, n, radius, colors = ["Green", "Blue"])
  */
 module cellA2polar(cells, n, radius, color = "Green")
 {
-    color(color)
-        rotate([0, 0, half_central_angle(n)])
-        rotate_extrude($fn = n)
-        difference()
-        {
-            polygon(points = cells[0]); // Main cell polygon
-            polygon(points = cells[2]); // Optional negative polygon
-        }
+    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
+    {
+        polygon(points = cells[0]); // Main cell polygon
+        polygon(points = cells[2]); // Optional negative polygon
+    }
 }
 
 /**
@@ -127,15 +119,12 @@ module cellA2polar(cells, n, radius, color = "Green")
  */
 module cellB2polar(cells, n, radius, color = "Blue")
 {
-    color(color)
-        rotate([0, 0, half_central_angle(n)])
-        rotate_extrude($fn = n)
-        translate([-radius * 2, 0, 0])
+    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) translate([ -radius * 2, 0, 0 ])
         difference()
-        {
-            polygon(points = cells[1]); // Main cell polygon
-            polygon(points = cells[3]); // Optional negative polygon
-        }
+    {
+        polygon(points = cells[1]); // Main cell polygon
+        polygon(points = cells[3]); // Optional negative polygon
+    }
 }
 
 /**
@@ -158,17 +147,16 @@ module place_polar_cells(cells, positions, n, radius, rotate = false, cell_type 
     // Iterate over positions
     for (pos = positions)
     {
-        translate([pos[0], pos[1], 0])
-            rotate([0, 0, rot])
+        translate([ pos[0], pos[1], 0 ]) rotate([ 0, 0, rot ])
+        {
+            if (cell_type == "A")
             {
-                if (cell_type == "A")
-                {
-                    cellA2polar(cells = cells, n = n, radius = radius, color = color);
-                }
-                else if (cell_type == "B")
-                {
-                    cellB2polar(cells = cells, n = n, radius = radius, color = color);
-                }
+                cellA2polar(cells = cells, n = n, radius = radius, color = color);
             }
+            else if (cell_type == "B")
+            {
+                cellB2polar(cells = cells, n = n, radius = radius, color = color);
+            }
+        }
     }
 }

@@ -16,43 +16,37 @@
  * @return An array of center points for hexagons.
  */
 function hexagon_centers_lvls(radius, levels) = let(
-    offset_x = radius * cos(30),         // Horizontal offset between hexagons
+    offset_x = radius * cos(30),          // Horizontal offset between hexagons
     offset_y = radius + radius * sin(30), // Vertical offset between hexagons
-    offset_step = 2 * offset_x,          // Step size for horizontal movement
-    dx = -(levels - 1) * offset_x * 2,   // Center x shift to align the pattern
-    dy = 0,                              // Center y shift; not required due to generation algorithm
-    beginning_n = 2 * levels - 1,        // Initial number of hexagons in the central row
+    offset_step = 2 * offset_x,           // Step size for horizontal movement
+    dx = -(levels - 1) * offset_x * 2,    // Center x shift to align the pattern
+    dy = 0,                               // Center y shift; not required due to generation algorithm
+    beginning_n = 2 * levels - 1,         // Initial number of hexagons in the central row
 
     // Function to generate points for a row of hexagons
     hexagons_pts = function(hex_datum)
-        let(
-            tx = hex_datum[0][0] + dx,       // Translated x-coordinate
-            ty = hex_datum[0][1] + dy,       // Translated y-coordinate
-            n_pts = hex_datum[1],            // Number of hexagons in this row
+        let(tx = hex_datum[0][0] + dx,                                      // Translated x-coordinate
+            ty = hex_datum[0][1] + dy,                                      // Translated y-coordinate
+            n_pts = hex_datum[1],                                           // Number of hexagons in this row
             offset_xs = [for (i = 0; i < n_pts; i = i + 1) i * offset_step] // X offsets for hexagons
-        )
-        [for (x = offset_xs) [x + tx, ty]],  // Generate center points for the row
+            )[for (x = offset_xs)[x + tx, ty]],                             // Generate center points for the row
 
     // Upper half of the hexagon grid
-    upper_hex_data = levels > 1 ? [for (i = [1:beginning_n - levels])
-        let(
-            x = offset_x * i,
-            y = offset_y * i,
-            n_upper = beginning_n - i
-        ) [[x, y], n_upper]] : [],
+    upper_hex_data = levels > 1 ? [for (i = [1:beginning_n - levels]) let(x = offset_x * i, y = offset_y * i,
+                                                                          n_upper = beginning_n - i) [[x, y], n_upper]]
+                                : [],
 
     // Lower half of the hexagon grid (mirrored upper half)
-    lower_hex_data = levels > 1 ? [for (hex_datum = upper_hex_data)
-        [[hex_datum[0][0], -hex_datum[0][1]], hex_datum[1]]] : [],
+    lower_hex_data = levels > 1
+                         ? [for (hex_datum = upper_hex_data) [[hex_datum [0] [0], -hex_datum [0] [1]], hex_datum [1]]]
+                         : [],
 
     // Combine all hexagon data
-    total_hex_data = [[[0, 0], beginning_n], each upper_hex_data, each lower_hex_data],
+    total_hex_data = [ [ [ 0, 0 ], beginning_n ], each upper_hex_data, each lower_hex_data ],
 
     // Generate all center points
-    centers = [for (hex_datum = total_hex_data)
-        let(pts = hexagons_pts(hex_datum)) [for (pt = pts) pt]]
-)
-concat([for (c = centers) each c]);
+    centers = [for (hex_datum = total_hex_data) let(pts = hexagons_pts(hex_datum))[for (pt = pts) pt]])
+    concat([for (c = centers) each c]);
 
 /**
  * @brief Generates center points for a rectangular hexagonal grid (n x m).
@@ -65,16 +59,14 @@ concat([for (c = centers) each c]);
  * @return An array of center points for hexagons.
  */
 function hexagon_centers_NxM(radius, n, m) =
-    let(
-        offset_x = radius * cos(30),         // Horizontal offset between hexagons
+    let(offset_x = radius * cos(30),          // Horizontal offset between hexagons
         offset_y = radius + radius * sin(30), // Vertical offset between hexagons
-        offset_step = 2 * offset_x,          // Step size for horizontal movement
+        offset_step = 2 * offset_x,           // Step size for horizontal movement
         // Function to generate grid points
-        generate_rectangular_points = function(n, m, offset_step, offset_y)
-            [for (i = [0:n - 1], j = [0:m - 1])
-                [i * offset_step + (j % 2) * (offset_step / 2), j * offset_y]]
-    )
-    generate_rectangular_points(n, m, offset_step, offset_y);
+        generate_rectangular_points = function(
+            n, m, offset_step,
+            offset_y)[for (i = [0:n - 1], j = [0:m - 1])[i * offset_step + (j % 2) * (offset_step / 2), j *offset_y]])
+        generate_rectangular_points(n, m, offset_step, offset_y);
 
 /**
  * @brief Generates center points for an octagonal grid.
@@ -88,18 +80,15 @@ function hexagon_centers_NxM(radius, n, m) =
  * @return An array of center points for octagons.
  */
 function octagon_centers_grid(radius, n, m, rotate = true) =
-    let(
-        side_length = (radius * 2) / (sqrt(4 + 2 * sqrt(2))), // Side length of the octagon
-        segment_length = side_length / sqrt(2),               // Segment length for positioning
-        total_width = side_length * (1 + sqrt(2)),            // Total width including spacing
+    let(side_length = (radius * 2) / (sqrt(4 + 2 * sqrt(2))),                      // Side length of the octagon
+        segment_length = side_length / sqrt(2),                                    // Segment length for positioning
+        total_width = side_length * (1 + sqrt(2)),                                 // Total width including spacing
         tip = rotate ? segment_length : (side_length / 2) * sqrt(2 - sqrt(2)) * 2, // Adjustment for rotation
-        shift = rotate ? total_width : radius * 2,            // Shift amount based on rotation
-        offset = shift - tip,                                 // Offset for alignment
+        shift = rotate ? total_width : radius * 2,                                 // Shift amount based on rotation
+        offset = shift - tip,                                                      // Offset for alignment
         // Function to generate grid points
-        generate_grid_points = function(n, m, step)
-            [for (i = [0:n - 1], j = [0:m - 1]) [i * step, j * step]]
-    )
-    generate_grid_points(n, m, total_width);
+        generate_grid_points = function(n, m, step)[for (i = [0:n - 1], j = [0:m - 1])[i * step, j *step]])
+        generate_grid_points(n, m, total_width);
 
 /**
  * @brief Generates a gradient color based on normalized coordinates and a color scheme.
@@ -112,13 +101,18 @@ function octagon_centers_grid(radius, n, m, rotate = true) =
  * @return An RGB color array [r, g, b].
  */
 function get_gradient_color(normalized_x, normalized_y, color_scheme) =
-    color_scheme == "scheme1" ? [normalized_x, 1 - normalized_x, normalized_y] : // Red to Blue
-    color_scheme == "scheme2" ? [1 - normalized_y, normalized_x, normalized_y] : // Green to Magenta
-    color_scheme == "scheme3" ? [normalized_y, 1 - normalized_y, normalized_x] : // Blue to Yellow
-    color_scheme == "scheme4" ? [1 - normalized_x, normalized_x, 1 - normalized_y] : // Cyan to Red
-    color_scheme == "scheme5" ? [normalized_x, normalized_x * normalized_y, 1 - normalized_x] : // Purple to Green
-    color_scheme == "scheme6" ? [1 - normalized_x * normalized_y, normalized_y, normalized_x] : // Orange to Blue
-    [0.9, 0.9, 0.9]; // Default color (grey) if no valid color scheme is provided
+    color_scheme == "scheme1" ? [ normalized_x, 1 - normalized_x, normalized_y ] : // Red to Blue
+        color_scheme == "scheme2" ? [ 1 - normalized_y, normalized_x, normalized_y ]
+                                  : // Green to Magenta
+        color_scheme == "scheme3" ? [ normalized_y, 1 - normalized_y, normalized_x ]
+                                  : // Blue to Yellow
+        color_scheme == "scheme4" ? [ 1 - normalized_x, normalized_x, 1 - normalized_y ]
+                                  : // Cyan to Red
+        color_scheme == "scheme5" ? [ normalized_x, normalized_x *normalized_y, 1 - normalized_x ]
+                                  : // Purple to Green
+        color_scheme == "scheme6" ? [ 1 - normalized_x * normalized_y, normalized_y, normalized_x ]
+                                  : // Orange to Blue
+        [ 0.9, 0.9, 0.9 ];          // Default color (grey) if no valid color scheme is provided
 
 /**
  * @brief Renders hexagons at specified centers with optional color gradient.
@@ -134,7 +128,8 @@ function get_gradient_color(normalized_x, normalized_y, color_scheme) =
  * @param color_scheme (Optional) Name of the color scheme for gradient.
  * @param alpha (Optional) Alpha transparency value.
  */
-module hexagons(radius, spacing = 0, hexagon_centers = [], levels = undef, n = undef, m = undef, color_scheme = undef, alpha = undef)
+module hexagons(radius, spacing = 0, hexagon_centers = [], levels = undef, n = undef, m = undef, color_scheme = undef,
+                alpha = undef)
 {
     if (len(hexagon_centers) == 0 && !is_undef(levels))
     {
@@ -168,14 +163,12 @@ module hexagons(radius, spacing = 0, hexagon_centers = [], levels = undef, n = u
         // If color_scheme is not specified, use default color
         if (is_undef(color_scheme))
         {
-            color_val = [0.9, 0.9, 0.9]; // Default grey color
+            color_val = [ 0.9, 0.9, 0.9 ]; // Default grey color
         }
 
         // Draw the hexagon at the specified center
-        color(color_val, alpha = alpha)
-            translate([center[0], center[1], 0])
-                rotate(30)
-                    circle(radius - spacing / 2, $fn = 6); // Hexagon shape
+        color(color_val, alpha = alpha) translate([ center[0], center[1], 0 ]) rotate(30)
+            circle(radius - spacing / 2, $fn = 6); // Hexagon shape
     }
 }
 
@@ -194,7 +187,8 @@ module hexagons(radius, spacing = 0, hexagon_centers = [], levels = undef, n = u
  * @param color_scheme (Optional) Name of the color scheme for gradient.
  * @param alpha (Optional) Alpha transparency value.
  */
-module hexagonsSolid(radius, height, spacing = 0, hexagon_centers = [], levels = undef, n = undef, m = undef, color_scheme = undef, alpha = undef)
+module hexagonsSolid(radius, height, spacing = 0, hexagon_centers = [], levels = undef, n = undef, m = undef,
+                     color_scheme = undef, alpha = undef)
 {
     if (len(hexagon_centers) == 0 && !is_undef(levels))
     {
@@ -228,15 +222,12 @@ module hexagonsSolid(radius, height, spacing = 0, hexagon_centers = [], levels =
         // If color_scheme is not specified, use default color
         if (is_undef(color_scheme))
         {
-            color_val = [0.9, 0.9, 0.9]; // Default grey color
+            color_val = [ 0.9, 0.9, 0.9 ]; // Default grey color
         }
 
         // Draw the extruded hexagon at the specified center
-        color(color_val, alpha = alpha)
-            translate([center[0], center[1], 0])
-                linear_extrude(height = height)
-                    rotate(30)
-                        circle(radius - spacing / 2, $fn = 6); // Hexagon shape
+        color(color_val, alpha = alpha) translate([ center[0], center[1], 0 ]) linear_extrude(height = height)
+            rotate(30) circle(radius - spacing / 2, $fn = 6); // Hexagon shape
     }
 }
 
@@ -255,7 +246,8 @@ module hexagonsSolid(radius, height, spacing = 0, hexagon_centers = [], levels =
  * @param color_scheme (Optional) Name of the color scheme for gradient.
  * @param alpha (Optional) Alpha transparency value.
  */
-module octagons(radius, spacing = 0, octagon_centers = [], n = undef, m = undef, rotate = true, order = 1, color_scheme = undef, alpha = undef)
+module octagons(radius, spacing = 0, octagon_centers = [], n = undef, m = undef, rotate = true, order = 1,
+                color_scheme = undef, alpha = undef)
 {
     if (len(octagon_centers) == 0 && !is_undef(n) && !is_undef(m))
     {
@@ -284,14 +276,13 @@ module octagons(radius, spacing = 0, octagon_centers = [], n = undef, m = undef,
         // If color_scheme is not specified, use default color
         if (is_undef(color_scheme))
         {
-            color_val = [0.9, 0.9, 0.9]; // Default grey color
+            color_val = [ 0.9, 0.9, 0.9 ]; // Default grey color
         }
 
         // Draw the octagon at the specified center
-        color(color_val, alpha = alpha)
-            translate([center[0], center[1], 0])
-                rotate([0, 0, rotate ? 22.5 : 0]) // Apply rotation if specified
-                    circle(radius - spacing / 2, $fn = 8 * order); // Octagon shape
+        color(color_val, alpha = alpha) translate([ center[0], center[1], 0 ])
+            rotate([ 0, 0, rotate ? 22.5 : 0 ])            // Apply rotation if specified
+            circle(radius - spacing / 2, $fn = 8 * order); // Octagon shape
     }
 }
 
@@ -311,7 +302,8 @@ module octagons(radius, spacing = 0, octagon_centers = [], n = undef, m = undef,
  * @param color_scheme (Optional) Name of the color scheme for gradient.
  * @param alpha (Optional) Alpha transparency value.
  */
-module octagonsSolid(radius, height, spacing = 0, octagon_centers = [], n = undef, m = undef, rotate = true, order = 1, color_scheme = undef, alpha = undef)
+module octagonsSolid(radius, height, spacing = 0, octagon_centers = [], n = undef, m = undef, rotate = true, order = 1,
+                     color_scheme = undef, alpha = undef)
 {
     if (len(octagon_centers) == 0 && !is_undef(n) && !is_undef(m))
     {
@@ -340,14 +332,12 @@ module octagonsSolid(radius, height, spacing = 0, octagon_centers = [], n = unde
         // If color_scheme is not specified, use default color
         if (is_undef(color_scheme))
         {
-            color_val = [0.9, 0.9, 0.9]; // Default grey color
+            color_val = [ 0.9, 0.9, 0.9 ]; // Default grey color
         }
 
         // Draw the extruded octagon at the specified center
-        color(color_val, alpha = alpha)
-            translate([center[0], center[1], 0])
-                rotate([0, 0, rotate ? 22.5 : 0]) // Apply rotation if specified
-                    linear_extrude(height = height)
-                        circle(radius - spacing / 2, $fn = 8 * order); // Octagon shape
+        color(color_val, alpha = alpha) translate([ center[0], center[1], 0 ])
+            rotate([ 0, 0, rotate ? 22.5 : 0 ]) // Apply rotation if specified
+            linear_extrude(height = height) circle(radius - spacing / 2, $fn = 8 * order); // Octagon shape
     }
 }
