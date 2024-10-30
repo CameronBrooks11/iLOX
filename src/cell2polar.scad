@@ -31,7 +31,7 @@ module cells2polarpos(cells, n, radius, colors = [ "Green", "Blue" ])
     echo("cells[2]: ", cells[2]);
     echo("cells[3]: ", cells[3]);
 
-    // Calculate the apothem 
+    // Calculate the apothem
     apo = apothem(radius, n);
 
     // First shape ('a' cell)
@@ -42,8 +42,8 @@ module cells2polarpos(cells, n, radius, colors = [ "Green", "Blue" ])
     }
 
     // Second shape ('b' cell)
-    color(colors[1]) translate([ apo*2, 0, 0 ]) rotate([ 0, 0, half_central_angle(n) ])
-        rotate_extrude($fn = n) translate([ -radius * 2, 0, 0 ]) difference()
+    color(colors[1]) translate([ apo * 2, 0, 0 ]) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n)
+        translate([ -radius * 2, 0, 0 ]) difference()
     {
         polygon(points = cells[1]);
         polygon(points = cells[3]);
@@ -70,14 +70,20 @@ module cellB2polar(cells, n, radius, color = "Blue")
 }
 
 // Module to place either cellA2polar or cellB2polar at given positions
-module place_polar_cells(cells, positions, n, radius, rotate = false, cell_type="A", color="CadetBlue") {
+module place_polar_cells(cells, positions, n, radius, rotate = false, cell_type = "A", color = "CadetBlue")
+{
     // Iterate over the array of positions and place a cell at each point
     rot = rotate ? half_central_angle(n) : 0;
-    for (pos = positions) {
-        translate([pos[0], pos[1], 0]) rotate([ 0, 0, rot ]) {
-            if (cell_type == "A") {
+    for (pos = positions)
+    {
+        translate([ pos[0], pos[1], 0 ]) rotate([ 0, 0, rot ])
+        {
+            if (cell_type == "A")
+            {
                 cellA2polar(cells = cells, n = n, radius = radius, color = color);
-            } else if (cell_type == "B") {
+            }
+            else if (cell_type == "B")
+            {
                 cellB2polar(cells = cells, n = n, radius = radius, color = color);
             }
         }
