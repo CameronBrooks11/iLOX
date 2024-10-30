@@ -16,9 +16,6 @@
   - [tess.scad](#tessscad)
   - [utils.scad](#utilsscad)
 - [Documentation](#documentation)
-  - [Corresponding Triangulated Tessellation](#corresponding-triangulated-tessellation)
-  - [Selective Positioning](#selective-positioning)
-  - [Supporting Documents](#supporting-documents)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
 
