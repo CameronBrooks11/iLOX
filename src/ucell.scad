@@ -1,6 +1,8 @@
 /**
  * @file ucell.scad
  * @brief Functions and modules for calculating and rendering unit cells.
+ * @author Cameron K. Brooks
+ * @copyright 2024
  *
  * This library provides functions to calculate the points of unit cells (cells A and B) based on given dimensions and
  * division points. It includes utilities for transforming and manipulating points, applying tolerances, and handling

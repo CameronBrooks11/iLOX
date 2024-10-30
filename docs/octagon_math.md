@@ -1,4 +1,4 @@
-![Regular Octagon Diagram](assets/octagon_dia.png)
+![Regular Octagon Diagram](assets/octagon_diag1.png)
 
 *Courtesy of Penny Nom [1]*
 
@@ -10,13 +10,13 @@ The diagonal of the octagon, denoted as `d`, can be found by considering the rig
 
 ![Equation d^2 = s^2 + w^2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}d^{2}=s^{2}&plus;w^{2}})
 
-### Width  `w` 
+### Width  `w`
 
 The width `w` is the distance from one side of the octagon to the opposite side, which is the length of one side `s` plus twice the length of segment `x`, the line from the midpoint of a side to the center of the octagon. Thus, `w` is expressed as:
 
 ![Equation w = s + 2x](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}w=s&plus;2x})
 
-### Segment Length  `x` 
+### Segment Length  `x`
 
 The segment `x` lies within isosceles right triangles, such as triangle `EBD`. Since the octagon is regular, each of these triangles has two equal sides, which are the segments `x` and the side length `s`. By the Pythagorean theorem:
 
@@ -31,9 +31,10 @@ Substituting `x` into the width equation:
 ![Equation w = s(1 + √2)](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}w=s(1&plus;\sqrt{2})})
 
 ### AC Perpendicular Section
+
 Now for the case of the rotated octagon we will need the length of the chord AC in the below diagram which we will refer to as `y`:
 
-![Regular Octagon Diagram 2](assets/octagon_dia2.png)
+![Regular Octagon Diagram 2](assets/octagon_diag2.png)
 
 Given a regular octagon, we can find the length of chord `AC` and the perpendicular from the midpoint of `AC` to `B` as follows:
 
@@ -75,8 +76,6 @@ And the length of the chord `AC`, denoted as `y`, is:
 
 ![y = s\sqrt{2 + \sqrt{2}}](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{{\color{White}y&space;=&space;s\sqrt{2&plus;\sqrt{2}}}})
 
-
-
 ### Final Equations
 
 Substituting `w` into the diagonal equation yields:
@@ -91,6 +90,8 @@ With these equations, we can solve for the diagonal length `d`, width `w`, and s
 - **Width `w`:** ![Equation w = s(1 + √2)](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}w=s(1&plus;\sqrt{2})})
 - **Segment `x`:** ![Equation x = s / √2](https://latex.codecogs.com/svg.image?\inline&space;\LARGE&space;\bg{white}{\color{White}x=\frac{s}{\sqrt{2}}}\frac{}{})
 
-## References:
+## References
+
 [1] [mathcentral.uregina.ca 'quandaries & queries'](http://mathcentral.uregina.ca/QQ/database/QQ.09.20/h/sue2.html)
+
 [2] [CueMath>Geometry>Octagon](https://www.cuemath.com/geometry/octagon/)

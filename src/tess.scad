@@ -1,6 +1,8 @@
 /**
  * @file tess.scad
  * @brief Functions and modules for generating tessellation patterns and rendering shapes.
+ * @author Cameron K. Brooks
+ * @copyright 2024
  *
  * This library provides functions to generate center points for hexagonal and octagonal grids,
  * create hexagons and octagons with optional color gradients, and render them as 2D or extruded 3D shapes.

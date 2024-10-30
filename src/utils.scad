@@ -1,6 +1,8 @@
 /**
  * @file utils.scad
  * @brief Utility functions for point operations in OpenSCAD.
+ * @author Cameron K. Brooks
+ * @copyright 2024
  *
  * This file contains helper functions and modules for various point operations,
  * such as sorting centers, calculating distances, checking point equality within

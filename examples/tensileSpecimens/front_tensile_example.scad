@@ -1,6 +1,6 @@
 /**
- * @file lateral_tensile_test.scad
- * @brief Script for simulating a lateral tensile test specimen with integrated cell structures.
+ * @file front_tensile_example.scad
+ * @brief Script for simulating a front tensile test specimen with integrated cell structures.
  *
  * This script builds upon the `workflow_example.scad` to create a 3D model of a tensile test specimen
  * as per ASTM D638 Type I dimensions, integrating the previously defined cell structures.
@@ -31,7 +31,7 @@ color("DarkSlateBlue", alpha = 1) union()
 {
 
     // Translate upwards by the substrate height to position the cells correctly
-    translate([ 0, 0, substrate_height ]) union()
+    translate([ 0, 0, substrate_height ]) rotate([ 0, 90, 0 ]) union()
     {
         // Place cell A instances at the filtered tessellation points with rotation
         place_polar_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n,
@@ -43,14 +43,16 @@ color("DarkSlateBlue", alpha = 1) union()
                           height = substrate_height); ///< Use (unfiltered) tess_points for the substrate to close the
                                                       ///< substrate gaps for testing
     }
-
-    // Extrude the tensile test specimen shape to the substrate height
-    linear_extrude(height = substrate_height) polygon(points = [
-        [ -connection_length / 2, connection_width / 2 ],  // Left top corner
-        [ -connection_length / 2, -connection_width / 2 ], // Left bottom corner
-        [ min_x, min_y ],                                  // Bottom corner at min_x and min_y of the cells
-        [ 0, min_y ],                                      // Bottom corner at x = 0
-        [ 0, max_y ],                                      // Top corner at x = 0
-        [ min_x, max_y ],                                  // Top corner at min_x and max_y of the cells
-    ]);
+    for (i = [0:1]) ///< Loop through twice and mirror the second extrusion to create the full specimen
+    {
+        // Extrude the tensile test specimen shape to the substrate height
+        mirror([ 0, 0, i ]) linear_extrude(height = max_x / 2, scale = 0) polygon(points = [
+            [ -connection_length / 2, connection_width / 2 ],  // Left top corner
+            [ -connection_length / 2, -connection_width / 2 ], // Left bottom corner
+            [ min_x, min_y ],                                  // Bottom corner at min_x and min_y of the cells
+            [ 0, min_y ],                                      // Bottom corner at x = 0
+            [ 0, max_y ],                                      // Top corner at x = 0
+            [ min_x, max_y ],                                  // Top corner at min_x and max_y of the cells
+        ]);
+    }
 }

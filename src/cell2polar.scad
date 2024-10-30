@@ -1,6 +1,8 @@
 /**
  * @file cell2polar.scad
  * @brief Functions and modules for converting cell patterns into polar coordinate 3D models.
+ * @author Cameron K. Brooks
+ * @copyright 2024
  *
  * This library provides functions to generate 3D representations of cell pairs by rotating 2D cell patterns around an
  * axis. It includes utilities for calculating geometric properties like the apothem and central angles of regular
