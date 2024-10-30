@@ -7,10 +7,16 @@
  * generating tessellations, and placing cells on a substrate.
  */
 
+// clear_render = 1; ///< Flag to clear the render, it can be any value
+// This is useful when passing to a sequetial script that uses variables from this script
+
+masterRender = true; ///< Flag to render the entire scene or individual components
+master_render = is_undef(clear_render) ? masterRender : false; // Override master_render if allow_render is false
+
 use <../../src/utils.scad>; // Utility functions for point operations
 
 // Define input dimensions for the unit cell
-width_x = 5;   ///< Width of the unit cell in the x-direction
+width_x = 5;  ///< Width of the unit cell in the x-direction
 height_y = 10; ///< Height of the unit cell in the y-direction
 
 // Define division points for creating the cell's internal structure
@@ -30,56 +36,48 @@ example_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
 
 use <../../src/ucell.scad>; // Functions and modules for calculating and rendering unit cells
 
+ucell_render = true; ///< Flag to render the unit cells or omit them
+
 // Calculate cells (A and B) using the defined dimensions and division points
 example_cells = calc_ucells(width = width_x, height = height_y, div = example_div, neg_poly = example_neg_poly);
 
-// Rotate the entire scene for better visualization
-rotate([ 90, 0, 0 ])
+if (ucell_render && master_render)
 {
-    // Render only the division polygons (cells A and B without the negative polygons)
-    render_ucells(cells = [ example_cells[0], example_cells[1], [], [] ], colors = example_colors);
+    // Rotate the entire scene for better visualization
+    rotate([ 90, 0, 0 ])
+    {
+        // Render only the division polygons (cells A and B without the negative polygons)
+        render_ucells(cells = [ example_cells[0], example_cells[1], [], [] ], colors = example_colors);
 
-    // Render only the negative (anti-cell) portions separately
-    render_ucells(cells = [ [], [], example_cells[2], example_cells[3] ], colors = example_colors);
+        // Render only the negative (anti-cell) portions separately
+        render_ucells(cells = [ [], [], example_cells[2], example_cells[3] ], colors = example_colors);
 
-    // Place spheres at the points of cell A (division points)
-    place_spheres(points = example_cells[0], d = 0.05, color = "Indigo", fn = 12);
+        // Place spheres at the points of cell A (division points)
+        place_spheres(points = example_cells[0], d = 0.05, color = "Indigo", fn = 12);
 
-    // Place spheres at the points of cell B (division points)
-    place_spheres(points = example_cells[1], d = 0.05, color = "Violet", fn = 12);
+        // Place spheres at the points of cell B (division points)
+        place_spheres(points = example_cells[1], d = 0.05, color = "Violet", fn = 12);
+    }
 }
 
 use <../../src/cell2polar.scad>; // Functions and modules for converting cells to polar coordinates
 
+c2p_render = true; ///< Flag to render the prepositioned cells or omit them
+
 degree_n = 6; ///< Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
 
-// Translate the position to render cells in polar coordinates
-translate([ width_x * 2, height_y / 2, 0 ])
-    // Render both cells A and B in polar coordinates
-    cells2polarpos(cells = example_cells, n = degree_n, radius = example_radius);
+if (c2p_render && master_render)
+{
+    // Translate the position to render cells in polar coordinates
+    translate([ width_x * 3, 0, 0 ])
+        // Render both cells A and B in polar coordinates
+        cells2polarpos(cells = example_cells, n = degree_n, radius = example_radius);
+}
+
+c2p_placed_render = true; ///< Flag to render the placed cells or omit them
 
 // Calculate the diameter based on the apothem of the polygon
 ago_dia = apothem(example_radius, degree_n) * 2;
-
-// Translate to a new position to render cells individually
-translate([ width_x * 5, height_y / 2, 0 ])
-{
-    // Render cell A in polar coordinates
-    cellA2polar(cells = example_cells, n = degree_n, radius = example_radius, color = "LightGreen");
-
-    // Render cell B in polar coordinates at a position shifted by the apothem diameter
-    translate([ ago_dia, 0, 0 ])
-        cellB2polar(cells = example_cells, n = degree_n, radius = example_radius, color = "LightBlue");
-
-    // Render additional cell B instances rotated and positioned around cell A
-    translate([ -ago_dia * sin(half_central_angle(degree_n)), -ago_dia * cos(half_central_angle(degree_n)), 0 ])
-        rotate([ 0, 0, central_angle(degree_n) ])
-            cellB2polar(cells = example_cells, n = degree_n, radius = example_radius, color = "LightBlue");
-
-    translate([ -ago_dia * sin(half_central_angle(degree_n)), ago_dia * cos(half_central_angle(degree_n)), 0 ])
-        rotate([ 0, 0, central_angle(degree_n) ])
-            cellB2polar(cells = example_cells, n = degree_n, radius = example_radius, color = "LightBlue");
-}
 
 // Define positions for placing one cell A and three cell B instances
 positions_A = [[ 0, 0 ]]; ///< Position for cell A
@@ -96,21 +94,26 @@ positions_B = [  ///< Positions for cell B instances
     ]
 ];
 
-// Translate and rotate to position the cells correctly
-translate([ width_x * 8, height_y / 2, 0 ]) rotate([ 0, 0, half_central_angle(degree_n) ])
+if (c2p_placed_render && master_render)
 {
-    // Place cell A at the specified position
-    place_polar_cells(cells = example_cells, positions = positions_A, n = degree_n, radius = example_radius,
-                      cell_type = "A", color = "OliveDrab");
+    // Translate and rotate to position the cells correctly
+    translate([ width_x * 7, 0, 0 ]) rotate([ 0, 0, half_central_angle(degree_n) ])
+    {
+        // Place cell A at the specified position
+        place_polar_cells(cells = example_cells, positions = positions_A, n = degree_n, radius = example_radius,
+                          cell_type = "A", color = "OliveDrab");
 
-    // Place cell B instances at the specified positions
-    place_polar_cells(cells = example_cells, positions = positions_B, n = degree_n, radius = example_radius,
-                      cell_type = "B", color = "CadetBlue");
+        // Place cell B instances at the specified positions
+        place_polar_cells(cells = example_cells, positions = positions_B, n = degree_n, radius = example_radius,
+                          cell_type = "B", color = "CadetBlue");
+    }
 }
 
 use <../../src/tess.scad>; // Functions and modules for generating tessellations
 
-levels = 5;           ///< Number of levels for the tessellation pattern
+tesselated_render = true; ///< Flag to render the tessellated centers or omit them
+
+levels = 4;           ///< Number of levels for the tessellation pattern
 packing_factor = 0.3; ///< Packing factor ranging from 0.0 to 1.0
 
 // Scale the packing factor from 1.0 to 1.5 for grid spacing
@@ -135,19 +138,22 @@ echo("Filtered Centers:", filtered_tess_points);
 
 substrate_height = 1; ///< Height of the substrate on which cells are placed
 
-// Translate to position the assembly and begin placing cells
-translate([ -width_x * 11, height_y / 2, 0 ])
+if (tesselated_render && master_render)
 {
-    // Place cell A instances at the filtered tessellation points with rotation
-    place_polar_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n, radius = example_radius,
-                      rotate = true, cell_type = "A", color = "OliveDrab");
+    // Translate to position the assembly and begin placing cells
+    translate([ width_x * 18, 0, 0 ])
+    {
+        // Place cell A instances at the filtered tessellation points with rotation
+        place_polar_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n,
+                          radius = example_radius, rotate = true, cell_type = "A", color = "ForestGreen");
 
-    // Render the substrate as solid hexagons beneath the cells
-    translate([ 0, 0, -substrate_height ])
-        hexagonsSolid(hexagon_centers = filtered_tess_points, radius = example_gridrad, height = substrate_height);
+        // Render the substrate as solid hexagons beneath the cells
+        color("ForestGreen") translate([ 0, 0, -substrate_height ])
+            hexagonsSolid(hexagon_centers = filtered_tess_points, radius = example_gridrad, height = substrate_height);
 
-    // Optionally print the positions of the centers as text labels
-    print_points(filtered_tess_points, text_size = 0.5, color = "Azure");
+        // Optionally print the positions of the centers as text labels
+        print_points(filtered_tess_points, text_size = 0.5, color = "Azure", pointD = 0.1, fn = 12);
+    }
 }
 
 // Generate triangulated center points for placing cell B instances
@@ -158,16 +164,19 @@ filtered_tess_points_tri = filter_triangulated_center_points(example_gridrad, te
 
 echo("Filtered Centers Triangulated:", filtered_tess_points_tri);
 
-separation = 5; ///< Separation distance along the z-axis for layering
+separation = 5; ///< Separation distance along the z-axis for visual clarity or animation
 
-// Translate to position the assembly for cell B instances
-translate([ -width_x * 11, height_y / 2, separation ])
+if (tesselated_render && master_render)
 {
-    // Place cell B instances at the filtered triangulated tessellation points with rotation
-    place_polar_cells(cells = example_cells, positions = filtered_tess_points_tri, n = degree_n,
-                      radius = example_radius, rotate = true, cell_type = "B", color = "CadetBlue");
+    // Translate to position the assembly for cell B instances
+    translate([ width_x * 18, 0, separation ])
+    {
+        // Place cell B instances at the filtered triangulated tessellation points with rotation
+        place_polar_cells(cells = example_cells, positions = filtered_tess_points_tri, n = degree_n,
+                          radius = example_radius, rotate = true, cell_type = "B", color = "MidnightBlue");
 
-    // Render the substrate as solid hexagons above the cells
-    translate([ 0, 0, height_y ])
-        hexagonsSolid(hexagon_centers = filtered_tess_points_tri, radius = example_gridrad, height = substrate_height);
+        // Render the substrate as solid hexagons above the cells
+        color("MidnightBlue") translate([ 0, 0, height_y ]) hexagonsSolid(
+            hexagon_centers = filtered_tess_points_tri, radius = example_gridrad, height = substrate_height);
+    }
 }
