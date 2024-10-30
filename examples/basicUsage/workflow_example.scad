@@ -33,7 +33,7 @@ rotate([ 90, 0, 0 ])
     // Render only the division polygons (without the negative polygons)
     render_ucells(cells = [ example_cells[0], example_cells[1], [], [] ], colors = example_colors);
 
-    // Render only the anti-cell portion
+    // Render only the anti-cell portion separately
     render_ucells(cells = [ [], [], example_cells[2], example_cells[3] ], colors = example_colors);
 
     // Place spheres at the division points
