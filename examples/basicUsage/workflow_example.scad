@@ -1,3 +1,5 @@
+// workflow_example.scad file
+
 use <../../src/utils.scad>;
 
 // Define input variables

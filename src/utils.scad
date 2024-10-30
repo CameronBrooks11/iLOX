@@ -1,37 +1,4 @@
-/*
- * Title: Point Calculation Utilities
- * Author: [Your Name]
- * Organization: [Your Organization]
- *
- * License: [Specify License]
- *
- * Description:
- *   This OpenSCAD script, named 'utils.scad', includes a collection
- *   of functions designed for calculating and manipulating points. The script offers
- *   functionalities such as sorting points, calculating row heights, generating
- *   triangulated center points, and filtering points. These utilities are essential
- *   for geometric manipulations and can be used in a variety of design and modeling contexts.
- *
- * Dependencies:
- *   sorted-nop\sorted.scad - Required for sorting functionality.
- *
- * Usage Notes:
- *   To use these functions, include this script in your OpenSCAD project. You can
- *   apply these functions to manipulate point data in your models, such as sorting
- *   points, finding unique points, or filtering based on specific criteria. Ensure
- *   that 'sorted-nop\sorted.scad' is accessible in your project directory.
- *
- * Parameters:
- *   centers - Array of point coordinates.
- *   sorted_centers - Array of sorted point coordinates.
- *   point - A single point coordinate.
- *   list - A list of points for comparison or filtering.
- *   tolerance - A small value to account for numerical precision issues.
- *
- * Revision History:
- *   [YYYY-MM-DD] - Initial version.
- *   [YYYY-MM-DD] - Subsequent updates with details.
- */
+// utils.scad file
 
 use <sorted.scad>
 

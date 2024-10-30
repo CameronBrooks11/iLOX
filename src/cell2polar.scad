@@ -1,3 +1,5 @@
+// cell2polar.scad file
+
 // Takes a cell pair and an optional anti-cell pair and returns the volume of the cell minus the volume of the anti-cell
 // to create the effecitve 3D representation of the cell pair. The anti-cell pair is optional and can be used to create
 // voids in the cell pair. the radius will be the distance from the center of the +/-y axis to the edge of the cell to

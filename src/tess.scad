@@ -1,41 +1,4 @@
-
-
-/*
- * Title: Hexagon Pattern Generator
- * Author: [Your Name]
- * Organization: [Your Organization]
- *
- * License: [Specify License]
- *
- * Description:
- *   This OpenSCAD script, named 'hexagons.scad', is designed to generate patterns
- *   consisting of hexagons. The script provides functionality for creating hexagon
- *   patterns in either a grid or a level-based arrangement. Users can specify
- *   parameters such as radius, levels, and spacing to tailor the hexagon pattern to their needs.
- *   Additionally, an optional color gradient can be applied to the hexagons.
- *
- * Dependencies:
- *   utils_viz.scad - Used for visualization utilities.
- *   utils_points.scad - Utilized for point calculation utilities.
- *
- * Usage Notes:
- *   To utilize this script, include it in your OpenSCAD project. You can customize
- *   the hexagon pattern by adjusting the parameters in the 'hexagons' module or
- *   the 'hexagon_centers' function. Ensure that the 'utils_viz.scad' and
- *   'utils_points.scad' files are located in the same directory or modify the import paths accordingly.
- *
- * Parameters:
- *   radius - Specifies the radius of the hexagons.
- *   levels - Determines the number of levels in the pattern.
- *   spacing - Sets the spacing between individual hexagons.
- *   hexagon_centers - An array of points defining the centers of the hexagons.
- *   color_scheme - An array defining the color gradient.
- *   alpha - The alpha value for color transparency.
- *
- * Revision History:
- *   [YYYY-MM-DD] - Initial version.
- *   [YYYY-MM-DD] - Subsequent updates with details.
- */
+// tess.scad file
 
 use <utils.scad>;
 
