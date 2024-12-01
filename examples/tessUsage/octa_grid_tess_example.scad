@@ -1,5 +1,5 @@
-use <..\src\tess.scad>
-use <..\src\utils.scad>
+use <..\..\src\tess.scad>
+use <..\..\src\utils.scad>
 
 // Define the mode:
 // 1 for grid,
