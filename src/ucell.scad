@@ -60,29 +60,15 @@ function applyTolerance(width, points, div, reverse_tolerance = false) = [for (i
 ]];
 
 /**
- * @brief Places spheres at specified points.
- *
- * Renders spheres at given points with specified diameter and color.
- *
- * @param points Array of points where spheres will be placed, each point as [x, y].
- * @param d Diameter of the spheres.
- * @param color Color of the spheres.
- * @param zGap Height offset for the spheres along the z-axis.
- * @param fn Number of facets used to render the sphere.
- */
-module place_spheres(points, d, color, zGap = 1, fn = 6)
-{
-    for (p = points)
-    {
-        translate([ p[0], p[1], zGap ]) color(color) sphere(d, $fn = fn); // Place sphere at each point
-    }
-}
-
-/**
  * @brief Calculates the points for unit cells A and B based on dimensions and division points.
  *
  * Generates the points for two unit cells by creating polygons from the division points, applying tolerances, and
  * handling optional negative polygons.
+ *
+ * The subdivision is determined automatically based on the y-values of the division points:
+ * - If the first division point's y-value is in the range [0, 0.5], subdiv = 0.
+ * - If the first division point's y-value is in the range [0.5, 1], subdiv = 1.
+ * - If not in either range, an error is thrown.
  *
  * @param width The width of the unit cell.
  * @param height The height of the unit cell.
@@ -95,34 +81,41 @@ module place_spheres(points, d, color, zGap = 1, fn = 6)
  *         - ncell_pointsB: Points for negative polygon of cell B (if neg_poly is provided).
  */
 function calc_ucells(width, height, div, neg_poly = []) = let(
-    // Define the corners of cell A and cell B
-    cornersA = [ [ 0, height ], [ 0, 0 ] ], cornersB = [[width, 0], [width, height]],
-    // Create mirrored division points
-    div_mirrored = concat(div, mirrorPoints(reverseArray(div))),
-    // Transform division points to actual size
-    div_polyA = transformPoints(div_mirrored, width, height), div_polyB = reverseArray(div_polyA),
-    // Apply tolerance to the division points
-    div_polyA_tol = applyTolerance(width, div_polyA, div), div_polyB_tol = applyTolerance(width, div_polyB, div, true),
-    // Combine corners and division points to form cell polygons
-    cell_pointsA = concat(cornersA, div_polyA_tol), cell_pointsB = concat(cornersB, div_polyB_tol),
-    // Transform negative polygons if provided
+    y_val = div[0][1],
+    subdiv = (y_val == 0) ? 0 :
+             ((y_val == 1) ? 1 :
+              assert(undef, "ERROR: Division point starting point y-val must be 0 (minor definition) or 1 (major definition).")),
+    cornersA = [ [ 0, height ], [ 0, 0 ] ],
+    cornersB = [ [ width, 0 ], [ width, height ] ],
+    div_mirrored = subdiv ? concat(mirrorPoints(div), reverseArray(div))
+                          : concat(div, mirrorPoints(reverseArray(div))),
+    div_polyA = transformPoints(div_mirrored, width, height),
+    div_polyB = reverseArray(div_polyA),
+    div_polyA_tol = applyTolerance(width, div_polyA, div),
+    div_polyB_tol = applyTolerance(width, div_polyB, div, true),
+    cell_pointsA = concat(cornersA, div_polyA_tol),
+    cell_pointsB = concat(cornersB, div_polyB_tol),
     ncell_pointsA = len(neg_poly) > 0 ? transformPoints(neg_poly, width, height) : [],
-    ncell_pointsB = len(neg_poly) > 0 ? transformPoints(mirrorPoints(neg_poly), width, height)
-                                      : [])[cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB];
+    ncell_pointsB = len(neg_poly) > 0 ? transformPoints(mirrorPoints(neg_poly), width, height) : []
+)[cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB];
+
 
 /**
- * @brief Renders the unit cells as colored polygons.
+ * @brief Renders unit cells with optional negative border offset.
  *
- * Draws the main cell polygons (cells A and B) and optionally the negative polygons if provided.
+ * Draws the main cell polygons and, if provided, negative polygons. The negative polygons
+ * are modified by applying an offset to produce a border cutout. This turns a simple
+ * rectangle into a rectangle with a rectangular hole inside.
  *
- * @param cells Array containing cell points as returned by calc_ucells().
- * @param colors (Optional) Array of colors for the polygons in the order:
- *               - colors[0]: Color for cell A.
- *               - colors[1]: Color for cell B.
- *               - colors[2]: Color for negative polygon of cell A.
- *               - colors[3]: Color for negative polygon of cell B.
+ * @param cells An array of cell polygons: [cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB].
+ * @param colors An array of colors to use for the polygons:
+ *               0 -> cell_pointsA,
+ *               1 -> cell_pointsB,
+ *               2 -> ncell_pointsA,
+ *               3 -> ncell_pointsB.
+ * @param neg_border The width of the border offset to apply to negative polygons. Defaults to 0.1.
  */
-module render_ucells(cells, colors = [ "MediumAquamarine", "MediumBlue", "Red", "DarkRed" ])
+module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Navy" ], neg_border = 0.05)
 {
     // Unpack calculated cell points
     cell_pointsA = cells[0];
@@ -137,7 +130,17 @@ module render_ucells(cells, colors = [ "MediumAquamarine", "MediumBlue", "Red", 
     // Draw the negative polygons if they exist
     if (len(ncell_pointsA) > 0)
     {
-        color(colors[2]) polygon(points = ncell_pointsA);
-        color(colors[3]) polygon(points = ncell_pointsB);
+        // Create a bordered negative shape by cutting out an offset portion inside it
+        color(colors[2])
+        difference() {
+            polygon(points = ncell_pointsA);
+            offset(r = -neg_border) polygon(points = ncell_pointsA);
+        }
+
+        color(colors[3])
+        difference() {
+            polygon(points = ncell_pointsB);
+            offset(r = -neg_border) polygon(points = ncell_pointsB);
+        }
     }
 }

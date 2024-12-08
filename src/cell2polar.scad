@@ -97,10 +97,9 @@ module cells2polarpos(cells, n, radius, colors = [ "Green", "Blue" ])
  *
  * @param cells An array containing cell point data.
  * @param n The number of sides for the rotation.
- * @param radius The radius used for positioning.
  * @param color (Optional) The color of the cell, default is "Green".
  */
-module cellA2polar(cells, n, radius, color = "Green")
+module cellA2polar(cells, n, color = "Green")
 {
     color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
     {
@@ -116,12 +115,12 @@ module cellA2polar(cells, n, radius, color = "Green")
  *
  * @param cells An array containing cell point data.
  * @param n The number of sides for the rotation.
- * @param radius The radius used for positioning.
+ * @param width The width used for positioning.
  * @param color (Optional) The color of the cell, default is "Blue".
  */
-module cellB2polar(cells, n, radius, color = "Blue")
+module cellB2polar(cells, n, width, color = "Blue")
 {
-    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) translate([ -radius * 2, 0, 0 ])
+    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) translate([ -width, 0, 0 ])
         difference()
     {
         polygon(points = cells[1]); // Main cell polygon
@@ -137,12 +136,12 @@ module cellB2polar(cells, n, radius, color = "Blue")
  * @param cells An array containing cell point data.
  * @param positions An array of positions where cells will be placed, each as [x, y].
  * @param n The number of sides for the rotation.
- * @param radius The radius used for positioning.
+ * @param width The width used for positioning.
  * @param rotate (Optional) Boolean to apply rotation, default is false.
  * @param cell_type (Optional) Type of cell to place, either "A" or "B", default is "A".
  * @param color (Optional) The color of the cells, default is "CadetBlue".
  */
-module place_polar_cells(cells, positions, n, radius, rotate = false, cell_type = "A", color = "CadetBlue")
+module place_polar_cells(cells, positions, n, width, rotate = false, cell_type = "A", color = "CadetBlue")
 {
     // Determine rotation angle
     rot = rotate ? half_central_angle(n) : 0;
@@ -153,11 +152,11 @@ module place_polar_cells(cells, positions, n, radius, rotate = false, cell_type 
         {
             if (cell_type == "A")
             {
-                cellA2polar(cells = cells, n = n, radius = radius, color = color);
+                cellA2polar(cells = cells, n = n, color = color);
             }
             else if (cell_type == "B")
             {
-                cellB2polar(cells = cells, n = n, radius = radius, color = color);
+                cellB2polar(cells = cells, n = n, width = width, color = color);
             }
         }
     }

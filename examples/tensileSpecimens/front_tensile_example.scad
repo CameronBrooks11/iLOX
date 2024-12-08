@@ -35,7 +35,7 @@ color("DarkSlateBlue", alpha = 1) union()
     {
         // Place cell A instances at the filtered tessellation points with rotation
         place_polar_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n,
-                          radius = example_radius, rotate = true, cell_type = "A", color = "ForestGreen");
+                          width = width_x, rotate = true, cell_type = "A", color = "ForestGreen");
 
         // Render the substrate as solid hexagons beneath the cells
         color("ForestGreen") translate([ 0, 0, -substrate_height ])
