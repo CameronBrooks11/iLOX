@@ -11,6 +11,7 @@
 
 
 use <../src/utils.scad>; // Utility functions for point operations
+use <arc_draw.scad>;    // Functions and modules for drawing arcs
 
 div_pts_dia = 0.01;
 

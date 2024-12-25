@@ -1,7 +1,5 @@
 # Docs
 
-[Logo Rendering Script - Gist](https://gist.github.com/CameronBrooks11/7f44e17af9c78c67fe432197d06337dd)
-
 ## Paper Thoughts
 
 - Interlocking metasurfaces (ILMs) are engineered arrays of complementary features that facilitate the joining of two bodies.

@@ -1,9 +1,9 @@
-![SnapTessCAD Logo](docs/assets/logo_strip_v1.png)
 
 *An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing*
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)

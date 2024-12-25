@@ -2,6 +2,7 @@
 
 
 use <../src/utils.scad>; // Utility functions for point operations
+use <arc_draw.scad>;    // Functions and modules for drawing arcs
 
 inputdiv_render = true; ///< Flag to render the input division points or omit them
 inputnegpoly_render = true; ///< Flag to render the input negative polygon points or omit them

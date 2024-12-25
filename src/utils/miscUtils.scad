@@ -90,11 +90,31 @@ function triangulated_center_points(centers) = let(sorted_centers = sort_centers
 function filter_triangulated_center_points(r, centers, filter_list, tolerance = EPSILON) = let(
     n = len(centers))[for (i = [0:n - 1]) if (!is_within_radius(centers[i], r + tolerance, filter_list)) centers[i]];
 
+
 /**
- * @brief Calculates the maximum x-coordinate from a list of points, scaled by width.
+ * @brief Places spheres at specified points.
  *
- * @param points An array of points, each as [x, y].
- * @param width Scaling factor for the x-coordinate.
- * @return The maximum x-value after scaling.
+ * Renders spheres at given points with specified diameter and color. If zGap is undef, 
+ * it will use the point's z-value if provided, otherwise 0. If zGap is defined, it 
+ * overrides any z-value in the points.
+ *
+ * @param points Array of points where spheres will be placed, each point as [x, y] or [x, y, z].
+ * @param d Diameter of the spheres.
+ * @param color Color of the spheres.
+ * @param zGap (Optional) Height offset for the spheres along the z-axis. Defaults to undef.
+ *             If undef and the point has a z-value, that is used. If undef and the point 
+ *             has no z-value, 0 is used.
+ * @param fn Number of facets used to render the sphere.
  */
-function max_x(points, width) = max([for (p = points) p[0] * width]);
+module place_spheres(points, d, color, zGap = undef, fn = 6)
+{
+    for (p = points) {
+        translate([
+            p[0],
+            p[1],
+            (zGap == undef)
+                ? (len(p) == 3 ? p[2] : 0)
+                : zGap
+        ]) color(color) sphere(d, $fn = fn);
+    }
+}
