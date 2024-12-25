@@ -150,9 +150,6 @@ if (tesselated_render && master_render)
         // Render the substrate as solid hexagons beneath the cells
         color("ForestGreen") translate([ 0, 0, -substrate_height ])
             hexagonsSolid(hexagon_centers = filtered_tess_points, radius = example_gridrad, height = substrate_height);
-
-        // Optionally print the positions of the centers as text labels
-        print_points(filtered_tess_points, text_size = 0.5, color = "Azure", pointD = 0.1, fn = 12);
     }
 }
 
