@@ -1,5 +1,4 @@
-
-*An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing*
+_An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing_
 
 ## Table of Contents
 
@@ -13,8 +12,6 @@
 - [Modules](#modules)
   - [ucell.scad](#ucellscad)
   - [cell2polar.scad](#cell2polarscad)
-  - [tess.scad](#tessscad)
-  - [utils.scad](#utilsscad)
 - [Documentation](#documentation)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -30,11 +27,16 @@
 ## Installation
 
 1. **Clone the Repository**:
-    ```git clone https://github.com/uwo-fast/SnapTessSCAD.git```
+   `git clone https://github.com/uwo-fast/SnapTessSCAD.git`
 
 2. **Include Library Files**: Incorporate the library files from the `src` directory into your OpenSCAD project.
 
-3. **Dependencies**: There are no external dependencies, `sorted.scad` file is already included in the `src` used from the [dotSCAD library](https://github.com/JustinSDK/dotSCAD), as it is required by `utils.scad`.
+3. **Dependencies**: Download and place the following libraries in your OpenSCAD libraries folder:
+   1. [thehans/FunctionalOpenSCAD](https://github.com/thehans/FunctionalOpenSCAD)
+   2. [CameronBrooks11/tessella](https://github.com/CameronBrooks11/Tessella)
+   3. [CameronBrooks11/DraftSCAD](https://github.com/CameronBrooks11/DraftSCAD) _only required for examples / advanced usage_
+   4. `sorted.scad` file is already included in the `src` used from the [dotSCAD library](https://github.com/JustinSDK/dotSCAD), as it is required by `utils.scad`.
+   5. [CameronBrooks11/OpenSCAD-Batch-Export](https://github.com/CameronBrooks11/OpenSCAD-Batch-Export) _if batch exporting is required for testing / iteration_
 
 ## Usage
 
@@ -85,31 +87,11 @@ Contains functions and modules for converting 2D cell patterns into 3D models us
 - Rendering cells in polar coordinates with rotational symmetry.
 - Placing cells at specified positions with optional rotation.
 
-### tess.scad
-
-Offers functions and modules for generating tessellation patterns and rendering shapes. Capabilities include:
-
-- Generating center points for hexagonal and octagonal grids.
-- Creating hexagons and octagons with optional color gradients.
-- Rendering shapes as 2D outlines or extruded 3D solids.
-- Supporting selective positioning and customization of tessellation patterns.
-
-### utils.scad
-
-Provides utility functions for point operations, such as:
-
-- Sorting centers by coordinates.
-- Calculating distances and checking point equality within a tolerance.
-- Filtering points based on proximity or matching criteria.
-- Generating triangulated center points.
-
 ## Documentation
 
 For detailed geometric calculations and explanations related to hexagons and octagons, refer to the following documents in the `docs` directory:
 
 - [`library_logic.md`](docs/library_logic.md): Explains in-depth the logic of the library.
-- [`hexagons_math.md`](docs/hexagons_math.md): Geometric math for chords and other relations of hexagons.
-- [`octagons_math.md`](docs/octagon_math.md): Geometric math for chords and other relations of octagons.
 
 ## License
 
