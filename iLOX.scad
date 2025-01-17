@@ -4,3 +4,4 @@ include <src/utils.scad>
 
 include <FunctionalOpenSCAD/functional.scad>;
 include <tessella/tess.scad>;
+include<pathbuilder/pathbuilder.scad>;
