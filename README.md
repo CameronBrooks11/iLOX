@@ -7,7 +7,6 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
 - [Installation](#installation)
 - [Usage](#usage)
   - [Basic Usage](#basic-usage)
-  - [Advanced Tessellation Usage](#advanced-tessellation-usage)
   - [Tensile Specimens](#tensile-specimens)
 - [Modules](#modules)
   - [ucell.scad](#ucellscad)
@@ -54,15 +53,6 @@ To run the example:
 
 1. Open `workflow_example.scad` in OpenSCAD.
 2. Render the model to visualize the unit cells and tessellations.
-
-### Advanced Tessellation Usage
-
-The `examples/tessUsage` directory contains scripts showcasing advanced usage of the tessellation library. These scripts demonstrate:
-
-- Generating and manipulating tessellation patterns.
-- Utilization of visualization tools.
-- Applying transformations and mappings to tessellations.
-- Customizing tessellation geometries through selective positioning and filtering.
 
 ### Tensile Specimens
 
