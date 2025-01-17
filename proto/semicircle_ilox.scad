@@ -1,13 +1,9 @@
+use <../iLOX.scad>; // Utility functions for point operations
 
-
-
-use <../src/utils.scad>; // Utility functions for point operations
-use <arc_draw.scad>;    // Functions and modules for drawing arcs
-
-inputdiv_render = true; ///< Flag to render the input division points or omit them
+inputdiv_render = true;     ///< Flag to render the input division points or omit them
 inputnegpoly_render = true; ///< Flag to render the input negative polygon points or omit them
-ucell_render = false; ///< Flag to render the unit cells or omit them
-ucell_points = false; ///< Flag to render the division points or omit them
+ucell_render = true;       ///< Flag to render the unit cells or omit them
+ucell_points = true;       ///< Flag to render the division points or omit them
 
 // Define input dimensions for the unit cell
 width_x = 10;  ///< Width of the unit cell in the x-direction
@@ -27,7 +23,8 @@ arc_points_list = arc_points(diameter = arc_diameter, start_angle = arc_start_an
 arc_shift_x = 0.5;
 arc_shift_y = 0.5;
 
-shifted_arc_points_list = shift_points(points = arc_points_list, shift_x = arc_shift_x, shift_y = arc_shift_y+arc_diameter/2);
+shifted_arc_points_list =
+    shift_points(points = arc_points_list, shift_x = arc_shift_x, shift_y = arc_shift_y + arc_diameter / 2);
 
 // Echo the resulting arc points
 echo("shifted arc points:", shifted_arc_points_list);
@@ -42,30 +39,28 @@ transformed_arc_points_list = transformPoints(shifted_arc_points_list, width_x, 
 // example_div = [ [ 1 - 0.3, 1 - 0, 0.01 ], [ 1 - 0.3, 1 - 0.4, 0.01 ] ];
 example_div = shifted_arc_points_list;
 
-if(inputdiv_render)
+if (inputdiv_render)
 {
     // Place spheres at the generated arc points
     place_spheres(points = example_div,
-                  d = 0.01,        // Diameter of each sphere
+                  d = 0.01,       // Diameter of each sphere
                   color = "Blue", // Color of the spheres
-                  fn = 12          // Number of facets for sphere smoothness
+                  fn = 12         // Number of facets for sphere smoothness
     );
-    translate([0, 0, -1])
-    scale([1, width_x/height_y, 1]) cube([1,1,1]);
+    translate([ 0, 0, -1 ]) scale([ 1, width_x / height_y, 1 ]) cube([ 1, 1, 1 ]);
 }
-
 
 // Define negative polygon points to create voids within the cell
 // Each point is defined as [x, y]
 example_neg_poly = [];
 
-if(inputnegpoly_render)
+if (inputnegpoly_render)
 {
     // Place spheres at the generated arc points
     place_spheres(points = example_neg_poly,
-                  d = 0.05,        // Diameter of each sphere
+                  d = 0.05,      // Diameter of each sphere
                   color = "Red", // Color of the spheres
-                  fn = 12          // Number of facets for sphere smoothness
+                  fn = 12        // Number of facets for sphere smoothness
     );
 }
 
@@ -81,7 +76,7 @@ echo("example_cells: ", example_cells);
 
 // Rotate the entire scene for better visualization
 // rotate([ 90, 0, 0 ])
-translate([width_x/2, 0, 0])
+translate([ width_x / 2, 0, 0 ])
 {
     if (ucell_render)
     {

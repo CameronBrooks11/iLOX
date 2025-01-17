@@ -1,18 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-use <../src/utils.scad>; // Utility functions for point operations
-use <arc_draw.scad>;    // Functions and modules for drawing arcs
-
 div_pts_dia = 0.01;
 
 inputdiv_render = true;       ///< Flag to render the input division points or omit them
@@ -20,7 +6,7 @@ scaledinputdiv_render = true; ///< Flag to render the scaled input division poin
 inputnegpoly_render = true;   ///< Flag to render the input negative polygon points or omit them
 
 // Define input dimensions for the unit cell
-width_x = 10;  ///< Width of the unit cell in the x-direction
+width_x = 10; ///< Width of the unit cell in the x-direction
 height_y = 8; ///< Height of the unit cell in the y-direction
 
 // Variables for arc parameters
@@ -65,7 +51,7 @@ echo("shifted arc points:", shifted_arc2_points_list);
 // Concatenate the two arc points lists
 shifted_arc_points_list = concat(shifted_arc1_points_list, shifted_arc2_points_list);
 
-stem_pts = [[ 0.2, 0.7, arc1_tolerance ], [ 0.2, 0.6, arc1_tolerance ]];
+stem_pts = [ [ 0.2, 0.7, arc1_tolerance ], [ 0.2, 0.6, arc1_tolerance ] ];
 
 input_pts = concat(shifted_arc_points_list, stem_pts);
 
@@ -106,16 +92,20 @@ example_div = input_pts;
 
 // Define negative polygon points to create voids within the cell
 // Each point is defined as [x, y]
-add_neg_poly = [ [ 0.2, 0 ], [ 1, 0 ], [ 1, 0.7 ],  ];
+add_neg_poly = [
+    [ 0.2, 0 ],
+    [ 1, 0 ],
+    [ 1, 0.7 ],
+];
 example_neg_poly = shift_points(concat(stem_pts, add_neg_poly), -arc1_tolerance, 0);
 
 if (inputnegpoly_render)
 {
     // Place spheres at the generated arc points
     place_spheres(points = example_neg_poly,
-                  d = div_pts_dia,      // Diameter of each sphere
-                  color = "Red", // Color of the spheres
-                  fn = 12        // Number of facets for sphere smoothness
+                  d = div_pts_dia, // Diameter of each sphere
+                  color = "Red",   // Color of the spheres
+                  fn = 12          // Number of facets for sphere smoothness
     );
 }
 
@@ -143,8 +133,7 @@ translate([ width_x / 2, 0, 0 ])
         render_ucells(cells = [ example_cells[0], example_cells[1], [], [] ]);
 
         // Render only the negative (anti-cell) portions separately
-        translate([ 0, 0, 0.1 ])
-        render_ucells(cells = [ [], [], example_cells[2], example_cells[3] ]);
+        translate([ 0, 0, 0.1 ]) render_ucells(cells = [ [], [], example_cells[2], example_cells[3] ]);
     }
     if (ucell_points)
     {
@@ -170,7 +159,7 @@ if (tests_render)
     translate([ width_x * 3, 0, 0 ])
     {
         // Place cell A at the specified position
-        place_polar_cells(cells = example_cells, positions = [[0,0]], n = 4, width = width_x, cell_type = "A",
+        place_polar_cells(cells = example_cells, positions = [[ 0, 0 ]], n = 4, width = width_x, cell_type = "A",
                           color = "OliveDrab");
     }
 }

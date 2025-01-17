@@ -1,8 +1,4 @@
-
-
-
-use <../src/utils.scad>; // Utility functions for point operations
-use <arc_draw.scad>;    // Functions and modules for drawing arcs
+use <../iLOX.scad>;  // Utility functions for point operations
 
 // Define input dimensions for the unit cell
 width_x = 5;   ///< Width of the unit cell in the x-direction

@@ -7,21 +7,21 @@
  * generating tessellations, and placing cells on a substrate.
  */
 
+use <../../iLOX.scad>;
+
 // clear_render = 1; ///< Flag to clear the render, it can be any value
 // This is useful when passing to a sequetial script that uses variables from this script
 
 masterRender = true; ///< Flag to render the entire scene or individual components
 master_render = is_undef(clear_render) ? masterRender : false; // Override master_render if allow_render is false
 
-use <../../src/utils.scad>; // Utility functions for point operations
-
 // Define input dimensions for the unit cell
-width_x = 5;  ///< Width of the unit cell in the x-direction
+width_x = 5;   ///< Width of the unit cell in the x-direction
 height_y = 10; ///< Height of the unit cell in the y-direction
 
 // Define division points for creating the cell's internal structure
 // Each point is defined as [x, y, tolerance]
-// Must form a division line 
+// Must form a division line
 // First point must start with 0 if defining the minor half of the ucell division
 // First point must start with 1 if defining the major half of the ucell division
 example_div = [ [ 0.5, 0, 0.01 ], [ 0.3, 0.1, 0.01 ], [ 0.3, 0.4, 0.01 ] ];
@@ -32,8 +32,6 @@ example_neg_poly = [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ];
 
 // Define color options for rendering
 example_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
-
-use <../../src/ucell.scad>; // Functions and modules for calculating and rendering unit cells
 
 ucell_render = true; ///< Flag to render the unit cells or omit them
 
@@ -58,8 +56,6 @@ if (ucell_render && master_render)
         place_spheres(points = example_cells[1], d = 0.05, color = "Violet", zGap = 0.5, fn = 12);
     }
 }
-
-use <../../src/cell2polar.scad>; // Functions and modules for converting cells to polar coordinates
 
 c2p_render = true; ///< Flag to render the prepositioned cells or omit them
 
@@ -108,8 +104,6 @@ if (c2p_placed_render && master_render)
     }
 }
 
-use <../../src/tess.scad>; // Functions and modules for generating tessellations
-
 tesselated_render = true; ///< Flag to render the tessellated centers or omit them
 
 levels = 4;           ///< Number of levels for the tessellation pattern
@@ -122,7 +116,7 @@ scaled_packing = 1.0 + packing_factor * 0.5;
 example_gridrad = ago_dia * scaled_packing;
 
 // Generate hexagon centers for the tessellation
-tess_points = hexagon_centers_lvls(example_gridrad, levels);
+tess_points = hexagons_centers_radial(radius = example_gridrad, levels = levels);
 echo("Unfiltered Centers:", tess_points);
 
 // Define points to be filtered out from the tessellation
@@ -136,6 +130,7 @@ filtered_tess_points = filter_center_points(tess_points, filter_points_levels);
 echo("Filtered Centers:", filtered_tess_points);
 
 substrate_height = 1; ///< Height of the substrate on which cells are placed
+use_filter = true;    ///< Flag to use the filtered tessellation points or the original tessellation points
 
 if (tesselated_render && master_render)
 {
@@ -143,12 +138,16 @@ if (tesselated_render && master_render)
     translate([ width_x * 18, 0, 0 ])
     {
         // Place cell A instances at the filtered tessellation points with rotation
-        place_polar_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n,
-                          width = width_x, rotate = true, cell_type = "A", color = "ForestGreen");
+        place_polar_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n, width = width_x,
+                          rotate = true, cell_type = "A", color = "ForestGreen");
+
+        final_tess_points = use_filter ? filtered_tess_points : tess_points;
+        tess_vertices = hexagons_vertices(radius = example_gridrad, centers = final_tess_points, angular_offset = 30);
 
         // Render the substrate as solid hexagons beneath the cells
-        color("ForestGreen") translate([ 0, 0, -substrate_height ])
-            hexagonsSolid(hexagon_centers = filtered_tess_points, radius = example_gridrad, height = substrate_height);
+        color("ForestGreen") translate([ 0, 0, -substrate_height ]) generic_poly(
+            vertices = tess_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]], // Hexagon paths
+            centers = final_tess_points, alpha = 0.5, extrude = substrate_height);
     }
 }
 
@@ -160,6 +159,8 @@ filtered_tess_points_tri = filter_triangulated_center_points(example_gridrad, te
 
 echo("Filtered Centers Triangulated:", filtered_tess_points_tri);
 
+final_tess_points_tri = use_filter ? filtered_tess_points_tri : tess_points_tri;
+
 separation = 5; ///< Separation distance along the z-axis for visual clarity or animation
 
 if (tesselated_render && master_render)
@@ -168,11 +169,15 @@ if (tesselated_render && master_render)
     translate([ width_x * 18, 0, separation ])
     {
         // Place cell B instances at the filtered triangulated tessellation points with rotation
-        place_polar_cells(cells = example_cells, positions = filtered_tess_points_tri, n = degree_n,
-                          width = width_x, rotate = true, cell_type = "B", color = "MidnightBlue");
+        place_polar_cells(cells = example_cells, positions = filtered_tess_points_tri, n = degree_n, width = width_x,
+                          rotate = true, cell_type = "B", color = "MidnightBlue");
 
-        // Render the substrate as solid hexagons above the cells
-        color("MidnightBlue") translate([ 0, 0, height_y ]) hexagonsSolid(
-            hexagon_centers = filtered_tess_points_tri, radius = width_x / 2, height = substrate_height);
+        tess_vertices =
+            hexagons_vertices(radius = example_gridrad, centers = final_tess_points_tri, angular_offset = 30);
+
+        // Render the substrate as solid hexagons beneath the cells
+        color("MidnightBlue") translate([ 0, 0, height_y ]) generic_poly(
+            vertices = tess_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]], // Hexagon paths
+            centers = final_tess_points_tri, alpha = 0.5, extrude = substrate_height);
     }
 }

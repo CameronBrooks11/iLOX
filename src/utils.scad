@@ -90,31 +90,62 @@ function triangulated_center_points(centers) = let(sorted_centers = sort_centers
 function filter_triangulated_center_points(r, centers, filter_list, tolerance = EPSILON) = let(
     n = len(centers))[for (i = [0:n - 1]) if (!is_within_radius(centers[i], r + tolerance, filter_list)) centers[i]];
 
-
 /**
  * @brief Places spheres at specified points.
  *
- * Renders spheres at given points with specified diameter and color. If zGap is undef, 
- * it will use the point's z-value if provided, otherwise 0. If zGap is defined, it 
+ * Renders spheres at given points with specified diameter and color. If zGap is undef,
+ * it will use the point's z-value if provided, otherwise 0. If zGap is defined, it
  * overrides any z-value in the points.
  *
  * @param points Array of points where spheres will be placed, each point as [x, y] or [x, y, z].
  * @param d Diameter of the spheres.
  * @param color Color of the spheres.
  * @param zGap (Optional) Height offset for the spheres along the z-axis. Defaults to undef.
- *             If undef and the point has a z-value, that is used. If undef and the point 
+ *             If undef and the point has a z-value, that is used. If undef and the point
  *             has no z-value, 0 is used.
  * @param fn Number of facets used to render the sphere.
  */
 module place_spheres(points, d, color, zGap = undef, fn = 6)
 {
-    for (p = points) {
-        translate([
-            p[0],
-            p[1],
-            (zGap == undef)
-                ? (len(p) == 3 ? p[2] : 0)
-                : zGap
-        ]) color(color) sphere(d, $fn = fn);
+    for (p = points)
+    {
+        translate([ p[0], p[1], (zGap == undef) ? (len(p) == 3 ? p[2] : 0) : zGap ]) color(color) sphere(d, $fn = fn);
     }
 }
+
+/**
+ * @brief Generates a series of points defining an arc.
+ *
+ * Returns a list of (x,y) coordinates forming an arc specified by a start angle, end angle, and number of points.
+ * The arc is determined by the radius derived from the given diameter.
+ *
+ * @param diameter The diameter of the arc's circle.
+ * @param start_angle The starting angle of the arc (in degrees).
+ * @param end_angle The ending angle of the arc (in degrees).
+ * @param num_points The number of points along the arc, defining its resolution.
+ * @param z_val The z-coordinate value for the arc points.
+ *
+ * @return A list of [x, y] points representing the arc.
+ */
+function arc_points(diameter, start_angle, end_angle, num_points, z_val = 0) = let(
+    radius = diameter /
+             2)[for (i = [0:num_points])[radius * cos(start_angle + (end_angle - start_angle) * i / num_points),
+                                         radius *sin(start_angle + (end_angle - start_angle) * i / num_points), z_val]];
+/**
+ * @brief Shifts a list of points by a given offset.
+ *
+ * Returns a new list of points, each adjusted by the specified shift amount in the x and y directions,
+ * and optionally in the z direction if the points contain a z-coordinate.
+ *
+ * If a point contains [x, y], it will be shifted by [shift_x, shift_y].
+ * If a point contains [x, y, z], it will be shifted by [shift_x, shift_y, shift_z].
+ *
+ * @param points An array of points, each as [x, y] or [x, y, z].
+ * @param shift_x The amount to shift in the x-direction.
+ * @param shift_y The amount to shift in the y-direction.
+ * @param shift_z (Optional) The amount to shift in the z-direction. Defaults to 0.
+ * @return A new array of points, each shifted by the specified amounts.
+ */
+function shift_points(points, shift_x, shift_y, shift_z = 0) = [for (p = points)(len(p) == 3)
+                                                                    ? [ p[0] + shift_x, p[1] + shift_y, p[2] + shift_z ]
+                                                                    : [ p[0] + shift_x, p[1] + shift_y ]];
