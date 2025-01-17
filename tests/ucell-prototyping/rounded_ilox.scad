@@ -1,3 +1,4 @@
+use <../../iLOX.scad>;
 
 div_pts_dia = 0.01;
 
@@ -109,8 +110,6 @@ if (inputnegpoly_render)
     );
 }
 
-use <../src/ucell.scad>; // Functions and modules for calculating and rendering unit cells
-
 ucell_render = true; ///< Flag to render the unit cells or omit them
 ucell_points = true; ///< Flag to render the division points or omit them
 tests_render = true; ///< Flag to render the test points or omit them
@@ -144,8 +143,6 @@ translate([ width_x / 2, 0, 0 ])
         place_spheres(points = example_cells[1], d = 0.05, color = "Violet", fn = 12);
     }
 }
-
-use <../src/cell2polar.scad>; // Functions and modules for converting cells to polar coordinates
 
 if (tests_render)
 {

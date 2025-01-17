@@ -1,4 +1,4 @@
-use <../iLOX.scad>; // Utility functions for point operations
+use <../../iLOX.scad>; // Utility functions for point operations
 
 inputdiv_render = true;     ///< Flag to render the input division points or omit them
 inputnegpoly_render = true; ///< Flag to render the input negative polygon points or omit them
@@ -67,8 +67,6 @@ if (inputnegpoly_render)
 // Define color options for rendering
 example_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
 
-use <../src/ucell.scad>; // Functions and modules for calculating and rendering unit cells
-
 // Calculate cells (A and B) using the defined dimensions and division points
 example_cells = calc_ucells(width = width_x, height = height_y, div = example_div, neg_poly = example_neg_poly);
 
@@ -95,8 +93,6 @@ translate([ width_x / 2, 0, 0 ])
         place_spheres(points = example_cells[1], d = 0.05, color = "Violet", fn = 12);
     }
 }
-
-use <../src/cell2polar.scad>; // Functions and modules for converting cells to polar coordinates
 
 degree_n = 6; ///< Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
 

@@ -18,6 +18,8 @@ example_neg_poly = [];
 // Define color options for rendering
 example_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
 
+use <../src/ucell.scad>; // Functions and modules for calculating and rendering unit cells
+
 ucell_render = true; ///< Flag to render the unit cells or omit them
 
 // Calculate cells (A and B) using the defined dimensions and division points
