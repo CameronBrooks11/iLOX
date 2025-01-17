@@ -1,6 +1,5 @@
 // External libraries
 include <FunctionalOpenSCAD/functional.scad>;
-include <pathbuilder/pathbuilder.scad>;
 include <tessella/tess.scad>;
 
 // Internal functions and modules
