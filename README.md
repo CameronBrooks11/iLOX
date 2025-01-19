@@ -1,19 +1,24 @@
+# iLOX
+
+_**I**nter**L**ocking **O**rthogonal e**X**trusions_
+
 _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing_
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Basic Usage](#basic-usage)
-  - [Tensile Specimens](#tensile-specimens)
-- [Modules](#modules)
-  - [ucell.scad](#ucellscad)
-  - [cell2polar.scad](#cell2polarscad)
-- [Documentation](#documentation)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
+- [iLOX](#ilox)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Basic Usage](#basic-usage)
+    - [Tensile Specimens](#tensile-specimens)
+  - [Modules](#modules)
+    - [ucell.scad](#ucellscad)
+    - [cell2polar.scad](#cell2polarscad)
+  - [Documentation](#documentation)
+  - [License](#license)
+  - [Acknowledgements](#acknowledgements)
 
 ## Features
 
