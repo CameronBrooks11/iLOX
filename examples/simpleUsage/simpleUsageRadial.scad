@@ -5,6 +5,7 @@ use <../../iLOX.scad>;
 // -----------------------------------
 
 // Flag to render the entire scene or individual components
+// Should always be false for exporting the final design
 show_ucell = false; ///< Flag to render the unit cell or omit it
 
 // Define input dimensions for the unit cell

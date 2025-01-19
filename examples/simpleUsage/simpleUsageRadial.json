@@ -1,0 +1,15 @@
+{
+    "parameterSets": {
+        "design default values": {
+            "base_ucell_div": "[[0.5, 0, 0.01], [0.3, 0.1, 0.01], [0.3, 0.4, 0.01]]",
+            "base_ucell_neg_poly": "[[0.7, 0.8], [0.7, 1], [0.3, 1]]",
+            "degree_n": "6",
+            "height_y": "10",
+            "levels": "4",
+            "packing_factor": "0.3",
+            "show_ucell": "false",
+            "width_x": "5"
+        }
+    },
+    "fileFormatVersion": "1"
+}
