@@ -82,9 +82,9 @@ function applyTolerance(width, points, div, reverse_tolerance = false) = [for (i
  */
 function calc_ucells(width, height, div, neg_poly = []) = let(
     y_val = div[0][1],
-    subdiv = (y_val == 0)
-                 ? 0
-                 : ((y_val == 1) ? 1 : assert(undef, "ERROR: Division point y-val must be 0 (minor) or 1 (major).")),
+    subdiv = (y_val == 0)   ? 0
+             : (y_val == 1) ? 1
+                            : assert(undef, "ERROR: Division point y-val must be 0 (minor) or 1 (major)"),
     cornersA = [ [ 0, height ], [ 0, 0 ] ], cornersB = [[width, 0], [width, height]],
     div_mirrored = subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
     div_polyA = transformPoints(div_mirrored, width, height), div_polyB = reverseArray(div_polyA),
@@ -122,8 +122,7 @@ module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Na
     color(colors[1]) polygon(points = cell_pointsB);
 
     // Draw the negative polygons if they exist
-    translate([0,0,0.005])
-    if (len(ncell_pointsA) > 0)
+    translate([ 0, 0, 0.005 ]) if (len(ncell_pointsA) > 0)
     {
         // negative cell points A
         color(colors[2]) difference()
@@ -142,8 +141,7 @@ module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Na
         }
 
         // negative cell points B
-        color(colors[3]) 
-        difference()
+        color(colors[3]) difference()
         {
             intersection()
             {
