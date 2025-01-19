@@ -1,5 +1,7 @@
 # Docs
 
+- [library logic overview](./library_logic.md)
+
 ## Paper Thoughts
 
 - Interlocking metasurfaces (ILMs) are engineered arrays of complementary features that facilitate the joining of two bodies.

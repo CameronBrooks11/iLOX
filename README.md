@@ -8,8 +8,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
 
 - [iLOX](#ilox)
   - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [Installation](#installation)
+  - [Overview](#overview)
   - [Usage](#usage)
     - [Basic Usage](#basic-usage)
     - [Tensile Specimens](#tensile-specimens)
@@ -20,27 +19,15 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
   - [License](#license)
   - [Acknowledgements](#acknowledgements)
 
-## Features
+## Overview
 
-- **Unit Cell Generation**: Calculate and render unit cells with customizable dimensions and division points.
-- **Polar Coordinate Conversion**: Convert 2D cell patterns into 3D models using polar coordinates.
-- **Complex Tessellations**: Generate intricate tessellations, including hexagonal and octagonal grids.
-- **Advanced Point Operations**: Perform operations like sorting centers, filtering points, and calculating triangulated centers.
-- **Selective Positioning**: Customize tessellation patterns by filtering and manipulating specific points.
+**Dependencies**: Download and place the following libraries in your OpenSCAD libraries folder:
 
-## Installation
-
-1. **Clone the Repository**:
-   `git clone https://github.com/uwo-fast/SnapTessSCAD.git`
-
-2. **Include Library Files**: Incorporate the library files from the `src` directory into your OpenSCAD project.
-
-3. **Dependencies**: Download and place the following libraries in your OpenSCAD libraries folder:
-   1. [thehans/FunctionalOpenSCAD](https://github.com/thehans/FunctionalOpenSCAD)
-   2. [CameronBrooks11/tessella](https://github.com/CameronBrooks11/Tessella)
-   3. [CameronBrooks11/DraftSCAD](https://github.com/CameronBrooks11/DraftSCAD) _only required for examples / advanced usage_
-   4. `sorted.scad` file is already included in the `src` used from the [dotSCAD library](https://github.com/JustinSDK/dotSCAD), as it is required by `utils.scad`.
-   5. [CameronBrooks11/OpenSCAD-Batch-Export](https://github.com/CameronBrooks11/OpenSCAD-Batch-Export) _if batch exporting is required for testing / iteration_
+1.  [thehans/FunctionalOpenSCAD](https://github.com/thehans/FunctionalOpenSCAD)
+2.  [CameronBrooks11/tessella](https://github.com/CameronBrooks11/Tessella)
+3.  [CameronBrooks11/DraftSCAD](https://github.com/CameronBrooks11/DraftSCAD) _only required for examples / advanced usage_
+4.  `sorted.scad` file is already included in the `src` used from the [dotSCAD library](https://github.com/JustinSDK/dotSCAD), as it is required by `utils.scad`.
+5.  [CameronBrooks11/OpenSCAD-Batch-Export](https://github.com/CameronBrooks11/OpenSCAD-Batch-Export) _if batch exporting is required for testing / iteration_
 
 ## Usage
 
@@ -84,9 +71,7 @@ Contains functions and modules for converting 2D cell patterns into 3D models us
 
 ## Documentation
 
-For detailed geometric calculations and explanations related to hexagons and octagons, refer to the following documents in the `docs` directory:
-
-- [`library_logic.md`](docs/library_logic.md): Explains in-depth the logic of the library.
+For detailed geometric calculations and explanations related to hexagons and octagons, refer to the following documents in the [`docs`](docs/README.md).
 
 ## License
 
