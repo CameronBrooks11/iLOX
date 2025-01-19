@@ -43,11 +43,8 @@ if (ucell_render && master_render)
     // Rotate the entire scene for better visualization
     rotate([ 90, 0, 0 ])
     {
-        // Render only the division polygons (cells A and B without the negative polygons)
-        render_ucells(cells = [ example_cells[0], example_cells[1], [], [] ], colors = example_colors);
-
-        // Render only the negative (anti-cell) portions separately
-        render_ucells(cells = [ [], [], example_cells[2], example_cells[3] ], colors = example_colors);
+        // Render the entire unit cell with both the division and negative polygons
+        render_ucells(cells = example_cells, colors = example_colors);
 
         // Place spheres at the points of cell A (division points)
         place_spheres(points = example_cells[0], d = 0.05, color = "Indigo", zGap = 0.5, fn = 12);
@@ -66,7 +63,7 @@ if (c2p_render && master_render)
     // Translate the position to render cells in polar coordinates
     translate([ width_x * 3, 0, 0 ])
         // Render both cells A and B in polar coordinates
-        cells2polarpos(cells = example_cells, n = degree_n, radius = width_x / 2);
+        ucell_rotX_paired(cells = example_cells, n = degree_n, radius = width_x / 2);
 }
 
 c2p_placed_render = true; ///< Flag to render the placed cells or omit them
@@ -95,11 +92,11 @@ if (c2p_placed_render && master_render)
     translate([ width_x * 7, 0, 0 ]) rotate([ 0, 0, half_central_angle(degree_n) ])
     {
         // Place cell A at the specified position
-        place_polar_cells(cells = example_cells, positions = positions_A, n = degree_n, width = width_x,
+        place_rot_cells(cells = example_cells, positions = positions_A, n = degree_n, width = width_x,
                           cell_type = "A", color = "OliveDrab");
 
         // Place cell B instances at the specified positions
-        place_polar_cells(cells = example_cells, positions = positions_B, n = degree_n, width = width_x,
+        place_rot_cells(cells = example_cells, positions = positions_B, n = degree_n, width = width_x,
                           cell_type = "B", color = "CadetBlue");
     }
 }
@@ -138,7 +135,7 @@ if (tesselated_render && master_render)
     translate([ width_x * 18, 0, 0 ])
     {
         // Place cell A instances at the filtered tessellation points with rotation
-        place_polar_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n, width = width_x,
+        place_rot_cells(cells = example_cells, positions = filtered_tess_points, n = degree_n, width = width_x,
                           rotate = true, cell_type = "A", color = "ForestGreen");
 
         final_tess_points = use_filter ? filtered_tess_points : tess_points;
@@ -169,7 +166,7 @@ if (tesselated_render && master_render)
     translate([ width_x * 18, 0, separation ])
     {
         // Place cell B instances at the filtered triangulated tessellation points with rotation
-        place_polar_cells(cells = example_cells, positions = filtered_tess_points_tri, n = degree_n, width = width_x,
+        place_rot_cells(cells = example_cells, positions = filtered_tess_points_tri, n = degree_n, width = width_x,
                           rotate = true, cell_type = "B", color = "MidnightBlue");
 
         tess_vertices =

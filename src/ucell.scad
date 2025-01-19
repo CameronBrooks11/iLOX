@@ -82,23 +82,17 @@ function applyTolerance(width, points, div, reverse_tolerance = false) = [for (i
  */
 function calc_ucells(width, height, div, neg_poly = []) = let(
     y_val = div[0][1],
-    subdiv = (y_val == 0) ? 0 :
-             ((y_val == 1) ? 1 :
-              assert(undef, "ERROR: Division point starting point y-val must be 0 (minor definition) or 1 (major definition).")),
-    cornersA = [ [ 0, height ], [ 0, 0 ] ],
-    cornersB = [ [ width, 0 ], [ width, height ] ],
-    div_mirrored = subdiv ? concat(mirrorPoints(div), reverseArray(div))
-                          : concat(div, mirrorPoints(reverseArray(div))),
-    div_polyA = transformPoints(div_mirrored, width, height),
-    div_polyB = reverseArray(div_polyA),
-    div_polyA_tol = applyTolerance(width, div_polyA, div),
-    div_polyB_tol = applyTolerance(width, div_polyB, div, true),
-    cell_pointsA = concat(cornersA, div_polyA_tol),
-    cell_pointsB = concat(cornersB, div_polyB_tol),
+    subdiv = (y_val == 0)
+                 ? 0
+                 : ((y_val == 1) ? 1 : assert(undef, "ERROR: Division point y-val must be 0 (minor) or 1 (major).")),
+    cornersA = [ [ 0, height ], [ 0, 0 ] ], cornersB = [[width, 0], [width, height]],
+    div_mirrored = subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
+    div_polyA = transformPoints(div_mirrored, width, height), div_polyB = reverseArray(div_polyA),
+    div_polyA_tol = applyTolerance(width, div_polyA, div), div_polyB_tol = applyTolerance(width, div_polyB, div, true),
+    cell_pointsA = concat(cornersA, div_polyA_tol), cell_pointsB = concat(cornersB, div_polyB_tol),
     ncell_pointsA = len(neg_poly) > 0 ? transformPoints(neg_poly, width, height) : [],
-    ncell_pointsB = len(neg_poly) > 0 ? transformPoints(mirrorPoints(neg_poly), width, height) : []
-)[cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB];
-
+    ncell_pointsB = len(neg_poly) > 0 ? transformPoints(mirrorPoints(neg_poly), width, height)
+                                      : [])[cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB];
 
 /**
  * @brief Renders unit cells with optional negative border offset.
@@ -128,19 +122,40 @@ module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Na
     color(colors[1]) polygon(points = cell_pointsB);
 
     // Draw the negative polygons if they exist
+    translate([0,0,0.005])
     if (len(ncell_pointsA) > 0)
     {
-        // Create a bordered negative shape by cutting out an offset portion inside it
-        color(colors[2])
-        difference() {
-            polygon(points = ncell_pointsA);
-            offset(r = -neg_border) polygon(points = ncell_pointsA);
+        // negative cell points A
+        color(colors[2]) difference()
+        { // Create a bordered negative shape by cutting out an offset portion inside it
+            intersection()
+            {
+                polygon(points = ncell_pointsA);
+                polygon(points = cell_pointsA);
+            }
+
+            offset(r = -neg_border) intersection()
+            {
+                polygon(points = ncell_pointsA);
+                polygon(points = cell_pointsA);
+            }
         }
 
-        color(colors[3])
-        difference() {
-            polygon(points = ncell_pointsB);
-            offset(r = -neg_border) polygon(points = ncell_pointsB);
+        // negative cell points B
+        color(colors[3]) 
+        difference()
+        {
+            intersection()
+            {
+                polygon(points = ncell_pointsB);
+                polygon(points = cell_pointsB);
+            }
+
+            offset(r = -neg_border) intersection()
+            {
+                polygon(points = ncell_pointsB);
+                polygon(points = cell_pointsB);
+            }
         }
     }
 }

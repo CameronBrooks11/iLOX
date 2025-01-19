@@ -156,7 +156,7 @@ if (tests_render)
     translate([ width_x * 3, 0, 0 ])
     {
         // Place cell A at the specified position
-        place_polar_cells(cells = example_cells, positions = [[ 0, 0 ]], n = 4, width = width_x, cell_type = "A",
+        place_rot_cells(cells = example_cells, positions = [[ 0, 0 ]], n = 4, width = width_x, cell_type = "A",
                           color = "OliveDrab");
     }
 }

@@ -29,7 +29,7 @@ union()
     translate([ substrate_height, 0, 0 ]) rotate([ 0, 90, 0 ]) union()
     {
         // Place cell A instances at the filtered tessellation points with rotation
-        place_polar_cells(cells = cells, positions = tess_points, n = degree_n, width = width_x, rotate = true,
+        place_rot_cells(cells = cells, positions = tess_points, n = degree_n, width = width_x, rotate = true,
                           cell_type = "A", color = "ForestGreen");
 
         tess_vertices = hexagons_vertices(radius = gridrad, centers = tess_points, angular_offset = 30);

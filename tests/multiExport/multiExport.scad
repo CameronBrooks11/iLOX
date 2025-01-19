@@ -47,7 +47,7 @@ tess_points = hexagons_centers_radial(gridrad, levels); // Generate hexagon cent
 if (master_render == "A" || master_render == "both")
 {
     // Place cell A instances at the filtered tessellation points with rotation
-    place_polar_cells(cells = cells, positions = tess_points, n = degree_n, width = width_x, rotate = true,
+    place_rot_cells(cells = cells, positions = tess_points, n = degree_n, width = width_x, rotate = true,
                       cell_type = "A", color = "ForestGreen");
 
     tess_vertices = hexagons_vertices(radius = gridrad, centers = tess_points, angular_offset = 30);
@@ -64,7 +64,7 @@ tess_points_tri =
 if (master_render == "B" || master_render == "both")
 {
     // Place cell B instances at the filtered triangulated tessellation points with rotation
-    place_polar_cells(cells = cells, positions = tess_points_tri, n = degree_n, width = width_x, rotate = true,
+    place_rot_cells(cells = cells, positions = tess_points_tri, n = degree_n, width = width_x, rotate = true,
                       cell_type = "B", color = "MidnightBlue");
 
     tess_vertices = hexagons_vertices(radius = gridrad, centers = tess_points_tri, angular_offset = 30);

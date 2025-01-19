@@ -14,7 +14,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
     - [Tensile Specimens](#tensile-specimens)
   - [Modules](#modules)
     - [ucell.scad](#ucellscad)
-    - [cell2polar.scad](#cell2polarscad)
+    - [cell2rot.scad](#cell2rotscad)
   - [Documentation](#documentation)
   - [License](#license)
   - [Acknowledgements](#acknowledgements)
@@ -61,7 +61,7 @@ Provides functions and modules for calculating and rendering unit cells based on
 - Rendering cells with optional negative polygons.
 - Placing spheres at specified points.
 
-### cell2polar.scad
+### cell2rot.scad
 
 Contains functions and modules for converting 2D cell patterns into 3D models using polar coordinates. Features include:
 
