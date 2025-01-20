@@ -118,11 +118,11 @@ positions_B = [  ///< Positions for cell B instances
 translate([ width_x * 3, 0, 0 ])
 {
     // Place cell A at the specified position
-    place_rot_cells(cells = example_cells, positions = positions_A, n = degree_n, width = width_x, cell_type = "A",
+    place_rotated_cells(cells = example_cells, positions = positions_A, n = degree_n, width = width_x, cell_type = "A",
                       color = "OliveDrab");
 
     // Place cell B instances at the specified positions
-    place_rot_cells(cells = example_cells, positions = positions_B, n = degree_n, width = width_x, cell_type = "B",
+    place_rotated_cells(cells = example_cells, positions = positions_B, n = degree_n, width = width_x, cell_type = "B",
                       color = "CadetBlue");
 }
 
@@ -130,6 +130,6 @@ translate([ width_x * 3, 0, 0 ])
 translate([ -width_x * 3, 0, 0 ])
 {
     // Place cell A at the specified position
-    place_rot_cells(cells = example_cells, positions = positions_A, n = 4, width = width_x, cell_type = "A",
+    place_rotated_cells(cells = example_cells, positions = positions_A, n = 4, width = width_x, cell_type = "A",
                       color = "OliveDrab");
 }

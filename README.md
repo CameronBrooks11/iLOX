@@ -26,7 +26,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
 1.  [thehans/FunctionalOpenSCAD](https://github.com/thehans/FunctionalOpenSCAD)
 2.  [CameronBrooks11/tessella](https://github.com/CameronBrooks11/Tessella)
 3.  [CameronBrooks11/DraftSCAD](https://github.com/CameronBrooks11/DraftSCAD) _only required for examples / advanced usage_
-4.  `sorted.scad` file is already included in the `src` used from the [dotSCAD library](https://github.com/JustinSDK/dotSCAD), as it is required by `utils.scad`.
+4.  `sorted.scad` file is already included in the `src` used from the [dotSCAD library](https://github.com/JustinSDK/dotSCAD), as it is required by `point_utils.scad`.
 5.  [CameronBrooks11/OpenSCAD-Batch-Export](https://github.com/CameronBrooks11/OpenSCAD-Batch-Export) _if batch exporting is required for testing / iteration_
 
 ## Usage

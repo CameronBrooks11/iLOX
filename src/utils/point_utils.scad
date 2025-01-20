@@ -1,13 +1,51 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
- * @file utils.scad
+ * @file point_utils.scad
  * @brief Utility functions for point operations in OpenSCAD.
  * @author Cameron K. Brooks
- * @copyright 2024
+ * @copyright 2025
  *
- * This file contains helper functions and modules for various point operations,
+ * This file contains helper functions for specific point operations,
  * such as sorting centers, calculating distances, checking point equality within
- * a tolerance, and filtering points based on certain criteria. These utilities are
- * useful for geometric computations and manipulations in OpenSCAD scripts.
+ * a tolerance, and filtering points based on certain criteria.
+ *
  */
 
 use <sorted.scad>
@@ -35,6 +73,66 @@ function point_row_height(sorted_centers) =
         : undef;
 
 /**
+ * @brief Finds the midpoints between adjacent points in each row and returns the new points.
+ *
+ * This function checks for points that are adjacent horizontally (same y but different x),
+ * and places a new point exactly halfway between them.
+ *
+ * @param centers An array of points forming a grid with some horizontal gaps.
+ * @return An array of new points placed between adjacent points in each row.
+ */
+function square_midpoints(centers) = let(sorted_centers = sort_centers(centers)) let(tri_centers = [])
+    concat(                                                         // Flatten the array and filter out empty entries
+        [for (i = [0:len(sorted_centers) - 2])                      // for loop i
+            let(p1 = sorted_centers[i], p2 = sorted_centers[i + 1]) // end let
+            if (abs(p1[1] - p2[1]) < EPSILON &&                     // p1 and p2 are in the same row
+                p2[0] > p1[0]                                       // p2 x-coordinate is greater than p1
+                )                                                   // end if
+            ([
+                (p1[0] + p2[0]) / 2, // x-coordinate of midpoint center
+                (p1[1] + p2[1]) / 2  // y-coordinate of midpoint center
+            ])]);
+
+/**
+ * @brief Calculates the centers of triangles formed by adjacent points.
+ *
+ * Generates triangulated center points based on provided centers, useful for creating a triangulated grid or pattern.
+ *
+ * @param centers An array of points (centers) to be triangulated.
+ * @return An array of triangulated center points.
+ */
+function triangulated_center_points(centers) = let(sorted_centers = sort_centers(centers),
+                                                   row_height = point_row_height(sorted_centers)) let(tri_centers = [])
+    concat(                                       // Flatten the array and filter out empty entries
+        [for (i = [0:len(sorted_centers) - 2])    // for loop i
+            for (j = [0:len(sorted_centers) - 1]) // for loop j
+            let(p1 = sorted_centers[i], p2 = sorted_centers[i + 1],
+                p3 = sorted_centers[j])                      // end let
+            if (abs(p1[1] - p2[1]) < EPSILON &&              // p1 and p2 are in the same row
+                abs(p3[1] - p1[1] - row_height) < EPSILON && // p3 is in the next row
+                p3[0] > p1[0] &&                             // p3 x-coordinate is greater than p1
+                p3[0] < p2[0]                                // p3 x-coordinate is less than p2
+                )                                            // end if
+            ([
+                (p1[0] + p2[0] + p3[0]) / 3, // x-coordinate of triangle center
+                (p1[1] + p2[1] + p3[1]) / 3  // y-coordinate of triangle center
+            ])]);
+
+/**
+ * @brief Filters out points from centers that are within a radius of points in the filter list.
+ *
+ * Useful for removing points that are too close to certain areas or features.
+ *
+ * @param r The radius within which to filter out points.
+ * @param centers An array of centers to be filtered.
+ * @param filter_list An array of points to filter against.
+ * @param tolerance (Optional) Tolerance value for comparison; default is EPSILON.
+ * @return A filtered array of centers.
+ */
+function filter_triangulated_center_points(r, centers, filter_list, tolerance = EPSILON) = let(
+    n = len(centers))[for (i = [0:n - 1]) if (!is_within_radius(centers[i], r + tolerance, filter_list)) centers[i]];
+
+/**
  * @brief Calculates the Euclidean distance between two points.
  *
  * @param p1 First point as [x, y].
@@ -54,65 +152,9 @@ function distance(p1, p2) = sqrt(pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2));
 function is_within_radius(point, radius, removal_points) =
     let(n = len(removal_points))[for (i = [0:n - 1]) if (distance(point, removal_points[i]) < radius) true][0];
 
-/**
- * @brief Calculates the centers of triangles formed by adjacent points.
- *
- * Generates triangulated center points based on provided centers, useful for creating a triangulated grid or pattern.
- *
- * @param centers An array of points (centers) to be triangulated.
- * @return An array of triangulated center points.
- */
-function triangulated_center_points(centers) = let(sorted_centers = sort_centers(centers),
-                                                   row_height = point_row_height(sorted_centers)) let(tri_centers = [])
-    concat( // Flatten the array and filter out empty entries
-        [for (i = [0:len(sorted_centers) - 2]) for (j = [0:len(sorted_centers) - 1])
-                let(p1 = sorted_centers[i], p2 = sorted_centers[i + 1],
-                    p3 = sorted_centers[j]) if (abs(p1[1] - p2[1]) < EPSILON && // p1 and p2 are in the same row
-                                                abs(p3[1] - p1[1] - row_height) < EPSILON && // p3 is in the next row
-                                                p3[0] > p1[0] && // p3 x-coordinate is greater than p1
-                                                p3[0] < p2[0]    // p3 x-coordinate is less than p2
-                                                )([
-                    (p1[0] + p2[0] + p3[0]) / 3, // x-coordinate of triangle center
-                    (p1[1] + p2[1] + p3[1]) / 3  // y-coordinate of triangle center
-                ])]);
-
-/**
- * @brief Filters out points from centers that are within a radius of points in the filter list.
- *
- * Useful for removing points that are too close to certain areas or features.
- *
- * @param r The radius within which to filter out points.
- * @param centers An array of centers to be filtered.
- * @param filter_list An array of points to filter against.
- * @param tolerance (Optional) Tolerance value for comparison; default is EPSILON.
- * @return A filtered array of centers.
- */
-function filter_triangulated_center_points(r, centers, filter_list, tolerance = EPSILON) = let(
-    n = len(centers))[for (i = [0:n - 1]) if (!is_within_radius(centers[i], r + tolerance, filter_list)) centers[i]];
-
-/**
- * @brief Places spheres at specified points.
- *
- * Renders spheres at given points with specified diameter and color. If zGap is undef,
- * it will use the point's z-value if provided, otherwise 0. If zGap is defined, it
- * overrides any z-value in the points.
- *
- * @param points Array of points where spheres will be placed, each point as [x, y] or [x, y, z].
- * @param d Diameter of the spheres.
- * @param color Color of the spheres.
- * @param zGap (Optional) Height offset for the spheres along the z-axis. Defaults to undef.
- *             If undef and the point has a z-value, that is used. If undef and the point
- *             has no z-value, 0 is used.
- * @param fn Number of facets used to render the sphere.
- */
-module place_spheres(points, d, color, zGap = undef, fn = 6)
-{
-    for (p = points)
-    {
-        translate([ p[0], p[1], (zGap == undef) ? (len(p) == 3 ? p[2] : 0) : zGap ]) color(color) sphere(d, $fn = fn);
-    }
-}
-
+// ----------------------------------------------------------------------
+// REPLACE WITH FUNCTIONALOPENSCAD LIBRARY
+// ----------------------------------------------------------------------
 /**
  * @brief Generates a series of points defining an arc.
  *

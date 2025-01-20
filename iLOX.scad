@@ -3,9 +3,12 @@ include <FunctionalOpenSCAD/functional.scad>;
 include <tessella/tess.scad>;
 
 // Internal functions and modules
-include <src/cell2rot.scad>
-include <src/ucell.scad>
-include <src/utils.scad>
+include <src/cell2rot.scad>;
+include <src/cell2linear.scad>;
+include <src/ucell.scad>;
+include <src/utils/viz_utils.scad>;
+include <src/utils/regpoly_utils.scad>;
+include <src/utils/point_utils.scad>;
 
 module ucell_designer(width_x, height_y, div, neg_poly = [], colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ],
                       pt_diams = 0.1, pt_colors = [ "Indigo", "Violet" ], pt_zGap = 0.5, pt_fn = 12)
@@ -48,7 +51,7 @@ module radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degre
     tess_hex_vertices = hexagons_vertices(radius = tesselation_radius, centers = tess_points, angular_offset = 30);
     color(cellA_color) union()
     { // Place cell A instances at tessellation points with rotation
-        place_rot_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x, rotate = true,
+        place_rotated_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x, rotate = true,
                         cell_type = "A");
 
         // Render substrate as solid hexagons beneath cells
@@ -60,7 +63,7 @@ module radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degre
     color(cellB_color) union()
     {
         // Place cell B instances at triangulated tessellation points with rotation
-        place_rot_cells(cells = base_ucell_cells, positions = tess_points_tri, n = degree_n, width = width_x,
+        place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri, n = degree_n, width = width_x,
                         rotate = true, cell_type = "B");
 
         // Render substrate as solid hexagons beneath cells

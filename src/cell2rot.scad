@@ -1,82 +1,16 @@
 /**
- * @brief Calculates the apothem of a regular polygon.
+ * @file cell2rot.scad
+ * @brief Functions and modules for rendering rotated unit cells.
+ * @author Cameron K. Brooks
+ * @copyright 2025
  *
- * The apothem is the distance from the center to the midpoint of one of its sides.
+ * This file contains modules for placing 'A' or 'B' type rotated cells at specified positions. The cells are rendered
+ * using rotational extrusion, with optional rotation and color parameters. The cells are defined by an array of points,
+ * with optional negative polygons for subtraction as defined in 'ucell.scad'.
  *
- * @param R The radius of the circumscribed circle of the polygon.
- * @param n The number of sides of the polygon.
- * @return The apothem length.
  */
-function apothem(R, n) = R * cos(180 / n);
 
-/**
- * @brief Calculates the difference between the radius and the apothem.
- *
- * Useful for adjusting positions when working with regular polygons.
- *
- * @param R The radius of the polygon.
- * @param n The number of sides of the polygon.
- * @return The difference between the radius and the apothem.
- */
-function radius_apothem_diff(R, n) = R - apothem(R, n);
-
-/**
- * @brief Calculates the central angle of a regular polygon.
- *
- * The central angle is the angle between two adjacent vertices from the center.
- *
- * @param n The number of sides of the polygon.
- * @return The central angle in degrees.
- */
-function central_angle(n) = 360 / n;
-
-/**
- * @brief Calculates half of the central angle of a regular polygon.
- *
- * Useful for aligning the polygon with the x-axis when rotating.
- *
- * @param n The number of sides of the polygon.
- * @return Half of the central angle in degrees.
- */
-function half_central_angle(n) = central_angle(n) / 2;
-
-/**
- * @brief Renders the 'A' type cell in polar coordinates.
- *
- * Rotates and extrudes the 'A' cell polygon to create a 3D shape.
- *
- * @param cells An array containing cell point data.
- * @param n The number of sides for the rotation.
- * @param color (Optional) The color of the cell, default is "Green".
- */
-module ucell_rotX_A(cells, n, color = "Green")
-{
-    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
-    {
-        polygon(points = cells[0]); // Main cell polygon
-        polygon(points = cells[2]); // Optional negative polygon
-    }
-}
-
-/**
- * @brief Renders the 'B' type cell in polar coordinates.
- *
- * Rotates and extrudes the 'B' cell polygon to create a 3D shape, adjusted for positioning.
- *
- * @param cells An array containing cell point data.
- * @param n The number of sides for the rotation.
- * @param width The width used for positioning.
- * @param color (Optional) The color of the cell, default is "Blue".
- */
-module ucell_rotX_B(cells, n, width, color = "Blue")
-{
-    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) translate([ -width, 0, 0 ])
-        difference()
-    {
-        polygon(points = cells[1]); // Main cell polygon
-        polygon(points = cells[3]); // Optional negative polygon
-    }
-}
+use <utils/regpoly_utils.scad>;
 
 /**
  * @brief Places 'A' or 'B' type rotated cells at specified positions.
@@ -91,7 +25,7 @@ module ucell_rotX_B(cells, n, width, color = "Blue")
  * @param cell_type (Optional) Type of cell to place, either "A" or "B", default is "A".
  * @param color (Optional) The color of the cells, default is "CadetBlue".
  */
-module place_rot_cells(cells, positions, n, width, rotate = false, cell_type = "A", color = "CadetBlue")
+module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type = "A", color = "CadetBlue")
 {
     // Determine rotation angle
     rot = rotate ? half_central_angle(n) : 0;
@@ -113,37 +47,37 @@ module place_rot_cells(cells, positions, n, width, rotate = false, cell_type = "
 }
 
 /**
- * @brief Generates a 3D unit cell by rotating and extruding cell pairs.
+ * @brief Renders the 'A' type cell in using a rotational extrusion.
  *
- * Takes cell pairs and optional anti-cell pairs, rotating and extruding them to create 3D models.
+ * Rotates and extrudes the 'A' cell polygon to create a 3D shape.
  *
- * @param cells An array containing cell point data: [cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB].
- * @param n The number of sides for the rotation (e.g., 6 for a hexagon).
- * @param radius The radius from the center to the largest x-value in the cell division.
- * @param colors (Optional) An array of colors for the cells, default is ["Green", "Blue"].
+ * @param cells An array containing cell point data.
+ * @param n The number of sides for the rotation.
+ * @param color (Optional) The color of the cell, default is "Green".
  */
-module ucell_rotX_paired(cells, n, radius, colors = [ "Green", "Blue" ])
+module ucell_rotX_A(cells, n, color = "Green")
 {
-    echo("n: ", n);
-    echo("radius: ", radius);
-    echo("cells[0]: ", cells[0]);
-    echo("cells[1]: ", cells[1]);
-    echo("cells[2]: ", cells[2]);
-    echo("cells[3]: ", cells[3]);
-
-    // Calculate the apothem
-    apo = apothem(radius, n);
-
-    // First shape ('A' cell)
-    color(colors[0]) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
+    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
     {
         polygon(points = cells[0]); // Main cell polygon
         polygon(points = cells[2]); // Optional negative polygon
     }
+}
 
-    // Second shape ('B' cell)
-    color(colors[1]) translate([ apo * 2, 0, 0 ]) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n)
-        translate([ -radius * 2, 0, 0 ]) difference()
+/**
+ * @brief Renders the 'B' type cell in using a rotational extrusion.
+ *
+ * Rotates and extrudes the 'B' cell polygon to create a 3D shape, adjusted for positioning.
+ *
+ * @param cells An array containing cell point data.
+ * @param n The number of sides for the rotation.
+ * @param width The width used for positioning.
+ * @param color (Optional) The color of the cell, default is "Blue".
+ */
+module ucell_rotX_B(cells, n, width, color = "Blue")
+{
+    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) translate([ -width, 0, 0 ])
+        difference()
     {
         polygon(points = cells[1]); // Main cell polygon
         polygon(points = cells[3]); // Optional negative polygon
