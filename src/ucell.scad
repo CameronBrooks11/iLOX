@@ -104,20 +104,6 @@ function applyTolerance(width, points, div, reverse_tolerance = false) = [for (i
  */
 function calc_ucell(width, height, div, neg_poly = []) = let(
     y_val = div[0][1],
-    subdiv = (y_val == 0)   ? 0
-             : (y_val == 1) ? 1
-                            : assert(undef, "ERROR: Division point y-val must be 0 (minor) or 1 (major)"),
-    cornersA = [ [ 0, height ], [ 0, 0 ] ], cornersB = [[width, 0], [width, height]],
-    div_mirrored = subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
-    div_polyA = transformPoints(div_mirrored, width, height), div_polyB = reverseArray(div_polyA),
-    div_polyA_tol = applyTolerance(width, div_polyA, div), div_polyB_tol = applyTolerance(width, div_polyB, div, true),
-    cell_pointsA = concat(cornersA, div_polyA_tol), cell_pointsB = concat(cornersB, div_polyB_tol),
-    ncell_pointsA = len(neg_poly) > 0 ? transformPoints(neg_poly, width, height) : [],
-    ncell_pointsB = len(neg_poly) > 0 ? transformPoints(mirrorPoints(neg_poly), width, height)
-                                      : [])[cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB];
-
-function calc_ucell_new(width, height, div, neg_poly = []) = let(
-    y_val = div[0][1],
     subdiv = (y_val == 0)   ? 0                                                                 // minor
              : (y_val == 1) ? 1                                                                 // major
                             : assert(undef, "ERROR: Div start must be 0 (minor) or 1 (major)"), // error
@@ -134,10 +120,28 @@ function calc_ucell_new(width, height, div, neg_poly = []) = let(
 
     [cell_pointsA, cell_pointsB, flatten(ncell_points)];
 
+/**
+ * @brief Calculates the points for negative polygons of unit cells A and B based on dimensions and division points.
+ *
+ * Generates the points for two negative polygons by creating polygons from the division points, applying tolerances,
+ * and handling optional negative polygons.
+ *
+ * The subdivision is determined automatically based on the y-values of the division points:
+ * - If the first division point's y-value is in the range [0, 0.5], subdiv = 0.
+ * - If the first division point's y-value is in the range [0.5, 1], subdiv = 1.
+ * - If not in either range, an error is thrown.
+ *
+ * @param width The width of the unit cell.
+ * @param height The height of the unit cell.
+ * @param poly Array of negative polygon points, each point as [x, y].
+ * @return An array containing:
+ *         - ncell_pointsA: Points for negative polygon of cell A.
+ *         - ncell_pointsB: Points for negative polygon of cell B.
+ */
 function calc_ucell_voids(width, height, poly = [[]]) =
     let(ncell_pointsA = len(poly) > 0 ? transformPointsList(poly, width, height) : [],
-        ncell_pointsB = len(poly) > 0 ? transformPointsList(mirrorPointsList(poly), width, height)
-                                      : [])[[ncell_pointsA], [ncell_pointsB]];
+        ncell_pointsB = len(poly) > 0 ? transformPointsList(mirrorPointsList(poly), width, height) : [])
+        [[ncell_pointsA], [ncell_pointsB]];
 
 /**
  * @brief Renders unit cells with optional negative border offset.
@@ -159,55 +163,6 @@ module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Na
     // Unpack calculated cell points
     cell_pointsA = cells[0];
     cell_pointsB = cells[1];
-    ncell_pointsA = cells[2];
-    ncell_pointsB = cells[3];
-
-    // Draw the main cell polygons
-    color(colors[0]) polygon(points = cell_pointsA);
-    color(colors[1]) polygon(points = cell_pointsB);
-
-    // Draw the negative polygons if they exist
-    translate([ 0, 0, 0.005 ]) if (len(ncell_pointsA) > 0)
-    {
-        // negative cell points A
-        color(colors[2]) difference()
-        { // Create a bordered negative shape by cutting out an offset portion inside it
-            intersection()
-            {
-                polygon(points = ncell_pointsA);
-                polygon(points = cell_pointsA);
-            }
-
-            offset(r = -neg_border) intersection()
-            {
-                polygon(points = ncell_pointsA);
-                polygon(points = cell_pointsA);
-            }
-        }
-
-        // negative cell points B
-        color(colors[3]) difference()
-        {
-            intersection()
-            {
-                polygon(points = ncell_pointsB);
-                polygon(points = cell_pointsB);
-            }
-
-            offset(r = -neg_border) intersection()
-            {
-                polygon(points = ncell_pointsB);
-                polygon(points = cell_pointsB);
-            }
-        }
-    }
-}
-
-module render_ucells_new(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Navy" ], neg_border = 0.05)
-{
-    // Unpack calculated cell points
-    cell_pointsA = cells[0];
-    cell_pointsB = cells[1];
     ncell_pointsA = cells[2][0];
     ncell_pointsB = cells[2][1];
 
@@ -221,7 +176,8 @@ module render_ucells_new(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen",
     // Draw the negative polygons if they exist
     translate([ 0, 0, 0.005 ]) if (len(ncell_pointsA) > 0)
     {
-        for(i = [0:len(ncell_pointsA) - 1]){
+        for (i = [0:len(ncell_pointsA) - 1])
+        {
             // negative cell points A
             color(colors[2]) difference()
             { // Create a bordered negative shape by cutting out an offset portion inside it

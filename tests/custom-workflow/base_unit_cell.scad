@@ -24,13 +24,13 @@ base_ucell_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
 
 // Calculate cells (A and B) using the defined dimensions and division points
 base_ucell_cells =
-    calc_ucell_new(width = width_x, height = height_y, div = base_ucell_div, neg_poly = base_ucell_neg_polys);
+    calc_ucell(width = width_x, height = height_y, div = base_ucell_div, neg_poly = base_ucell_neg_polys);
 
 // Make sure to view from the top!!!
 if (ucell_render)
 {
     // Render the entire unit cell with both the division and negative polygons
-    render_ucells_new(cells = base_ucell_cells, colors = base_ucell_colors);
+    render_ucells(cells = base_ucell_cells, colors = base_ucell_colors);
 
     // Place spheres at the points of cell A (division points)
     place_spheres(points = base_ucell_cells[0], d = 0.1, color = "Indigo", zGap = 0.5, fn = 12);
