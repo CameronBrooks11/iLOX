@@ -13,7 +13,7 @@ include <src/utils/point_utils.scad>;
 module ucell_designer(width_x, height_y, div, neg_poly = [], colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ],
                       pt_diams = 0.1, pt_colors = [ "Indigo", "Violet" ], pt_zGap = 0.5, pt_fn = 12)
 {
-    base_ucell_cells = calc_ucells(width = width_x, height = height_y, div = div, neg_poly = neg_poly);
+    base_ucell_cells = calc_ucell(width = width_x, height = height_y, div = div, neg_poly = neg_poly);
     // Render the entire unit cell with both the division and negative polygons
     render_ucells(cells = base_ucell_cells, colors = colors);
 
@@ -29,7 +29,7 @@ module radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degre
 {
     // Calculate cells (A and B) using the defined dimensions and division points
     base_ucell_cells =
-        calc_ucells(width = width_x, height = height_y, div = base_ucell_div, neg_poly = base_ucell_neg_poly);
+        calc_ucell(width = width_x, height = height_y, div = base_ucell_div, neg_poly = base_ucell_neg_poly);
 
     // Calculate the diameter based on the apothem of the polygon
     apothem_diameter = apothem(width_x / 2, degree_n) * 2;

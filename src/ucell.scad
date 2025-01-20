@@ -22,6 +22,18 @@
 function transformPoints(points, width, height) = [for (p = points)[width * p[0], height *p[1]]];
 
 /**
+ * @brief Transforms a list of normalized points by scaling with width and height.
+ *
+ * Multiplies each point's x-coordinate by the given width and y-coordinate by the given height.
+ *
+ * @param points Array of points to be transformed, each point as [x, y].
+ * @param width The scaling factor for the x-coordinate.
+ * @param height The scaling factor for the y-coordinate.
+ * @return An array of transformed points.
+ */
+function transformPointsList(points, width, height) = [for (p = points) transformPoints(p, width, height)];
+
+/**
  * @brief Mirrors a list of points across the lines x = 1 and y = 1.
  *
  * Subtracts each point's x and y coordinates from 1. If a third element exists (e.g., tolerance), it is preserved.
@@ -30,6 +42,16 @@ function transformPoints(points, width, height) = [for (p = points)[width * p[0]
  * @return An array of mirrored points.
  */
 function mirrorPoints(points) = [for (p = points)[1 - p[0], 1 - p[1], p[2]]];
+
+/**
+ * @brief Mirrors a list of points across the lines x = 1 and y = 1.
+ *
+ * Subtracts each point's x and y coordinates from 1. If a third element exists (e.g., tolerance), it is preserved.
+ *
+ * @param points Array of points to be mirrored, each point as [x, y] or [x, y, z].
+ * @return An array of mirrored points.
+ */
+function mirrorPointsList(points) = [for (p = points) mirrorPoints(p)];
 
 /**
  * @brief Reverses the order of elements in an array.
@@ -80,7 +102,7 @@ function applyTolerance(width, points, div, reverse_tolerance = false) = [for (i
  *         - ncell_pointsA: Points for negative polygon of cell A (if neg_poly is provided).
  *         - ncell_pointsB: Points for negative polygon of cell B (if neg_poly is provided).
  */
-function calc_ucells(width, height, div, neg_poly = []) = let(
+function calc_ucell(width, height, div, neg_poly = []) = let(
     y_val = div[0][1],
     subdiv = (y_val == 0)   ? 0
              : (y_val == 1) ? 1
@@ -93,6 +115,29 @@ function calc_ucells(width, height, div, neg_poly = []) = let(
     ncell_pointsA = len(neg_poly) > 0 ? transformPoints(neg_poly, width, height) : [],
     ncell_pointsB = len(neg_poly) > 0 ? transformPoints(mirrorPoints(neg_poly), width, height)
                                       : [])[cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB];
+
+function calc_ucell_new(width, height, div, neg_poly = []) = let(
+    y_val = div[0][1],
+    subdiv = (y_val == 0)   ? 0                                                                 // minor
+             : (y_val == 1) ? 1                                                                 // major
+                            : assert(undef, "ERROR: Div start must be 0 (minor) or 1 (major)"), // error
+    cornersA = [ [ 0, height ], [ 0, 0 ] ],   // A side: bottom left, top left
+    cornersB = [[width, 0], [width, height]], // B side: top right, bottom right
+    div_mirrored = subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
+    div_polyA = transformPoints(div_mirrored, width, height),    // transform division points for cell A
+    div_polyB = reverseArray(div_polyA),                         // reverse division points to create cell B
+    div_polyA_tol = applyTolerance(width, div_polyA, div),       // apply tolerance to div_polyA
+    div_polyB_tol = applyTolerance(width, div_polyB, div, true), // apply tolerance to div_polyB
+    cell_pointsA = concat(cornersA, div_polyA_tol),              // cell A points
+    cell_pointsB = concat(cornersB, div_polyB_tol),              // cell B points
+    ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : []) // negative polygons
+
+    [cell_pointsA, cell_pointsB, flatten(ncell_points)];
+
+function calc_ucell_voids(width, height, poly = [[]]) =
+    let(ncell_pointsA = len(poly) > 0 ? transformPointsList(poly, width, height) : [],
+        ncell_pointsB = len(poly) > 0 ? transformPointsList(mirrorPointsList(poly), width, height)
+                                      : [])[[ncell_pointsA], [ncell_pointsB]];
 
 /**
  * @brief Renders unit cells with optional negative border offset.
@@ -153,6 +198,60 @@ module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Na
             {
                 polygon(points = ncell_pointsB);
                 polygon(points = cell_pointsB);
+            }
+        }
+    }
+}
+
+module render_ucells_new(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Navy" ], neg_border = 0.05)
+{
+    // Unpack calculated cell points
+    cell_pointsA = cells[0];
+    cell_pointsB = cells[1];
+    ncell_pointsA = cells[2][0];
+    ncell_pointsB = cells[2][1];
+
+    echo("ncell_pointsA new: ", ncell_pointsA);
+    echo("ncell_pointsB new: ", ncell_pointsB);
+
+    // Draw the main cell polygons
+    color(colors[0]) polygon(points = cell_pointsA);
+    color(colors[1]) polygon(points = cell_pointsB);
+
+    // Draw the negative polygons if they exist
+    translate([ 0, 0, 0.005 ]) if (len(ncell_pointsA) > 0)
+    {
+        for(i = [0:len(ncell_pointsA) - 1]){
+            // negative cell points A
+            color(colors[2]) difference()
+            { // Create a bordered negative shape by cutting out an offset portion inside it
+                intersection()
+                {
+                    polygon(points = ncell_pointsA[i]);
+                    polygon(points = cell_pointsA);
+                }
+
+                offset(r = -neg_border) intersection()
+                {
+                    polygon(points = ncell_pointsA[i]);
+                    polygon(points = cell_pointsA);
+                }
+            }
+
+            // negative cell points B
+            color(colors[3]) difference()
+            {
+                intersection()
+                {
+                    polygon(points = ncell_pointsB[i]);
+                    polygon(points = cell_pointsB);
+                }
+
+                offset(r = -neg_border) intersection()
+                {
+                    polygon(points = ncell_pointsB[i]);
+                    polygon(points = cell_pointsB);
+                }
             }
         }
     }

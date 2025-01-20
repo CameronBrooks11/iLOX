@@ -55,9 +55,9 @@ module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type
  * @param n The number of sides for the rotation.
  * @param color (Optional) The color of the cell, default is "Green".
  */
-module ucell_rotX_A(cells, n, color = "Green")
+module ucell_rotX_A(cells, n, color = "Green", angle = 360)
 {
-    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) difference()
+    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude(angle = angle, $fn = n) difference()
     {
         polygon(points = cells[0]); // Main cell polygon
         polygon(points = cells[2]); // Optional negative polygon
@@ -74,10 +74,10 @@ module ucell_rotX_A(cells, n, color = "Green")
  * @param width The width used for positioning.
  * @param color (Optional) The color of the cell, default is "Blue".
  */
-module ucell_rotX_B(cells, n, width, color = "Blue")
+module ucell_rotX_B(cells, n, width, color = "Blue", angle = 360)
 {
-    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude($fn = n) translate([ -width, 0, 0 ])
-        difference()
+    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude(angle = angle, $fn = n)
+        translate([ -width, 0, 0 ]) difference()
     {
         polygon(points = cells[1]); // Main cell polygon
         polygon(points = cells[3]); // Optional negative polygon
