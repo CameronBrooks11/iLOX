@@ -55,7 +55,7 @@ module place_linear_cells(cells, positions, width, cell_type = "A", color = "Cad
  */
 module ucell_linX_A(cells, width, color, fullex = 0)
 {
-    exwidth = fullex ? width + fullex  : width;
+    exwidth = fullex ? width + fullex : width;
 
     for (i = [0:1])
     {
@@ -63,7 +63,8 @@ module ucell_linX_A(cells, width, color, fullex = 0)
             difference()
         {
             polygon(points = cells[0]); // Main cell polygon
-            polygon(points = cells[2]); // Optional negative polygon
+            for (i = [0:len(cells[2][0]) - 1])
+                polygon(points = cells[2][0][i]); // Optional negative polygon        }
         }
     }
 }
@@ -79,16 +80,17 @@ module ucell_linX_A(cells, width, color, fullex = 0)
  * @param color The color of the cell.
  */
 
-module ucell_linX_B(cells, width, color, fullex = 0)
+module ucell_linX_B(cells, width, color, fullex = 0, cc = false)
 {
     exwidth = fullex ? width + fullex : width;
     for (i = [0:1])
     {
-        mirror([ i, 0, 0 ]) color(color) translate([ -width, exwidth / 2, 0 ]) rotate([ 90, 0, 0 ])
+        mirror([ i, 0, 0 ]) color(color) translate([ -(cc ? 0 : width), exwidth / 2, 0 ]) rotate([ 90, 0, 0 ])
             linear_extrude(exwidth) difference()
         {
             polygon(points = cells[1]); // Main cell polygon
-            polygon(points = cells[3]); // Optional negative polygon
+            for (i = [0:len(cells[2][1]) - 1])
+                polygon(points = cells[2][1][i]); // Optional negative polygon        }
         }
     }
 }

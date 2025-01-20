@@ -60,7 +60,8 @@ module ucell_rotX_A(cells, n, color = "Green", angle = 360)
     color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude(angle = angle, $fn = n) difference()
     {
         polygon(points = cells[0]); // Main cell polygon
-        polygon(points = cells[2]); // Optional negative polygon
+        for (i = [0:len(cells[2][0]) - 1])
+            polygon(points = cells[2][0][i]); // Optional negative polygon
     }
 }
 
@@ -80,6 +81,7 @@ module ucell_rotX_B(cells, n, width, color = "Blue", angle = 360)
         translate([ -width, 0, 0 ]) difference()
     {
         polygon(points = cells[1]); // Main cell polygon
-        polygon(points = cells[3]); // Optional negative polygon
+        for (i = [0:len(cells[2][1]) - 1])
+            polygon(points = cells[2][1][i]); // Optional negative polygon
     }
 }
