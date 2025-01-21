@@ -98,15 +98,22 @@ add_neg_poly = [
     [ 1, 0 ],
     [ 1, 0.7 ],
 ];
-example_neg_poly = shift_points(concat(stem_pts, add_neg_poly), -arc1_tolerance, 0);
+example_neg_poly1 = shift_points(stem_pts, -arc1_tolerance, 0);
+example_neg_poly2 = shift_points(add_neg_poly, -arc1_tolerance, 0);
+example_neg_poly = [ example_neg_poly1, example_neg_poly2 ];
 
 if (inputnegpoly_render)
 {
     // Place spheres at the generated arc points
-    place_spheres(points = example_neg_poly,
+    place_spheres(points = example_neg_poly1,
                   d = div_pts_dia, // Diameter of each sphere
                   color = "Red",   // Color of the spheres
                   fn = 12          // Number of facets for sphere smoothness
+    );
+    place_spheres(points = example_neg_poly2,
+                  d = div_pts_dia,   // Diameter of each sphere
+                  color = "DarkRed", // Color of the spheres
+                  fn = 12            // Number of facets for sphere smoothness
     );
 }
 
@@ -157,6 +164,6 @@ if (tests_render)
     {
         // Place cell A at the specified position
         place_rotated_cells(cells = example_cells, positions = [[ 0, 0 ]], n = 4, width = width_x, cell_type = "A",
-                          color = "OliveDrab");
+                            color = "OliveDrab");
     }
 }

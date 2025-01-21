@@ -16,7 +16,15 @@ height_y = 10; ///< Height of the unit cell in the y-direction
 base_ucell_div = [ [ 0.5, 0, 0.01 ], [ 0.3, 0.1, 0.01 ], [ 0.3, 0.4, 0.01 ] ];
 
 // Define negative polygon points to create voids within the cell, each point is defined as [x, y]
-base_ucell_neg_poly = [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ];
+base_ucell_neg_poly = [
+    [
+        [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] // cut corner of the cell
+    ],
+    //...more polygons can be added here:
+    // [
+    // [ x1, y1 ], [ x2, y2  ], [ x3, y3  ]
+    // ], ...
+];
 
 // Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
 degree_n = 6;
