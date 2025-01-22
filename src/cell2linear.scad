@@ -13,17 +13,17 @@
 use <utils/regpoly_utils.scad>;
 
 /**
- * @brief Places 'A' or 'B' type rotated cells at specified positions.
+ * @brief Places 'A' or 'B' type linear cells at specified positions.
  *
- * Iterates over an array of positions and places the specified cell type at each point, with optional rotation.
+ * Iterates over an array of positions and places the specified cell type at each point, with optional extension and
+ * color.
  *
  * @param cells An array containing cell point data.
  * @param positions An array of positions where cells will be placed, each as [x, y].
- * @param n The number of sides for the rotation.
  * @param width The width used for positioning.
- * @param rotate (Optional) Boolean to apply rotation, default is false.
  * @param cell_type (Optional) Type of cell to place, either "A" or "B", default is "A".
  * @param color (Optional) The color of the cells, default is "CadetBlue".
+ * @param extension (Optional) The extension of the extrusion, default is 0.
  */
 module place_linear_cells(cells, positions, width, cell_type = "A", color = undef, extension = 0)
 {
@@ -52,7 +52,8 @@ module place_linear_cells(cells, positions, width, cell_type = "A", color = unde
  * Renders a linear 'A' type cell using linear extrusion with the specified color.
  *
  * @param cells An array containing cell point data.
- * @param n The number of sides for the rotation.
+ * @param width The width used for positioning.
+ * @param extension (Optional) The extension of the extrusion, default is 0.
  * @param color The color of the cell.
  */
 module ucell_linX_A(cells, width, extension = 0, color = "OliveDrab")
@@ -77,11 +78,11 @@ module ucell_linX_A(cells, width, extension = 0, color = "OliveDrab")
  * Renders a linear 'B' type cell using linear extrusion with the specified color.
  *
  * @param cells An array containing cell point data.
- * @param n The number of sides for the rotation.
  * @param width The width used for positioning.
+ * @param extension (Optional) The extension of the extrusion, default is 0.
+ * @param cc (Optional) Boolean to prevent translation to origin, default is false.
  * @param color The color of the cell.
  */
-
 module ucell_linX_B(cells, width, extension = 0, cc = false, color = "CadetBlue")
 {
     extrusion_depth = width + extension;
