@@ -1,8 +1,8 @@
 use <../../iLOX.scad>;  // Utility functions for point operations
 
 // Define input dimensions for the unit cell
-width_x = 5;   ///< Width of the unit cell in the x-direction
-height_y = 10; ///< Height of the unit cell in the y-direction
+width_x = 5;   // Width of the unit cell in the x-direction
+height_y = 10; // Height of the unit cell in the y-direction
 
 // Define division points for creating the cell's internal structure
 // Each point is defined as [x, y, tolerance]
@@ -18,7 +18,7 @@ example_neg_poly = [];
 // Define color options for rendering
 example_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
 
-ucell_render = true; ///< Flag to render the unit cells or omit them
+ucell_render = true; // Flag to render the unit cells or omit them
 
 // Calculate cells (A and B) using the defined dimensions and division points
 example_cells =

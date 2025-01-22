@@ -1,13 +1,13 @@
 use <../../iLOX.scad>; // Utility functions for point operations
 
-inputdiv_render = true;     ///< Flag to render the input division points or omit them
-inputnegpoly_render = true; ///< Flag to render the input negative polygon points or omit them
-ucell_render = true;       ///< Flag to render the unit cells or omit them
-ucell_points = true;       ///< Flag to render the division points or omit them
+inputdiv_render = true;     // Flag to render the input division points or omit them
+inputnegpoly_render = true; // Flag to render the input negative polygon points or omit them
+ucell_render = true;       // Flag to render the unit cells or omit them
+ucell_points = true;       // Flag to render the division points or omit them
 
 // Define input dimensions for the unit cell
-width_x = 10;  ///< Width of the unit cell in the x-direction
-height_y = 10; ///< Height of the unit cell in the y-direction
+width_x = 10;  // Width of the unit cell in the x-direction
+height_y = 10; // Height of the unit cell in the y-direction
 
 // Variables for arc parameters
 arc_diameter = 0.5;
@@ -94,15 +94,15 @@ translate([ width_x / 2, 0, 0 ])
     }
 }
 
-degree_n = 6; ///< Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
+degree_n = 6; // Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
 
 // Calculate the diameter based on the apothem of the polygon
 ago_dia = apothem(width_x / 2, degree_n) * 2;
 
 // Define positions for placing one cell A and three cell B instances
-positions_A = [[ 0, 0 ]]; ///< Position for cell A
+positions_A = [[ 0, 0 ]]; // Position for cell A
 
-positions_B = [  ///< Positions for cell B instances
+positions_B = [  // Positions for cell B instances
     [ago_dia, 0],
     [
         -ago_dia * sin(half_central_angle(degree_n)),

@@ -4,8 +4,8 @@ use <../../iLOX.scad>;
 ucell_render = is_undef(ucell_derender) ? true : false;
 
 // Define input dimensions for the unit cell
-width_x = 5;   ///< Width of the unit cell in the x-direction
-height_y = 10; ///< Height of the unit cell in the y-direction
+width_x = 5;   // Width of the unit cell in the x-direction
+height_y = 10; // Height of the unit cell in the y-direction
 
 // Each point is defined as [x, y, tolerance] and must form a division line
 // First point must start with 0 if defining the minor (starting from bottom) half of the ucell division

@@ -6,11 +6,11 @@ use <../../iLOX.scad>;
 
 // Flag to render the entire scene or individual components
 // Should always be false for exporting the final design
-show_ucell = false; ///< Flag to render the unit cell or omit it
+show_ucell = false; // Flag to render the unit cell or omit it
 
 // Define input dimensions for the unit cell
-width_x = 5;   ///< Width of the unit cell in the x-direction
-height_y = 10; ///< Height of the unit cell in the y-direction
+width_x = 5;   // Width of the unit cell in the x-direction
+height_y = 10; // Height of the unit cell in the y-direction
 
 // Each point is defined as [x, y, tolerance] and must form a division line
 base_ucell_div = [ [ 0.5, 0, 0.01 ], [ 0.3, 0.1, 0.01 ], [ 0.3, 0.4, 0.01 ] ];

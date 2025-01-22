@@ -50,7 +50,7 @@
 
 use <sorted.scad>
 
-EPSILON = 1e-3; ///< Tolerance value used for floating-point comparisons.
+EPSILON = 1e-3; // Tolerance value used for floating-point comparisons.
 
 /**
  * @brief Sorts an array of centers by their y-coordinate, then by x-coordinate.

@@ -2,13 +2,13 @@ use <../../iLOX.scad>;
 
 div_pts_dia = 0.01;
 
-inputdiv_render = true;       ///< Flag to render the input division points or omit them
-scaledinputdiv_render = true; ///< Flag to render the scaled input division points or omit them
-inputnegpoly_render = true;   ///< Flag to render the input negative polygon points or omit them
+inputdiv_render = true;       // Flag to render the input division points or omit them
+scaledinputdiv_render = true; // Flag to render the scaled input division points or omit them
+inputnegpoly_render = true;   // Flag to render the input negative polygon points or omit them
 
 // Define input dimensions for the unit cell
-width_x = 10; ///< Width of the unit cell in the x-direction
-height_y = 8; ///< Height of the unit cell in the y-direction
+width_x = 10; // Width of the unit cell in the x-direction
+height_y = 8; // Height of the unit cell in the y-direction
 
 // Variables for arc parameters
 arc1_diameter = 0.2;
@@ -117,9 +117,9 @@ if (inputnegpoly_render)
     );
 }
 
-ucell_render = true; ///< Flag to render the unit cells or omit them
-ucell_points = true; ///< Flag to render the division points or omit them
-tests_render = true; ///< Flag to render the test points or omit them
+ucell_render = true; // Flag to render the unit cells or omit them
+ucell_points = true; // Flag to render the division points or omit them
+tests_render = true; // Flag to render the test points or omit them
 
 // Calculate cells (A and B) using the defined dimensions and division points
 example_cells = (ucell_render || ucell_points)
@@ -154,7 +154,7 @@ translate([ width_x / 2, 0, 0 ])
 if (tests_render)
 {
 
-    degree_n = 6; ///< Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
+    degree_n = 6; // Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
 
     // Calculate the diameter based on the apothem of the polygon
     ago_dia = apothem(width_x / 2, degree_n) * 2;
