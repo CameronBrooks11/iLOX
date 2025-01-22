@@ -10,19 +10,18 @@ zFite = $preview ? 0.1 : 0; // Set the z-fighting offset for preview mode
 
 radial_tess_derender = true; // Flag to clear the render, can be set to any value to reset the render state.
 
-include <../direct-workflow/tesselation_radial.scad> // Include the example workflow script for cell definitions and functions.
+include <../direct-workflow/tesselation_radial.scad> // Include the final stage in the direct workflow 
 
-// Dimensions based on ASTM D638 Type I tensile test specimen
-// Source:
+// Dimensions based on ASTM D638 Type I tensile test specimen. Source:
 // https://www.researchgate.net/publication/346730095/figure/fig1/AS:1083887929303061@1635430428214/Dimensions-of-the-tensile-test-specimen-ASTM-D638-type-I.jpg
-standard_tensile_specimen_width = 19;   // Width of the narrow section (mm) as per ASTM D638 Type I.
-standard_tensile_specimen_length = 165; // Overall length of the specimen (mm) as per ASTM D638 Type I.
+standard_tensile_specimen_width = 19;   // Width of a tensile specimen in mm as per ASTM D638 Type I.
+standard_tensile_specimen_length = 165; // Overall length of a tensile specimen in mm as per ASTM D638 Type I.
 
 extra_conn_width = 0;  // Extra width for the connection to the cells
 extra_conn_length = 0; // Extra length for the connection to the cells
 
-connection_width = standard_tensile_specimen_width;   // Width of the narrow section (mm).
-connection_length = standard_tensile_specimen_length; // Overall length of the specimen (mm).
+connection_width = standard_tensile_specimen_width + extra_conn_width;    // Width of the narrow section
+connection_length = standard_tensile_specimen_length + extra_conn_length; // Overall length of the specimen
 
 // Determine the range of the center points for normalization
 min_x = min([for (center = tess_points) center[0]]); // Minimum x-coordinate in the tessellation points.
