@@ -74,6 +74,7 @@ module ucell_rotX_A(cells, n, color = "Green", angle = 360)
  * @param n The number of sides for the rotation.
  * @param width The width used for positioning.
  * @param color (Optional) The color of the cell, default is "Blue".
+    * @param angle (Optional) The angle of rotation, default is 360.
  */
 module ucell_rotX_B(cells, n, width, color = "Blue", angle = 360)
 {

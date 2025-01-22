@@ -28,6 +28,7 @@ function central_angle(n) = 360 / n;
  * @return Half of the central angle in degrees.
  */
 function half_central_angle(n) = central_angle(n) / 2;
+
 /**
  * @brief Calculates the apothem of a regular polygon.
  *
@@ -38,6 +39,17 @@ function half_central_angle(n) = central_angle(n) / 2;
  * @return The apothem length.
  */
 function apothem(R, n) = R * cos(half_central_angle(n));
+
+/**
+ * @brief Calculates the radius of the circumscribed circle of a regular polygon.
+ *
+ * The radius is the distance from the center to one of its vertices.
+ *
+ * @param A The apothem of the polygon.
+ * @param n The number of sides of the polygon.
+ * @return The radius length.
+ */
+function radiusapo(A, n) = A / cos(half_central_angle(n));
 
 /**
  * @brief Calculates the difference between the radius and the apothem.
