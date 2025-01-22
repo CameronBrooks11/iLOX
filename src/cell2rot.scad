@@ -25,10 +25,13 @@ use <utils/regpoly_utils.scad>;
  * @param cell_type (Optional) Type of cell to place, either "A" or "B", default is "A".
  * @param color (Optional) The color of the cells, default is "CadetBlue".
  */
-module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type = "A", color = "CadetBlue")
+module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type = "A", color = undef)
 {
     // Determine rotation angle
     rot = rotate ? half_central_angle(n) : 0;
+
+    ccolor = is_undef(color) ? (cell_type == "A" ? "Green" : "Blue") : color;
+
     // Iterate over positions
     for (pos = positions)
     {
@@ -36,11 +39,11 @@ module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type
         {
             if (cell_type == "A")
             {
-                ucell_rotX_A(cells = cells, n = n, color = color);
+                ucell_rotX_A(cells = cells, n = n, color = ccolor);
             }
             else if (cell_type == "B")
             {
-                ucell_rotX_B(cells = cells, n = n, width = width, color = color);
+                ucell_rotX_B(cells = cells, n = n, width = width, color = ccolor);
             }
         }
     }
@@ -55,7 +58,7 @@ module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type
  * @param n The number of sides for the rotation.
  * @param color (Optional) The color of the cell, default is "Green".
  */
-module ucell_rotX_A(cells, n, color = "Green", angle = 360)
+module ucell_rotX_A(cells, n, angle = 360, color = "Green")
 {
     color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude(angle = angle, $fn = n) difference()
     {
@@ -74,9 +77,9 @@ module ucell_rotX_A(cells, n, color = "Green", angle = 360)
  * @param n The number of sides for the rotation.
  * @param width The width used for positioning.
  * @param color (Optional) The color of the cell, default is "Blue".
-    * @param angle (Optional) The angle of rotation, default is 360.
+ * @param angle (Optional) The angle of rotation, default is 360.
  */
-module ucell_rotX_B(cells, n, width, color = "Blue", angle = 360)
+module ucell_rotX_B(cells, n, width, angle = 360, color = "Blue")
 {
     color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude(angle = angle, $fn = n)
         translate([ -width, 0, 0 ]) difference()

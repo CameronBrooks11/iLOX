@@ -25,8 +25,10 @@ use <utils/regpoly_utils.scad>;
  * @param cell_type (Optional) Type of cell to place, either "A" or "B", default is "A".
  * @param color (Optional) The color of the cells, default is "CadetBlue".
  */
-module place_linear_cells(cells, positions, width, cell_type = "A", color = "CadetBlue", fullex = 0)
+module place_linear_cells(cells, positions, width, cell_type = "A", color = undef, extension = 0)
 {
+    ccolor = is_undef(color) ? (cell_type == "A" ? "OliveDrab" : "CadetBlue") : color;
+
     // Iterate over positions
     for (pos = positions)
     {
@@ -34,11 +36,11 @@ module place_linear_cells(cells, positions, width, cell_type = "A", color = "Cad
         {
             if (cell_type == "A")
             {
-                ucell_linX_A(cells = cells, width = width, color = color, fullex = fullex);
+                ucell_linX_A(cells = cells, width = width, color = ccolor, extension = extension);
             }
             else if (cell_type == "B")
             {
-                ucell_linX_B(cells = cells, width = width, color = color, fullex = fullex);
+                ucell_linX_B(cells = cells, width = width, color = ccolor, extension = extension);
             }
         }
     }
@@ -53,14 +55,14 @@ module place_linear_cells(cells, positions, width, cell_type = "A", color = "Cad
  * @param n The number of sides for the rotation.
  * @param color The color of the cell.
  */
-module ucell_linX_A(cells, width, color, fullex = 0)
+module ucell_linX_A(cells, width, extension = 0, color = "OliveDrab")
 {
-    exwidth = fullex ? width + fullex : width;
+    extrusion_depth = width + extension;
 
     for (i = [0:1])
     {
-        mirror([ i, 0, 0 ]) color(color) translate([ 0, exwidth / 2, 0 ]) rotate([ 90, 0, 0 ]) linear_extrude(exwidth)
-            difference()
+        mirror([ i, 0, 0 ]) color(color) translate([ 0, extrusion_depth / 2, 0 ]) rotate([ 90, 0, 0 ])
+            linear_extrude(extrusion_depth) difference()
         {
             polygon(points = cells[0]); // Main cell polygon
             for (i = [0:len(cells[2][0]) - 1])
@@ -80,13 +82,13 @@ module ucell_linX_A(cells, width, color, fullex = 0)
  * @param color The color of the cell.
  */
 
-module ucell_linX_B(cells, width, color, fullex = 0, cc = false)
+module ucell_linX_B(cells, width, extension = 0, cc = false, color = "CadetBlue")
 {
-    exwidth = fullex ? width + fullex : width;
+    extrusion_depth = width + extension;
     for (i = [0:1])
     {
-        mirror([ i, 0, 0 ]) color(color) translate([ -(cc ? 0 : width), exwidth / 2, 0 ]) rotate([ 90, 0, 0 ])
-            linear_extrude(exwidth) difference()
+        mirror([ i, 0, 0 ]) color(color) translate([ -(cc ? 0 : width), extrusion_depth / 2, 0 ]) rotate([ 90, 0, 0 ])
+            linear_extrude(extrusion_depth) difference()
         {
             polygon(points = cells[1]); // Main cell polygon
             for (i = [0:len(cells[2][1]) - 1])
