@@ -35,7 +35,7 @@ Download and place the following libraries in your OpenSCAD libraries folder:
     2.  Ensure it is placed in your OpenSCAD libraries folder.
 2.  [thehans/FunctionalOpenSCAD](https://github.com/thehans/FunctionalOpenSCAD)
     1.  Not currently needed!
-    2.  Will be removed in the future to increase workflow flexibility.
+    2.  Will be incorportated in the future to increase workflow flexibility.
 3.  [CameronBrooks11/OpenSCAD-Batch-Export](https://github.com/CameronBrooks11/OpenSCAD-Batch-Export)
     1.  _If batch exporting is required for testing or iteration._
     2.  Provides a cross-platform, user-friendly GUI for mass-exporting parametric OpenSCAD scripts to .stl files.
