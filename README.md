@@ -11,10 +11,17 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
   - [Overview](#overview)
   - [Usage](#usage)
     - [Basic Usage](#basic-usage)
+    - [Direct Workflow](#direct-workflow)
     - [Tensile Specimens](#tensile-specimens)
-  - [Modules](#modules)
+  - [Structure](#structure)
+    - [iLOX.scad](#iloxscad)
     - [ucell.scad](#ucellscad)
     - [cell2rot.scad](#cell2rotscad)
+    - [cell2linear.scad](#cell2linearscad)
+    - [point\_utils.scad](#point_utilsscad)
+    - [sorted.scad](#sortedscad)
+    - [regpoly\_utils.scad](#regpoly_utilsscad)
+    - [viz\_utils.scad](#viz_utilsscad)
   - [Documentation](#documentation)
   - [License](#license)
   - [Acknowledgements](#acknowledgements)
@@ -34,45 +41,68 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
 
 ### Basic Usage
 
-The `examples/basicUsage/workflow_example.scad` script demonstrates how to use the library to:
+The `examples/simpleUsage/` folder contains `simpleUsageRadial.scad` and `simpleUsageRectangular.scad` which demonstrate how to use high level modules of the library.
 
-- Define unit cell dimensions and division points.
-- Calculate unit cells (cells A and B) with optional negative polygons.
-- Render cells and place spheres at division points.
-- Convert cells into polar coordinates and create 3D models.
-- Generate tessellation patterns and place cells accordingly.
+### Direct Workflow
 
-To run the example:
-
-1. Open `workflow_example.scad` in OpenSCAD.
-2. Render the model to visualize the unit cells and tessellations.
+This can be found under `tests/direct-workflow` and is a sequential set of scripts that utilize the full source of this library to demonstrate the full functionality of the library for both the rotational-radial and rectilinear-rectangular cases.
 
 ### Tensile Specimens
 
-The `examples/tensileSpecimens` directory includes scripts that apply the workflow to create tensile testing specimens. These models integrate unit cells and tessellation patterns into the geometry of a tensile test specimen for load testing simulations.
+The `tests/tensileSpecimens` directory includes scripts that apply serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
 
-## Modules
+## Structure
+
+```
+D:.
+│   iLOX.scad
+├───src
+│   │   cell2linear.scad
+│   │   cell2rot.scad
+│   │   ucell.scad
+│   │
+│   └───utils
+│           point_utils.scad
+│           regpoly_utils.scad
+│           sorted.scad
+│           viz_utils.scad
+```
+
+### iLOX.scad
+
+The `iLOX.scad` file serves as the main entry point for the project, including essential external libraries like `FunctionalOpenSCAD` and `tessella` to handle functional of point data and tessellation tasks. It also includes the internal `src/` SCAD files such as `cell2rot.scad`, `cell2linear.scad`, and `ucell.scad` to define the key functions for unit cell creation and rendering. It also includes modular, high-level implementations of both the rotational extrusion + radial tesselation and rectilinear extrusion + rectangular tesselation cases.
 
 ### ucell.scad
 
-Provides functions and modules for calculating and rendering unit cells based on given dimensions and division points. Key features include:
-
-- Transforming and mirroring points.
-- Applying tolerances to division points.
-- Rendering cells with optional negative polygons.
-- Placing spheres at specified points.
+This module provides essential functions and modules for defining and rendering unit cells. It includes tools for calculating the points of cells A and B based on given dimensions, handling transformations, applying tolerances, and managing optional negative polygons. Rendering capabilities are provided for visualizing the cells and their optional cutouts.
 
 ### cell2rot.scad
 
-Contains functions and modules for converting 2D cell patterns into 3D models using polar coordinates. Features include:
+This module builds on `ucell.scad` to render unit cells in a rotational context. Using rotational extrusion, it enables placement of cells A and B at specified positions with options for rotation, customization of colors, and inclusion of negative polygons for subtractive features.
 
-- Calculating geometric properties like apothem and central angles.
-- Rendering cells in polar coordinates with rotational symmetry.
-- Placing cells at specified positions with optional rotation.
+### cell2linear.scad
+
+This module extends `ucell.scad` by enabling linear extrusion of unit cells. It supports placing cells A and B at designated positions with optional extensions, custom colors, and negative polygon adjustments for creating detailed features.
+
+### point_utils.scad
+
+This file provides utility functions for point operations such as sorting, calculating distances, and filtering points. It includes tools for generating midpoints, triangulating grids, and determining point proximity.
+
+### sorted.scad
+
+A helper file for implementing sorting utilities used by `point_utils.scad` for ordering points based on a specified key function. Used from [dotSCAD](https://github.com/bjnortier/dotSCAD).
+
+### regpoly_utils.scad
+
+This file contains functions for working with regular polygons, such as calculating the central angle, apothem, and radius. These utilities assist in positioning and rotating regular polygons.
+
+### viz_utils.scad
+
+This file has visualization utilities for rendering points and geometric elements, such as placing spheres at specified coordinates to help with the visual representation of data.
 
 ## Documentation
 
-For detailed geometric calculations and explanations related to hexagons and octagons, refer to the following documents in the [`docs`](docs/README.md).
+For details on the conceptual background and explanations related logic of the program, refer to the documentation in the [`docs`](docs/README.md).
 
 ## License
 
