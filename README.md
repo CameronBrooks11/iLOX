@@ -13,7 +13,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
     - [Basic Usage](#basic-usage)
     - [Direct Workflow](#direct-workflow)
     - [Tensile Specimens](#tensile-specimens)
-  - [Structure](#structure)
+  - [Library Structure](#library-structure)
     - [iLOX.scad](#iloxscad)
     - [ucell.scad](#ucellscad)
     - [cell2rot.scad](#cell2rotscad)
@@ -54,7 +54,7 @@ This can be found under `tests/direct-workflow` and is a sequential set of scrip
 
 The `tests/tensileSpecimens` directory includes scripts that apply serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
 
-## Structure
+## Library Structure
 
 ```
 D:.
