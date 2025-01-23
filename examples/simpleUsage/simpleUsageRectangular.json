@@ -1,0 +1,16 @@
+{
+    "parameterSets": {
+        "design default values": {
+            "base_ucell_div": "[[0.5, 0, 0.01], [0.3, 0.1, 0.01], [0.3, 0.4, 0.01]]",
+            "base_ucell_neg_poly": "[[[0.7, 0.8], [0.7, 1], [0.3, 1]]]",
+            "extension_factor": "0.5",
+            "grid_m": "4",
+            "grid_n": "5",
+            "height_y": "10",
+            "show_ucell": "false",
+            "substrate_height": "3",
+            "width_x": "5"
+        }
+    },
+    "fileFormatVersion": "1"
+}

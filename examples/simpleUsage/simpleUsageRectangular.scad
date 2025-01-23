@@ -27,17 +27,20 @@ base_ucell_neg_poly = [
     // ], ...
 ];
 
-// Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
-degree_n = 6;
+// Number of grid points in the X direction
+grid_n = 5;
+// Number of grid points in the Y direction
+grid_m = 4;
 
-// Number of levels for tessellation pattern
-levels = 4;
+// Height of substrate
+substrate_height = 3;
 
-// Packing factor
-packing_factor = 0.3; // [0:1]
+// Extend up to a double width of the unit cell in the Y direction to decrease gaps
+extension_factor = 0.5; // [0:0.1:1]
 
 // Select whether to render the 2D unit cell to design or the final 3D radial tessellation
 if (show_ucell)
     ucell_designer(width_x, height_y, base_ucell_div);
 else
-    radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degree_n, levels, packing_factor);
+    linear_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
+                substrate_height);
