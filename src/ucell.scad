@@ -174,7 +174,7 @@ module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Na
     color(colors[1]) polygon(points = cell_pointsB);
 
     // Draw the negative polygons if they exist
-    translate([ 0, 0, 0.005 ]) if (!is_undef(ncell_pointsA)) if (len(ncell_pointsA) > 0)
+    translate([ 0, 0, 0.005 ]) if (!is_undef(ncell_pointsA))
     {
         for (i = [0:len(ncell_pointsA) - 1])
         {
