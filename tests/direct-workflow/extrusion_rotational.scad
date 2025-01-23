@@ -1,5 +1,6 @@
 use <../../iLOX.scad>;
 
+// Should be kept true. Flag to derender rotational extrusions
 ucell_derender = true;
 
 include <base_unit_cell.scad>;
@@ -7,7 +8,8 @@ include <base_unit_cell.scad>;
 // rotx_derender = true;
 rotx_render = is_undef(rotx_derender) ? true : false;
 
-degree_n = 6; // Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
+// Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
+degree_n = 6;
 
 // Calculate the diameter based on the apothem of the polygon
 apothem_radius = apothem(width_x / 2, degree_n);

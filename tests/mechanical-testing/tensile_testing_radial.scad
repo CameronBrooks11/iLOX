@@ -8,20 +8,24 @@
 
 zFite = $preview ? 0.1 : 0; // Set the z-fighting offset for preview mode
 
-radial_tess_derender = true; // Flag to clear the render, can be set to any value to reset the render state.
+// Should be kept true. Flag to clear the render, can be set to any value to reset the render state.
+radial_tess_derender = true;
 
-include <../direct-workflow/tesselation_radial.scad> // Include the final stage in the direct workflow 
+include <../direct-workflow/tesselation_radial.scad> // Include the final stage in the direct workflow
 
 // Dimensions based on ASTM D638 Type I tensile test specimen. Source:
 // https://www.researchgate.net/publication/346730095/figure/fig1/AS:1083887929303061@1635430428214/Dimensions-of-the-tensile-test-specimen-ASTM-D638-type-I.jpg
-standard_tensile_specimen_width = 19;   // Width of a tensile specimen in mm as per ASTM D638 Type I.
-standard_tensile_specimen_length = 165; // Overall length of a tensile specimen in mm as per ASTM D638 Type I.
+// Width of a tensile specimen in mm as per ASTM D638 Type I.
+standard_tensile_specimen_width = 19;
+// Overall length of a tensile specimen in mm as per ASTM D638 Type I.
+standard_tensile_specimen_length = 165;
+// Extra width for the connection to the cells, adds to standard_tensile_specimen_width
+extra_width_tensile_connector = 0;
+// Extra length for the connection to the cells, adds to standard_tensile_specimen_length
+extra_length_tensile_connector = 0;
 
-extra_conn_width = 0;  // Extra width for the connection to the cells
-extra_conn_length = 0; // Extra length for the connection to the cells
-
-connection_width = standard_tensile_specimen_width + extra_conn_width;    // Width of the narrow section
-connection_length = standard_tensile_specimen_length + extra_conn_length; // Overall length of the specimen
+connection_width = standard_tensile_specimen_width + extra_width_tensile_connector;    // Width of the narrow section
+connection_length = standard_tensile_specimen_length + extra_length_tensile_connector; // Overall length of the specimen
 
 // Determine the range of the center points for normalization
 min_x = min([for (center = tess_points) center[0]]); // Minimum x-coordinate in the tessellation points.
@@ -33,12 +37,16 @@ max_y = max([for (center = tess_points) center[1]]); // Maximum y-coordinate in 
 min_y_edge = min_y - tesselation_radius;
 max_y_edge = max_y + tesselation_radius;
 
-cut_width = 2; // Width of the cut slots to allow bend
+// Width of the cut slots to allow bend, depth is automatically set to the half the substrate height
+cut_width = 2;
 
 // Holder dimensions for the tensile test specimen
-holder_width = 10;    // Width of the holder for the tensile specimen
-holder_thickness = 2; // Thickness of the holder for the tensile specimen
-cut_tol = 0.2;        // Tolerance for the cut slots
+// Width of the holder for the tensile specimen
+holder_width = 10;
+// Thickness of the holder for the tensile specimen
+holder_thickness = 2;
+// Tolerance for the cut slots
+cut_tol = 0.2;
 
 tensile_ilox_holder();
 tensile_ilox_specimen();
@@ -54,20 +62,10 @@ module tensile_ilox_specimen()
         union()
         {
             // Translate upwards by the substrate height to position the cells correctly
-            translate([ 0, 0, substrate_height ]) union()
-            {
+            translate([ 0, 0, substrate_height ])
                 // Place cell A instances at the filtered tessellation points with rotation
                 place_rotated_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x,
                                     rotate = true, cell_type = "A", color = "Teal");
-
-                tess_vertices =
-                    hexagons_vertices(radius = tesselation_radius, centers = tess_points, angular_offset = 30);
-
-                // Render the substrate as solid hexagons beneath the cells
-                color("Teal") translate([ 0, 0, -substrate_height ])
-                    generic_poly(vertices = tess_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]], // Hexagon paths
-                                 centers = tess_points, alpha = 0.5, extrude = substrate_height);
-            }
 
             // Extrude the tensile test specimen shape to the substrate height
             for (i = [0:1])

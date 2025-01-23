@@ -1,6 +1,6 @@
 use <../../iLOX.scad>;
 
-// Flag to derender rotational extrusions
+// Should be kept true. Flag to derender rotational extrusions
 rotx_derender = true;
 
 include <extrusion_rectlinear.scad>;
@@ -8,15 +8,13 @@ include <extrusion_rectlinear.scad>;
 // Derender radial tessellation (defaults to false if undefined)
 rectlinear_tess_render = is_undef(rectlinear_tess_derender) ? true : false;
 
-// Flag to render tessellated centers
-tesselated_render = true;
-
-// Number of levels for tessellation pattern
-grid_n = 8;
+// Number of grid points in the X direction
+grid_n = 5;
+// Number of grid points in the Y direction
 grid_m = 4;
 
 // Height of substrate
-substrate_height = 1;
+substrate_height = 3;
 
 // Extend up to a double width of the unit cell in the Y direction to decrease gaps
 extension_factor = 0.5; // [0:0.1:1]

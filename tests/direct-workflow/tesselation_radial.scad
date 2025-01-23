@@ -1,6 +1,6 @@
 use <../../iLOX.scad>;
 
-// Flag to derender rotational extrusions
+// Should be kept true. Flag to derender rotational extrusions
 rotx_derender = true;
 
 include <extrusion_rotational.scad>;
@@ -8,14 +8,11 @@ include <extrusion_rotational.scad>;
 // Derender radial tessellation (defaults to false if undefined)
 radial_tess_render = is_undef(radial_tess_derender) ? true : false;
 
-// Flag to render tessellated centers
-tesselated_render = true;
-
 // Number of levels for tessellation pattern
 levels = 4;
 
 // Height of substrate
-substrate_height = 2;
+substrate_height = 3;
 
 // Packing factor
 packing_factor = 0.3; // [0:0.1:1]

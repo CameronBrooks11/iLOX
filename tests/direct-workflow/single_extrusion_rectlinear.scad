@@ -1,5 +1,6 @@
 use <../../iLOX.scad>;
 
+// Should be kept true. Flag to derender rotational extrusions
 ucell_derender = true;
 
 include <base_unit_cell.scad>;

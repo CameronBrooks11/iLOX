@@ -1,5 +1,6 @@
 use <../../iLOX.scad>;
 
+// Should be kept true. Flag to derender rotational extrusions
 ucell_derender = true;
 
 include <base_unit_cell.scad>;
@@ -7,7 +8,8 @@ include <base_unit_cell.scad>;
 // rotx_derender = true;
 rotx_render = is_undef(rotx_derender) ? true : false;
 
-degree_n = 6; // Number of sides for the rotational symmetry (i.e. 6 for hexagonal)
+// Number of sides for the rotational symmetry (i.e. 6 for hexagonal)
+degree_n = 6;
 
 if (rotx_render)
 {
@@ -24,7 +26,7 @@ if (rotx_render)
     ucell_rotX_A(cells = base_ucell_cells, n = degree_n, color = "OliveDrab");
 
     // Give the floating A cell a subtrate to sit upon
-    translate([ 0, 0, -single_substrate_thickness / 2 ]) color("OliveDrab") rotate([ 0, 0, 30 ])
+    translate([ 0, 0, -single_substrate_thickness / 2 ]) color("OliveDrab") rotate([ 0, 0, 360 / (degree_n * 2) ])
         cylinder(d = subtrate_width, h = single_substrate_thickness, center = true, $fn = degree_n);
 
     // Place cell B instances split over rotated 3 rotational extrusions
@@ -42,7 +44,8 @@ if (rotx_render)
                 cells = base_ucell_cells, width = 0, n = degree_n, color = "CadetBlue", angle = 360 / degree_n);
         }
 
-    // Connect the floating B cell halves using a linear extrusion
-    translate([ 0, 0, height_y + single_substrate_thickness / 2 ]) color("CadetBlue") rotate([ 0, 0, 30 ])
-        cylinder(d = subtrate_width, h = single_substrate_thickness, center = true, $fn = degree_n);
+    // Connect the floating B cell halves using a cylindrical extrusion
+    translate([ 0, 0, height_y + single_substrate_thickness / 2 ]) color("CadetBlue")
+        rotate([ 0, 0, 360 / (degree_n * 2) ])
+            cylinder(d = subtrate_width, h = single_substrate_thickness, center = true, $fn = degree_n);
 }
