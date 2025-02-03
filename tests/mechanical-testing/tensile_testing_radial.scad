@@ -24,14 +24,17 @@ extra_width_tensile_connector = 0;
 // Extra length for the connection to the cells, adds to standard_tensile_specimen_length
 extra_length_tensile_connector = 0;
 
-connection_width = standard_tensile_specimen_width + extra_width_tensile_connector;    // Width of the narrow section
-connection_length = standard_tensile_specimen_length + extra_length_tensile_connector; // Overall length of the specimen
-
 // Determine the range of the center points for normalization
 min_x = min([for (center = tess_points) center[0]]); // Minimum x-coordinate in the tessellation points.
 max_x = max([for (center = tess_points) center[0]]); // Maximum x-coordinate in the tessellation points.
 min_y = min([for (center = tess_points) center[1]]); // Minimum y-coordinate in the tessellation points.
 max_y = max([for (center = tess_points) center[1]]); // Maximum y-coordinate in the tessellation points.
+
+// connection_width = standard_tensile_specimen_width + extra_width_tensile_connector;    // Width of the narrow section
+connection_width = (max_y + tesselation_radius) * 2;
+// connection_length = standard_tensile_specimen_length + extra_length_tensile_connector; // Length of the specimen
+connection_length =
+    (standard_tensile_specimen_length + extra_length_tensile_connector) / 2; // cut short for testing samples
 
 // Adjust from the center of the cells to the edge of the cells
 min_y_edge = min_y - tesselation_radius;
@@ -39,6 +42,7 @@ max_y_edge = max_y + tesselation_radius;
 
 // Width of the cut slots to allow bend, depth is automatically set to the half the substrate height
 cut_width = 2;
+cut_depth = substrate_height / 4;
 
 // Holder dimensions for the tensile test specimen
 // Width of the holder for the tensile specimen
@@ -48,7 +52,7 @@ holder_thickness = 2;
 // Tolerance for the cut slots
 cut_tol = 0.2;
 
-tensile_ilox_holder();
+//tensile_ilox_holder();
 tensile_ilox_specimen();
 
 // Render the tensile test specimen with integrated cells
@@ -86,9 +90,9 @@ module tensile_ilox_specimen()
         for (i = [0:1])
         {
             mirror([ i, 0, 0 ]) color("Salmon")
-                translate([ max_x + tesselation_radius + cut_width / 2, 0, substrate_height ])
+                translate([ max_x + tesselation_radius + cut_width / 2, 0, substrate_height / 2 + cut_depth ])
 
-                    cube([ cut_width, max_y_edge * 2, substrate_height ], center = true);
+                    cube([ cut_width, max_y_edge * 2 + zFite, substrate_height ], center = true);
         }
     }
 }

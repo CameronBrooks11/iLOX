@@ -9,12 +9,12 @@ include <extrusion_rectlinear.scad>;
 rectlinear_tess_render = is_undef(rectlinear_tess_derender) ? true : false;
 
 // Number of grid points in the X direction
-grid_n = 5;
+grid_n = 4;
 // Number of grid points in the Y direction
-grid_m = 4;
+grid_m = 3;
 
 // Height of substrate
-substrate_height = 3;
+substrate_height = 2;
 
 // Extend up to a double width of the unit cell in the Y direction to decrease gaps
 extension_factor = 0.5; // [0:0.1:1]

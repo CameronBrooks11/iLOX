@@ -9,13 +9,14 @@ include <extrusion_rotational.scad>;
 radial_tess_render = is_undef(radial_tess_derender) ? true : false;
 
 // Number of levels for tessellation pattern
-levels = 4;
+levels = 3;
 
 // Height of substrate
-substrate_height = 3;
+substrate_height = 2;
 
 // Packing factor
-packing_factor = 0.3; // [0:0.1:1]
+packing_factor = 0.5; // [0:0.1:1]
+
 scaled_packing = 1.0 + packing_factor * 0.5; // Scaled packing factor for grid spacing (1.0 to 1.5)
 echo("Scaled packing factor: ", scaled_packing);
 
