@@ -30,7 +30,7 @@ function sort_centers(centers) = sorted(centers, key=function(p) [p[1], p[0]]); 
  * @param nested_arrays A nested array to be flattened.
  * @return A single-level array containing all elements from the nested arrays.
  */
-function flatten(nested_arrays) = [ for (subarray = nested_arrays) for (element = subarray) element ];
+function flatten(nested_arrays) = [for (subarray = nested_arrays) for (element = subarray) element];
 
 /**
  * @brief Calculates the height between rows of points in a sorted array.
@@ -150,6 +150,9 @@ function is_within_radius(point, radius, removal_points) =
 // ----------------------------------------------------------------------
 // REPLACE WITH FUNCTIONALOPENSCAD LIBRARY
 // ----------------------------------------------------------------------
+
+//include <FunctionalOpenSCAD/functional.scad>;
+
 /**
  * @brief Generates a series of points defining an arc.
  *
