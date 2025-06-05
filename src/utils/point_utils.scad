@@ -1,43 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * @file point_utils.scad
  * @brief Utility functions for point operations in OpenSCAD.
@@ -60,7 +20,17 @@ EPSILON = 1e-3; // Tolerance value used for floating-point comparisons.
  * @param centers An array of points (centers) to be sorted, each as [x, y].
  * @return A sorted array of centers.
  */
-function sort_centers(centers) = sorted(centers, key = function(p)[p[1], p[0]]); // Sort by y, then x
+function sort_centers(centers) = sorted(centers, key=function(p) [p[1], p[0]]); // Sort by y, then x
+
+/**
+ * @brief Flattens a nested array of arrays into a single array.
+ *
+ * This function takes an array of arrays and returns a single array containing all elements.
+ *
+ * @param nested_arrays A nested array to be flattened.
+ * @return A single-level array containing all elements from the nested arrays.
+ */
+function flatten(nested_arrays) = [ for (subarray = nested_arrays) for (element = subarray) element ];
 
 /**
  * @brief Calculates the height between rows of points in a sorted array.
@@ -69,10 +39,12 @@ function sort_centers(centers) = sorted(centers, key = function(p)[p[1], p[0]]);
  * @return The height difference between rows, or undef if not applicable.
  */
 function point_row_height(sorted_centers) =
-    let(row_heights = [for (i = [1:len(sorted_centers) - 1]) if (sorted_centers[i][1] != sorted_centers[i - 1][1])
-                abs(sorted_centers[i][1] - sorted_centers[i - 1][1])])(len(row_heights) > 0)
-        ? row_heights[0]
-        : undef;
+  let (
+    row_heights = [
+      for (i = [1:len(sorted_centers) - 1]) if (sorted_centers[i][1] != sorted_centers[i - 1][1]) abs(sorted_centers[i][1] - sorted_centers[i - 1][1]),
+    ]
+  ) (len(row_heights) > 0) ? row_heights[0]
+  : undef;
 
 /**
  * @brief Finds the midpoints between adjacent points in each row and returns the new points.
@@ -83,17 +55,24 @@ function point_row_height(sorted_centers) =
  * @param centers An array of points forming a grid with some horizontal gaps.
  * @return An array of new points placed between adjacent points in each row.
  */
-function square_midpoints(centers) = let(sorted_centers = sort_centers(centers)) let(tri_centers = [])
-    concat(                                                         // Flatten the array and filter out empty entries
-        [for (i = [0:len(sorted_centers) - 2])                      // for loop i
-            let(p1 = sorted_centers[i], p2 = sorted_centers[i + 1]) // end let
-            if (abs(p1[1] - p2[1]) < EPSILON &&                     // p1 and p2 are in the same row
-                p2[0] > p1[0]                                       // p2 x-coordinate is greater than p1
-                )                                                   // end if
-            ([
-                (p1[0] + p2[0]) / 2, // x-coordinate of midpoint center
-                (p1[1] + p2[1]) / 2  // y-coordinate of midpoint center
-            ])]);
+function square_midpoints(centers) =
+  let (sorted_centers = sort_centers(centers)) let (tri_centers = []) concat(
+    // Flatten the array and filter out empty entries
+    [
+      for (i = [0:len(sorted_centers) - 2]) // for loop i
+      let (p1 = sorted_centers[i], p2 = sorted_centers[i + 1]) // end let
+      if (
+        abs(p1[1] - p2[1]) < EPSILON && // p1 and p2 are in the same row
+        p2[0] > p1[0] // p2 x-coordinate is greater than p1
+      ) // end if
+      (
+        [
+          (p1[0] + p2[0]) / 2, // x-coordinate of midpoint center
+          (p1[1] + p2[1]) / 2, // y-coordinate of midpoint center
+        ]
+      ),
+    ]
+  );
 
 /**
  * @brief Calculates the centers of triangles formed by adjacent points.
@@ -103,22 +82,34 @@ function square_midpoints(centers) = let(sorted_centers = sort_centers(centers))
  * @param centers An array of points (centers) to be triangulated.
  * @return An array of triangulated center points.
  */
-function triangulated_center_points(centers) = let(sorted_centers = sort_centers(centers),
-                                                   row_height = point_row_height(sorted_centers)) let(tri_centers = [])
-    concat(                                       // Flatten the array and filter out empty entries
-        [for (i = [0:len(sorted_centers) - 2])    // for loop i
-            for (j = [0:len(sorted_centers) - 1]) // for loop j
-            let(p1 = sorted_centers[i], p2 = sorted_centers[i + 1],
-                p3 = sorted_centers[j])                      // end let
-            if (abs(p1[1] - p2[1]) < EPSILON &&              // p1 and p2 are in the same row
-                abs(p3[1] - p1[1] - row_height) < EPSILON && // p3 is in the next row
-                p3[0] > p1[0] &&                             // p3 x-coordinate is greater than p1
-                p3[0] < p2[0]                                // p3 x-coordinate is less than p2
-                )                                            // end if
-            ([
-                (p1[0] + p2[0] + p3[0]) / 3, // x-coordinate of triangle center
-                (p1[1] + p2[1] + p3[1]) / 3  // y-coordinate of triangle center
-            ])]);
+function triangulated_center_points(centers) =
+  let (
+    sorted_centers = sort_centers(centers),
+    row_height = point_row_height(sorted_centers)
+  ) let (tri_centers = []) concat(
+    // Flatten the array and filter out empty entries
+    [
+      for (i = [0:len(sorted_centers) - 2]) // for loop i
+      for (j = [0:len(sorted_centers) - 1]) // for loop j
+      let (
+        p1 = sorted_centers[i],
+        p2 = sorted_centers[i + 1],
+        p3 = sorted_centers[j]
+      ) // end let
+      if (
+        abs(p1[1] - p2[1]) < EPSILON && // p1 and p2 are in the same row
+        abs(p3[1] - p1[1] - row_height) < EPSILON && // p3 is in the next row
+        p3[0] > p1[0] && // p3 x-coordinate is greater than p1
+        p3[0] < p2[0] // p3 x-coordinate is less than p2
+      ) // end if
+      (
+        [
+          (p1[0] + p2[0] + p3[0]) / 3, // x-coordinate of triangle center
+          (p1[1] + p2[1] + p3[1]) / 3, // y-coordinate of triangle center
+        ]
+      ),
+    ]
+  );
 
 /**
  * @brief Filters out points from centers that are within a radius of points in the filter list.
@@ -131,8 +122,10 @@ function triangulated_center_points(centers) = let(sorted_centers = sort_centers
  * @param tolerance (Optional) Tolerance value for comparison; default is EPSILON.
  * @return A filtered array of centers.
  */
-function filter_triangulated_center_points(r, centers, filter_list, tolerance = EPSILON) = let(
-    n = len(centers))[for (i = [0:n - 1]) if (!is_within_radius(centers[i], r + tolerance, filter_list)) centers[i]];
+function filter_triangulated_center_points(r, centers, filter_list, tolerance = EPSILON) =
+  let (
+    n = len(centers)
+  ) [for (i = [0:n - 1]) if (!is_within_radius(centers[i], r + tolerance, filter_list)) centers[i]];
 
 /**
  * @brief Calculates the Euclidean distance between two points.
@@ -152,7 +145,7 @@ function distance(p1, p2) = sqrt(pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2));
  * @return True if the point is within radius of any point in removal_points, false otherwise.
  */
 function is_within_radius(point, radius, removal_points) =
-    let(n = len(removal_points))[for (i = [0:n - 1]) if (distance(point, removal_points[i]) < radius) true][0];
+  let (n = len(removal_points)) [for (i = [0:n - 1]) if (distance(point, removal_points[i]) < radius) true][0];
 
 // ----------------------------------------------------------------------
 // REPLACE WITH FUNCTIONALOPENSCAD LIBRARY
@@ -171,10 +164,16 @@ function is_within_radius(point, radius, removal_points) =
  *
  * @return A list of [x, y] points representing the arc.
  */
-function arc_points(diameter, start_angle, end_angle, num_points, z_val = 0) = let(
-    radius = diameter /
-             2)[for (i = [0:num_points])[radius * cos(start_angle + (end_angle - start_angle) * i / num_points),
-                                         radius *sin(start_angle + (end_angle - start_angle) * i / num_points), z_val]];
+function arc_points(diameter, start_angle, end_angle, num_points, z_val = 0) =
+  let (
+    radius = diameter / 2
+  ) [
+      for (i = [0:num_points]) [
+        radius * cos(start_angle + (end_angle - start_angle) * i / num_points),
+        radius * sin(start_angle + (end_angle - start_angle) * i / num_points),
+        z_val,
+      ],
+  ];
 /**
  * @brief Shifts a list of points by a given offset.
  *
@@ -190,6 +189,8 @@ function arc_points(diameter, start_angle, end_angle, num_points, z_val = 0) = l
  * @param shift_z (Optional) The amount to shift in the z-direction. Defaults to 0.
  * @return A new array of points, each shifted by the specified amounts.
  */
-function shift_points(points, shift_x, shift_y, shift_z = 0) = [for (p = points)(len(p) == 3)
-                                                                    ? [ p[0] + shift_x, p[1] + shift_y, p[2] + shift_z ]
-                                                                    : [ p[0] + shift_x, p[1] + shift_y ]];
+function shift_points(points, shift_x, shift_y, shift_z = 0) =
+  [
+    for (p = points) (len(p) == 3) ? [p[0] + shift_x, p[1] + shift_y, p[2] + shift_z]
+    : [p[0] + shift_x, p[1] + shift_y],
+  ];
