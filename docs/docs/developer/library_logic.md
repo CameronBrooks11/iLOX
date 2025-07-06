@@ -1,5 +1,5 @@
 ---
-title: Auxiliary Links
+title: Library Logic
 parent: Developer
 nav_order: 2
 ---
