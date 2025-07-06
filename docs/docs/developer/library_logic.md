@@ -1,3 +1,9 @@
+---
+title: Auxiliary Links
+parent: Developer
+nav_order: 2
+---
+
 # Library Logic
 
 This serves as a walkthrough of the logic behind the library including the concept and math behind it.
