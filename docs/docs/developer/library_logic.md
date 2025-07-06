@@ -20,15 +20,15 @@ The idea is that we have two surfaces and we want to connect or fasten them toge
 
 The unit geometry refers to how the surface is bisected from +y to -y to form the latching structure of to fix the position of the +y and -y faces. The simplest example is given in the below figure.
 
-![](../assets/unit1.png)
+![](../images/unit1.png)
 
 Adding a tolerance on this line:
 
-![](../assets/unit2.png)
+![](../images/unit2.png)
 
 Looking forward we can also remove the upper edge where the now separate surfaces will make initial contact during engagement:
 
-![](../assets/unit3.png)
+![](../images/unit3.png)
 
 The surface to be bisected must consider leaving sufficient substrate on the +y and -y for each of the surfaces to remain intact during manufacturing. In the above example there is symmetry, so it is arbitrary to specify which segment will occupy the center points or the vertices but if it isn't then this detail becomes relevant how the bisection is defined with respect to +y and -y depending on the application of what occupies that space.
 
