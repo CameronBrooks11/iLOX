@@ -14,6 +14,9 @@ Welcome to the **{{ site.title }}** documentation!
 
 ## Paper Thoughts
 
+{: .note }
+These are just some unorganized thoughts, gladly disregard!
+
 - Interlocking metasurfaces (ILMs) are engineered arrays of complementary features that facilitate the joining of two bodies.
   - Unlike traditional methods such as bolts, adhesives, or welds, ILMs offer easy assembly, disassembly, and reassembly while maintaining robust mechanical properties.
   - They function across a surface in a quasi-continuous manner, enabling the connection of complex structures like lattices.
