@@ -1,10 +1,10 @@
 ---
-title: Library Logic
-parent: Developer
-nav_order: 2
+title: Architecture
+parent: Developer Guide
+nav_order: 1
 ---
 
-# Library Logic
+# Architecture
 
 This serves as a walkthrough of the logic behind the library including the concept and math behind it.
 
