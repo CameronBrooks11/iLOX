@@ -1,5 +1,5 @@
-title: JtD OpenSCAD Template
-description: A starter template for a Jekyll site…
+title: iLOX
+description: InterLocking Orthogonal eXtrusions OpenSCAD library.
 theme: just-the-docs
 color_scheme: openscad-dark
 baseurl: "/iLOX"
