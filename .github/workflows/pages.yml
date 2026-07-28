@@ -79,6 +79,19 @@ jobs:
               --imgsize=1000,750 --viewall --autocenter
           done
 
+      - name: Stage customizer project tree
+        # The customizer targets publish everything under their projectRoot, so
+        # stage only what the entry files need — the library, its src/, the
+        # tessella dependency, and the example entries — with the repo layout
+        # preserved so relative `use <../../iLOX.scad>` still resolves.
+        run: |
+          mkdir -p publish-staging/examples/simpleUsage publish-staging/tessella
+          cp iLOX.scad publish-staging/
+          cp -r src publish-staging/src
+          cp tessella/tess.scad publish-staging/tessella/
+          cp -r tessella/src publish-staging/tessella/src
+          cp examples/simpleUsage/*.scad examples/simpleUsage/*.json publish-staging/examples/simpleUsage/
+
       - name: Assemble OpenSCAD model surfaces
         # Publishes the models declared in openscad-publish.yml into the built
         # Jekyll site (docs/_site), served same-origin.
