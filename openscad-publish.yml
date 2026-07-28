@@ -1,0 +1,32 @@
+# Declares which OpenSCAD model(s) are published into the docs site and how.
+# Consumed by the openscad-web GitHub Action in .github/workflows/pages.yml.
+# Reference: https://github.com/CameronBrooks11/openscad-web/blob/v0/docs/PUBLISHING.md
+#
+# Both examples are published as lightweight `static` surfaces: pre-rendered
+# geometry + poster (~0.7 MB each, no in-browser compiler). The .off/.png are
+# produced by the render step in pages.yml.
+#
+# No live `customizer` targets yet: the examples are multi-file (they
+# `use <../../iLOX.scad>`, which includes src/ and the external tessella
+# library), and openscad-web's compile surfaces currently boot from a single
+# published .scad file only — the assembled project/ tree is not hydrated into
+# the browser filesystem. Once boot-time project hydration lands in
+# openscad-web, add `projectRoot`-based customizer targets here and `live=`
+# params to the docs embeds for the click-to-upgrade tier.
+
+site:
+  # Mount models into the Jekyll build output so they deploy with the site.
+  outDir: docs/_site
+
+targets:
+  - surface: static
+    geometry: ./rendered/simpleUsageRadial.off
+    poster: ./rendered/simpleUsageRadial.png
+    mountPath: /models/radial/
+    title: Radial iLOX Tessellation
+
+  - surface: static
+    geometry: ./rendered/simpleUsageRectangular.off
+    poster: ./rendered/simpleUsageRectangular.png
+    mountPath: /models/rectangular/
+    title: Rectangular iLOX Tessellation
