@@ -30,7 +30,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
+
+      - name: Checkout tessella (OpenSCAD library dependency)
+        # iLOX.scad does `include <tessella/tess.scad>`; OpenSCAD resolves
+        # angle-bracket includes relative to the including file first, so a
+        # tessella/ directory beside iLOX.scad satisfies it for both the CLI
+        # render below and the staged customizer project tree.
+        uses: actions/checkout@v7
+        with:
+          repository: CameronBrooks11/tessella
+          ref: e6e97ed4f6849a82c4507855de74a13d019f94e5
+          path: tessella
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -41,7 +52,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Build with Jekyll
         # install gems in docs/ then build
@@ -52,9 +63,32 @@ jobs:
         env:
           JEKYLL_ENV: production
 
+      - name: Render static model geometry
+        # Pre-render the models used by `static` surfaces to OFF (+ a PNG
+        # poster) with the OpenSCAD CLI. OFF is a headless CGAL export; the
+        # PNG poster needs an OpenGL context, so render it under xvfb (a
+        # virtual display). Posters use preview mode (no --render) so the
+        # models' color() information is kept.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openscad xvfb
+          mkdir -p rendered
+          for model in simpleUsageRadial simpleUsageRectangular; do
+            openscad "examples/simpleUsage/$model.scad" -o "rendered/$model.off"
+            xvfb-run -a openscad "examples/simpleUsage/$model.scad" -o "rendered/$model.png" \
+              --imgsize=1000,750 --viewall --autocenter
+          done
+
+      - name: Assemble OpenSCAD model surfaces
+        # Publishes the models declared in openscad-publish.yml into the built
+        # Jekyll site (docs/_site), served same-origin.
+        uses: CameronBrooks11/openscad-web@v0
+        with:
+          config: ./openscad-publish.yml
+
       - name: Upload artifact
         # Automatically uploads the generated docs/_site folder
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/_site
 
@@ -68,4 +102,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
