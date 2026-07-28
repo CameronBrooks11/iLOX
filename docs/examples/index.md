@@ -13,5 +13,6 @@ in the repository, each shown as an embedded 3D model:
 - [Rectangular tessellation]({% link examples/rectangular.md %}) — interlocking
   cells on a rectangular grid with substrates.
 
-Each page embeds a pre-rendered model — click **View 3D** for a rotatable
-in-browser view.
+Each page embeds a pre-rendered model — click **View 3D** for a rotatable view,
+or **Customize (live)** to load the in-browser OpenSCAD customizer and edit the
+parameters yourself.

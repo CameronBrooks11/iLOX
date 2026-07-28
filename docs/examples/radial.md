@@ -11,7 +11,7 @@ rotational symmetry: cell A instances (green) sit on hexagon centers over one
 substrate, cell B instances (blue) on the triangulated midpoints under the
 other, so pressing the two substrates together engages every cell at once.
 
-{% include openscad.html model="radial" title="Radial iLOX Tessellation" %}
+{% include openscad.html model="radial" live="radial-live" title="Radial iLOX Tessellation" %}
 
 Source: [`examples/simpleUsage/simpleUsageRadial.scad`](https://github.com/CameronBrooks11/iLOX/blob/main/examples/simpleUsage/simpleUsageRadial.scad)
 

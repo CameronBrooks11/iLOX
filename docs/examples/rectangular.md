@@ -11,7 +11,7 @@ instances (green) on the grid points over one substrate, cell B instances
 (blue) on the grid midpoints under the other. An extension factor stretches
 cells along Y to close the gaps a square lattice would otherwise leave.
 
-{% include openscad.html model="rectangular" title="Rectangular iLOX Tessellation" %}
+{% include openscad.html model="rectangular" live="rectangular-live" title="Rectangular iLOX Tessellation" %}
 
 Source: [`examples/simpleUsage/simpleUsageRectangular.scad`](https://github.com/CameronBrooks11/iLOX/blob/main/examples/simpleUsage/simpleUsageRectangular.scad)
 

@@ -2,17 +2,16 @@
 # Consumed by the openscad-web GitHub Action in .github/workflows/pages.yml.
 # Reference: https://github.com/CameronBrooks11/openscad-web/blob/v0/docs/PUBLISHING.md
 #
-# Both examples are published as lightweight `static` surfaces: pre-rendered
-# geometry + poster (~0.7 MB each, no in-browser compiler). The .off/.png are
-# produced by the render step in pages.yml.
+# Each example is published twice: a lightweight `static` surface (pre-rendered
+# geometry + poster, ~0.7 MB, the default the docs embed) and a `customizer`
+# surface (the live in-browser compiler) for the per-embed "Customize" upgrade.
+# The two live surfaces share one runtime (multi-target publish).
 #
-# No live `customizer` targets yet: the examples are multi-file (they
-# `use <../../iLOX.scad>`, which includes src/ and the external tessella
-# library), and openscad-web's compile surfaces currently boot from a single
-# published .scad file only — the assembled project/ tree is not hydrated into
-# the browser filesystem. Once boot-time project hydration lands in
-# openscad-web, add `projectRoot`-based customizer targets here and `live=`
-# params to the docs embeds for the click-to-upgrade tier.
+# The customizer targets use projectRoot + entry because the examples are
+# multi-file: they `use <../../iLOX.scad>`, which includes src/ and the
+# external tessella library. pages.yml stages that minimal tree into
+# publish-staging/ (everything under projectRoot becomes public), and the
+# runtime hydrates the published tree at boot (openscad-web >= 0.6).
 
 site:
   # Mount models into the Jekyll build output so they deploy with the site.
@@ -25,8 +24,24 @@ targets:
     mountPath: /models/radial/
     title: Radial iLOX Tessellation
 
+  - projectRoot: ./publish-staging
+    entry: ./examples/simpleUsage/simpleUsageRadial.scad
+    surface: customizer
+    mountPath: /models/radial-live/
+    controls: true
+    download: true
+    title: Radial iLOX Tessellation (interactive)
+
   - surface: static
     geometry: ./rendered/simpleUsageRectangular.off
     poster: ./rendered/simpleUsageRectangular.png
     mountPath: /models/rectangular/
     title: Rectangular iLOX Tessellation
+
+  - projectRoot: ./publish-staging
+    entry: ./examples/simpleUsage/simpleUsageRectangular.scad
+    surface: customizer
+    mountPath: /models/rectangular-live/
+    controls: true
+    download: true
+    title: Rectangular iLOX Tessellation (interactive)
