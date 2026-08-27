@@ -83,7 +83,12 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y xvfb
+          # The AppImage bundles Qt but links the system GL/font stack, which the
+          # runner image does not carry -- apt's openscad used to pull these in as
+          # dependencies. Without them the AppImage dies at load time with
+          # "libEGL.so.1: cannot open shared object file", before it runs at all.
+          sudo apt-get install -y xvfb \
+            libegl1 libgl1 libopengl0 libfontconfig1 libharfbuzz0b
           curl -fSL -o /tmp/openscad.AppImage \
             "https://files.openscad.org/snapshots/${OPENSCAD_SNAPSHOT}"
           echo "${OPENSCAD_SHA256}  /tmp/openscad.AppImage" | sha256sum -c -
@@ -109,6 +114,16 @@ jobs:
             xvfb-run -a /tmp/openscad.AppImage --appimage-extract-and-run \
               "examples/simpleUsage/$model.scad" -o "rendered/$model.png" \
               --imgsize=1000,750 --viewall --autocenter
+
+            # Fail loudly if the OFF came out colorless. Without this the only
+            # symptom is embeds quietly reverting to the viewer's default yellow,
+            # which is how this went unnoticed the first time. A colored face line
+            # is "<n> <n indices> r g b" -- i.e. at least n+4 fields.
+            if ! awk '$1 ~ /^[0-9]+$/ && $1 >= 3 && NF >= $1 + 4 { found = 1; exit } END { exit !found }' \
+              "rendered/$model.off"; then
+              echo "::error::rendered/$model.off carries no per-face colors -- check the OpenSCAD version and --backend" >&2
+              exit 1
+            fi
           done
 
       - name: Stage customizer project tree
