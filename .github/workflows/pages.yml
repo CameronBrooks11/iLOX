@@ -63,19 +63,51 @@ jobs:
         env:
           JEKYLL_ENV: production
 
+      - name: Install OpenSCAD (color-preserving OFF export)
+        # ubuntu's `openscad` package is 2021.01: no Manifold backend, and OFF
+        # export drops color() entirely, so the static 3D views rendered every
+        # model in the viewer's default cameo yellow while the posters (preview
+        # mode, see below) kept their colors. Manifold arrived in the 2025.03
+        # development snapshots and there is still no stable release carrying
+        # it, so pin a snapshot AppImage and check its published checksum.
+        #
+        # Snapshots are pruned after roughly eight months. When this 404s, pick
+        # a newer build from https://files.openscad.org/snapshots/ and update
+        # both values -- each AppImage has a .sha256 published beside it.
+        #
+        # --appimage-extract-and-run avoids needing FUSE, which the runners
+        # do not provide.
+        env:
+          OPENSCAD_SNAPSHOT: OpenSCAD-2026.08.19-x86_64.AppImage
+          OPENSCAD_SHA256: fdd818025e890f465ffacffbe7d0c6fa3ebeb3f7c18ee860a909ab41396be643
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          curl -fSL -o /tmp/openscad.AppImage \
+            "https://files.openscad.org/snapshots/${OPENSCAD_SNAPSHOT}"
+          echo "${OPENSCAD_SHA256}  /tmp/openscad.AppImage" | sha256sum -c -
+          chmod +x /tmp/openscad.AppImage
+          /tmp/openscad.AppImage --appimage-extract-and-run --version
+
       - name: Render static model geometry
         # Pre-render the models used by `static` surfaces to OFF (+ a PNG
-        # poster) with the OpenSCAD CLI. OFF is a headless CGAL export; the
-        # PNG poster needs an OpenGL context, so render it under xvfb (a
-        # virtual display). Posters use preview mode (no --render) so the
-        # models' color() information is kept.
+        # poster). color() only survives into OFF on the Manifold backend --
+        # CGAL drops it -- and CGAL is still the default on some releases, so
+        # pass --backend explicitly rather than relying on the default.
+        #
+        # The PNG poster needs an OpenGL context, so render it under xvfb (a
+        # virtual display). Posters stay in preview mode (no --render), which
+        # keeps color() on every OpenSCAD version -- that is why they were the
+        # one colored thing on the page before this fix.
         run: |
-          sudo apt-get update
-          sudo apt-get install -y openscad xvfb
+          set -euo pipefail
           mkdir -p rendered
           for model in simpleUsageRadial simpleUsageRectangular; do
-            openscad "examples/simpleUsage/$model.scad" -o "rendered/$model.off"
-            xvfb-run -a openscad "examples/simpleUsage/$model.scad" -o "rendered/$model.png" \
+            /tmp/openscad.AppImage --appimage-extract-and-run --backend=Manifold \
+              "examples/simpleUsage/$model.scad" -o "rendered/$model.off"
+            xvfb-run -a /tmp/openscad.AppImage --appimage-extract-and-run \
+              "examples/simpleUsage/$model.scad" -o "rendered/$model.png" \
               --imgsize=1000,750 --viewall --autocenter
           done
 
