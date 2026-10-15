@@ -22,8 +22,11 @@ use <../../iLOX.scad>;
 width_x = 5;
 height_y = 10;
 
-// Division line as [x, y, tolerance] points
-base_ucell_div = [ [ 0.5, 0, 0.01 ], [ 0.3, 0.1, 0.01 ], [ 0.3, 0.4, 0.01 ] ];
+// Division line as [x, y] points
+base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
+
+// Gap between the interlocking cells, in mm
+clearance = 0.2;
 
 // Negative polygons cut voids out of the cell
 base_ucell_neg_poly = [ [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ] ];
@@ -34,12 +37,14 @@ grid_m = 4;
 substrate_height = 3;
 extension_factor = 0.5; // [0:0.1:1]
 
-linear_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
-            substrate_height);
+linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m,
+            extension_factor, substrate_height);
 ```
 
 Key parameters:
 
+- `clearance` — the gap between the two interlocking halves in mm, measured
+  normal to the division line.
 - `grid_n`, `grid_m` — number of grid points in X and Y.
 - `extension_factor` — stretches cells along Y (up to one cell width) to
   reduce the gaps between rows.

@@ -15,11 +15,13 @@ arc1_diameter = 0.2;
 arc1_start_angle = 90;
 arc1_end_angle = 0;
 arc1_num_points = 15;
-arc1_tolerance = 0.01;
+
+// Gap between the interlocking cells in mm, measured normal to the division line
+clearance = 0.2;
 
 // Generate the arc points
 arc1_points_list = arc_points(diameter = arc1_diameter, start_angle = arc1_start_angle, end_angle = arc1_end_angle,
-                              num_points = arc1_num_points, z_val = arc1_tolerance);
+                              num_points = arc1_num_points);
 
 arc1_shift_x = 0.5;
 arc1_shift_y = 1 - arc1_diameter;
@@ -34,11 +36,10 @@ arc2_diameter = arc1_diameter;
 arc2_start_angle = 0;
 arc2_end_angle = -90;
 arc2_num_points = arc1_num_points;
-arc2_tolerance = arc1_tolerance;
 
 // Generate the arc points
 arc2_points_list = arc_points(diameter = arc2_diameter, start_angle = arc2_start_angle, end_angle = arc2_end_angle,
-                              num_points = arc2_num_points, z_val = arc2_tolerance);
+                              num_points = arc2_num_points);
 gap = 0.1;
 arc2_shift_x = arc1_shift_x;
 arc2_shift_y = arc1_shift_y - gap;
@@ -52,7 +53,7 @@ echo("shifted arc points:", shifted_arc2_points_list);
 // Concatenate the two arc points lists
 shifted_arc_points_list = concat(shifted_arc1_points_list, shifted_arc2_points_list);
 
-stem_pts = [ [ 0.2, 0.7, arc1_tolerance ], [ 0.2, 0.6, arc1_tolerance ] ];
+stem_pts = [ [ 0.2, 0.7 ], [ 0.2, 0.6 ] ];
 
 input_pts = concat(shifted_arc_points_list, stem_pts);
 
@@ -73,11 +74,11 @@ scaled_arc_points_list =
     transformPoints(points = shifted_arc_points_list, width = width_x / width_x, height = height_y / width_x);
 
 // Define division points for creating the cell's internal structure
-// Each point is defined as [x, y, tolerance]
+// Each point is defined as [x, y]
 // Must form a division line
 // First point must start with 0 if defining the minor half of the ucell division
 // First point must start with 1 if defining the major half of the ucell division
-// example_div = [ [ 1 - 0.3, 1 - 0, 0.01 ], [ 1 - 0.3, 1 - 0.4, 0.01 ] ];
+// example_div = [ [ 1 - 0.3, 1 - 0 ], [ 1 - 0.3, 1 - 0.4 ] ];
 translate([ 2, 0, 0 ]) if (scaledinputdiv_render)
 {
     // Place spheres at the generated arc points
@@ -98,8 +99,8 @@ add_neg_poly = [
     [ 1, 0 ],
     [ 1, 0.7 ],
 ];
-example_neg_poly1 = shift_points(stem_pts, -arc1_tolerance, 0);
-example_neg_poly2 = shift_points(add_neg_poly, -arc1_tolerance, 0);
+example_neg_poly1 = shift_points(stem_pts, -clearance / width_x, 0);
+example_neg_poly2 = shift_points(add_neg_poly, -clearance / width_x, 0);
 example_neg_poly = [ example_neg_poly1, example_neg_poly2 ];
 
 if (inputnegpoly_render)
@@ -123,7 +124,8 @@ tests_render = true; // Flag to render the test points or omit them
 
 // Calculate cells (A and B) using the defined dimensions and division points
 example_cells = (ucell_render || ucell_points)
-                    ? calc_ucell(width = width_x, height = height_y, div = example_div, neg_poly = example_neg_poly)
+                    ? calc_ucell(width = width_x, height = height_y, div = example_div, clearance = clearance,
+                                 neg_poly = example_neg_poly)
                     : [];
 
 echo("example_cells: ", example_cells);

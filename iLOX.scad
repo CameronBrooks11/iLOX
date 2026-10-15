@@ -13,8 +13,8 @@ include <src/utils/viz_utils.scad>;
  * @brief Renders a unit cell with division points and negative polygons
  * @param width_x Width of the unit cell in the x-direction
  * @param height_y Height of the unit cell in the y-direction
- * @param div Points are [x, y, tolerance], with the first as 0 for the minor (bottom) or 1 for the major (top) ucell
- * division.
+ * @param div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell division.
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line.
  * @param neg_poly Define points for a polygon to act as a negative to create voids within the cell, each point is
  * defined as [x, y]
  * @param colors Array of colors for the cell and negative polygon
@@ -23,10 +23,12 @@ include <src/utils/viz_utils.scad>;
  * @param pt_zGap Height offset for the points along the z-axis
  * @param pt_fn Number of facets used to render the points
  */
-module ucell_designer(width_x, height_y, div, neg_poly = [], colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ],
-                      pt_diams = 0.1, pt_colors = [ "Indigo", "Violet" ], pt_zGap = 0.5, pt_fn = 12)
+module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
+                      colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ], pt_diams = 0.1,
+                      pt_colors = [ "Indigo", "Violet" ], pt_zGap = 0.5, pt_fn = 12)
 {
-    base_ucell_cells = calc_ucell(width = width_x, height = height_y, div = div, neg_poly = neg_poly);
+    base_ucell_cells =
+        calc_ucell(width = width_x, height = height_y, div = div, clearance = clearance, neg_poly = neg_poly);
     // Render the entire unit cell with both the division and negative polygons
     render_ucells(cells = base_ucell_cells, colors = colors);
 
@@ -41,8 +43,9 @@ module ucell_designer(width_x, height_y, div, neg_poly = [], colors = [ "GreenYe
  * @brief Renders a radial tessellation of cells A and B
  * @param width_x Width of the unit cell in the x-direction
  * @param height_y Height of the unit cell in the y-direction
- * @param base_ucell_div Points are [x, y, tolerance], with the first as 0 for the minor (bottom) or 1 for the major
- * (top) ucell division.
+ * @param base_ucell_div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell
+ * division.
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line.
  * @param base_ucell_neg_poly Define points for a polygon to act as a negative to create voids within the cell, each
  * point is defined as [x, y]
  * @param degree_n Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
@@ -52,12 +55,13 @@ module ucell_designer(width_x, height_y, div, neg_poly = [], colors = [ "GreenYe
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
  */
-module radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degree_n, levels, packing_factor,
+module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
                    substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue")
 {
     // Calculate cells (A and B) using the defined dimensions and division points
     base_ucell_cells =
-        calc_ucell(width = width_x, height = height_y, div = base_ucell_div, neg_poly = base_ucell_neg_poly);
+        calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
+                   neg_poly = base_ucell_neg_poly);
 
     // Calculate the diameter based on the apothem of the polygon
     apothem_diameter = apothem(width_x / 2, degree_n) * 2;
@@ -104,8 +108,9 @@ module radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degre
  * @brief Renders a linear tessellation of cells A and B
  * @param width_x Width of the unit cell in the x-direction
  * @param height_y Height of the unit cell in the y-direction
- * @param base_ucell_div Points are [x, y, tolerance], with the first as 0 for the minor (bottom) or 1 for the major
- * (top) ucell division.
+ * @param base_ucell_div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell
+ * division.
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line.
  * @param base_ucell_neg_poly Define points for a polygon to act as a negative to create voids within the cell, each
  * point is defined as [x, y]
  * @param grid_n Number of grid points in the X direction
@@ -115,12 +120,13 @@ module radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degre
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
  */
-module linear_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
+module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
                    substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue")
 {
     // Calculate cells (A and B) using the defined dimensions and division points
     base_ucell_cells =
-        calc_ucell(width = width_x, height = height_y, div = base_ucell_div, neg_poly = base_ucell_neg_poly);
+        calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
+                   neg_poly = base_ucell_neg_poly);
 
     extension = extension_factor * width_x;
 

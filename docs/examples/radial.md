@@ -22,8 +22,11 @@ use <../../iLOX.scad>;
 width_x = 5;
 height_y = 10;
 
-// Division line as [x, y, tolerance] points
-base_ucell_div = [ [ 0.5, 0, 0.01 ], [ 0.3, 0.1, 0.01 ], [ 0.3, 0.4, 0.01 ] ];
+// Division line as [x, y] points
+base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
+
+// Gap between the interlocking cells, in mm
+clearance = 0.2;
 
 // Negative polygons cut voids out of the cell
 base_ucell_neg_poly = [ [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ] ];
@@ -33,13 +36,15 @@ degree_n = 6;
 levels = 4;
 packing_factor = 0.3; // [0:1]
 
-radial_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, degree_n, levels, packing_factor);
+radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor);
 ```
 
 Key parameters:
 
 - `base_ucell_div` — the division line that splits the unit cell into the two
-  interlocking halves; each point carries its own fit tolerance.
+  interlocking halves.
+- `clearance` — the gap between the two halves in mm, measured normal to the
+  division line.
 - `degree_n` — order of rotational symmetry for each cell (6 = hexagonal).
 - `levels` — how many rings of hexagons the lattice grows outward.
 - `packing_factor` — extra spacing between cells, from none (0) to half a cell
