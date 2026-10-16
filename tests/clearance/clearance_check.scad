@@ -3,8 +3,9 @@
 // edges lie exactly `clearance` / 2 from the division line and run parallel to it, and each tip stops `tip_clearance`
 // short of the opposite substrate. Prints PASS.
 //
-// Run: openscad -o clearance.stl tests/clearance/clearance_check.scad
+// Run: openscad --hardwarnings -o clearance.stl tests/clearance/clearance_check.scad
 // It exits non-zero on a failure: the cube at the end, the only geometry, is reached only when every check passed.
+// tests/clearance/rejected_inputs.scad covers the inputs calc_ucell must reject.
 
 include <../../iLOX.scad>;
 
@@ -70,6 +71,7 @@ for (cs = cases, c = clearances, t = tips)
     for (k = [0:1])
     {
         poly = cells[k];
+        assert(len(poly) >= 3, str(tag, "cell ", k, " is empty"));
         other = cut_segments(cells[1 - k], w, h, tip);
         for (p = poly)
         {

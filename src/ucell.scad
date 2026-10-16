@@ -232,7 +232,16 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
         boxB = [for (e = edgesB) segmentBox(e)],
         n = len(edgesA),
         gaps = [for (p = cell_pointsA, k = [0:n - 1]) if (boxesNear([ p[0], p[0], p[1], p[1] ], boxB[k], clearance))
-                segmentDistance(p, edgesB[k][0], edgesB[k][1])])
+                segmentDistance(p, edgesB[k][0], edgesB[k][1])],
+        // Midpoints of A's cut sides, away from the cell's edges, with their distance from the division line
+        lineBoxes = [for (i = [0:len(div_line) - 2]) segmentBox([ div_line[i], div_line[i + 1] ])],
+        sides = [for (e = edgesA) let(m = (e[0] + e[1]) / 2)
+                if (min(m[0], m[1], width - m[0], height - m[1]) > clearance + 1e-9 &&
+                    !(abs(e[0][1] - (height - tip)) < 1e-9 && abs(e[1][1] - (height - tip)) < 1e-9)) // not the tip
+                    let(d = [for (i = [0:len(div_line) - 2])
+                                if (boxesNear([ m[0], m[0], m[1], m[1] ], lineBoxes[i], clearance / 2 + 1e-6))
+                                    segmentDistance(m, div_line[i], div_line[i + 1])])
+                        len(d) > 0 ? min(d) : undef])
         // A split cell shows up as edges doubling back along the unit cell's border, or touching at a point
         assert(len([for (i = [0:n - 1], j = [i + 1:1:n - 1]) let(e = edgesA[i], f = edgesA[j])
                    if (boxesNear(boxA[i], boxA[j], 1e-9) &&
@@ -247,19 +256,16 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
                        if (boxesNear(boxA[i], boxB[k], 1e-9) && segmentsCross(e[0], e[1], f[0], f[1])) 1]) == 0 &&
                    (len(gaps) == 0 || min(gaps) > clearance - 1e-6),
                "ERROR: Div line brings the cells closer than the clearance")
+        // A side further than half the clearance from the line means the offset swallowed a feature
+        assert(len([for (d = sides) if (is_undef(d) || abs(d - clearance / 2) > 1e-6) 1]) == 0,
+               "ERROR: Div line has a feature too narrow for the clearance")
 
             [cell_pointsA, cell_pointsB, flatten(ncell_points)];
 
 /**
  * @brief Calculates the points for negative polygons of unit cells A and B based on dimensions and division points.
  *
- * Generates the points for two negative polygons by creating polygons from the division points and handling optional
- * negative polygons.
- *
- * The subdivision is determined automatically based on the y-values of the division points:
- * - If the first division point's y-value is in the range [0, 0.5], subdiv = 0.
- * - If the first division point's y-value is in the range [0.5, 1], subdiv = 1.
- * - If not in either range, an error is thrown.
+ * Scales the negative polygons to the cell for cell A, and turns them 180 degrees about the cell centre for cell B.
  *
  * @param width The width of the unit cell.
  * @param height The height of the unit cell.
