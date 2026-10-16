@@ -2,8 +2,9 @@
 // every vertex of one is at least `clearance` from the other, and the cut sides more than `clearance` from the cell's
 // edges lie exactly `clearance` / 2 from the division line, and run parallel to it. Prints PASS.
 //
-// Run: openscad -o clearance.stl tests/clearance/clearance_check.scad
+// Run: openscad --hardwarnings -o clearance.stl tests/clearance/clearance_check.scad
 // It exits non-zero on a failure: the cube at the end, the only geometry, is reached only when every check passed.
+// tests/clearance/rejected_inputs.scad covers the inputs calc_ucell must reject.
 
 include <../../iLOX.scad>;
 
@@ -60,6 +61,7 @@ for (cs = cases, c = clearances)
     for (k = [0:1])
     {
         poly = cells[k];
+        assert(len(poly) >= 3, str(tag, "cell ", k, " is empty"));
         other = cut_segments(cells[1 - k], w, h);
         for (p = poly)
         {
