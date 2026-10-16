@@ -117,6 +117,7 @@ function clipToAxis(poly, axis, bound, side) =
  * @return The part's points.
  */
 function cellLeftOf(line, d, width, height) =
+    assert(line[1][1] > 1e-9, "ERROR: Div line must rise off the bottom edge")
     let(o = offsetPolyline(line, d),
         n = len(o),
         center = [ width, height ] / 2,
@@ -127,13 +128,49 @@ function cellLeftOf(line, d, width, height) =
         a1 = atan2(start[1] - center[1], start[0] - center[0]),
         arc = [for (a = [a0:10:a1 < a0 ? a1 + 360 : a1]) center + r * [ cos(a), sin(a) ]],
         shape = concat([start], o, [end], arc),
-        part = clipToAxis(clipToAxis(clipToAxis(clipToAxis(shape, 0, 0, 1), 0, width, -1), 1, 0, 1), 1, height, -1),
-        // A segment the offset reversed (a notch narrower than the clearance) would cross the rest of the part
-        inside = [for (p = o) p[0] >= 0 && p[0] <= width && p[1] >= 0 && p[1] <= height],
-        reversed = [for (i = [0:n - 2])
-                if ((o[i + 1] - o[i]) * (line[i + 1] - line[i]) <= 0 && (inside[i] || inside[i + 1])) i])
-        assert(len(reversed) == 0 && len(part) >= 3, "ERROR: clearance too large for the div line")
-            dedupePolyline(part);
+        part = clipToAxis(clipToAxis(clipToAxis(clipToAxis(shape, 0, 0, 1), 0, width, -1), 1, 0, 1), 1, height, -1))
+        // The end segments set the extensions, so the offset must not shorten them to nothing or turn them round
+        assert((o[1] - o[0]) * (line[1] - line[0]) > 1e-9 && (o[n - 1] - o[n - 2]) * (line[n - 1] - line[n - 2]) > 1e-9,
+               "ERROR: clearance too large for the div line")
+        assert(len(part) >= 3, "ERROR: clearance too large for the div line") dropCollinear(part);
+
+/**
+ * @brief Gives the side of the line through a and b that p lies on: 1 left, -1 right, 0 on the line.
+ */
+function turn(a, b, p) = let(v = (b - a)[0] * (p - a)[1] - (b - a)[1] * (p - a)[0]) abs(v) < 1e-9 ? 0 : sign(v);
+
+/**
+ * @brief Tests whether segments a-b and c-d cross at a point inside both.
+ */
+function segmentsCross(a, b, c, d) = turn(a, b, c) * turn(a, b, d) < 0 && turn(c, d, a) * turn(c, d, b) < 0;
+
+/**
+ * @brief Tests whether segments a-b and c-d lie on one line and overlap by more than a point.
+ */
+function segmentsOverlap(a, b, c, d) =
+    turn(a, b, c) == 0 && turn(a, b, d) == 0 &&
+    (let(u = (b - a) / norm(b - a), s = [ (c - a) * u, (d - a) * u ]) min(max(s), norm(b - a)) - max(min(s), 0) > 1e-9);
+
+/**
+ * @brief Removes polygon vertices that lie on the line through their neighbours, including duplicates and the
+ * zero-area spikes clipping leaves along the cell's edges.
+ */
+function dropCollinear(poly) =
+    let(n = len(poly),
+        d = [for (i = [0:n - 1]) if (norm(poly[i] - poly[(i + 1) % n]) > 1e-9) poly[i]], // repeats first
+        m = len(d),
+        keep = [for (i = [0:m - 1]) if (turn(d[(i + m - 1) % m], d[i], d[(i + 1) % m]) != 0) d[i]])
+        len(keep) == n ? poly : dropCollinear(keep);
+
+/**
+ * @brief Calculates the distance from p to the segment a-b.
+ */
+function segmentDistance(p, a, b) = let(ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - a - ab * t);
+
+/**
+ * @brief Lists a polygon's edges, each as [start, end].
+ */
+function polygonEdges(poly) = [for (i = [0:len(poly) - 1])[poly[i], poly[(i + 1) % len(poly)]]];
 
 /**
  * @brief Calculates the points for unit cells A and B based on dimensions and division points.
@@ -169,9 +206,23 @@ function calc_ucell(width, height, div, clearance, neg_poly = []) =
         div_line = dedupePolyline(transformPoints(div_mirrored, width, height)), // full line, bottom to top
         cell_pointsA = cellLeftOf(div_line, clearance / 2, width, height),       // cell A points
         cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
-        ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : []) // negative polygons
+        ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : [], // negative polygons
+        // Cell B is cell A turned 180 degrees, so checking A covers both
+        edgesA = polygonEdges(cell_pointsA),
+        edgesB = polygonEdges(cell_pointsB),
+        n = len(edgesA))
+        // A split cell shows up as edges doubling back along the unit cell's border
+        assert(len([for (i = [0:n - 1], j = [i + 1:n - 1])
+                   let(e = edgesA[i], f = edgesA[j]) if (segmentsCross(e[0], e[1], f[0], f[1]) ||
+                                                        segmentsOverlap(e[0], e[1], f[0], f[1])) 1]) == 0,
+               "ERROR: Div line folds or splits the cells at this clearance")
+        assert(len([for (e = edgesA) if (abs(e[0][1]) < 1e-9 && abs(e[1][1]) < 1e-9 && norm(e[1] - e[0]) > 1e-9) 1]),
+               "ERROR: Div line leaves cell A off its substrate")
+        assert(len([for (e = edgesA, f = edgesB) if (segmentsCross(e[0], e[1], f[0], f[1])) 1]) == 0 &&
+                   min([for (p = cell_pointsA, f = edgesB) segmentDistance(p, f[0], f[1])]) > clearance - 1e-6,
+               "ERROR: Div line brings the cells closer than the clearance")
 
-        [cell_pointsA, cell_pointsB, flatten(ncell_points)];
+            [cell_pointsA, cell_pointsB, flatten(ncell_points)];
 
 /**
  * @brief Calculates the points for negative polygons of unit cells A and B based on dimensions and division points.
