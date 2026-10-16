@@ -15,9 +15,6 @@ arc_start_angle = 90;
 arc_end_angle = -90;
 arc_num_points = 15;
 
-// Gap between the interlocking cells in mm, measured normal to the division line
-clearance = 0.2;
-
 // Generate the arc points
 arc_points_list = arc_points(diameter = arc_diameter, start_angle = arc_start_angle, end_angle = arc_end_angle,
                              num_points = arc_num_points);
@@ -40,6 +37,9 @@ transformed_arc_points_list = transformPoints(shifted_arc_points_list, width_x, 
 // First point must start with 1 if defining the major half of the ucell division
 // example_div = [ [ 1 - 0.3, 1 - 0 ], [ 1 - 0.3, 1 - 0.4 ] ];
 example_div = shifted_arc_points_list;
+
+// Gap between cells A and B in mm
+clearance = 0.2;
 
 if (inputdiv_render)
 {

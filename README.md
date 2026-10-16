@@ -77,7 +77,7 @@ The `iLOX.scad` file serves as the main entry point for the project, including e
 
 ### ucell.scad
 
-This module provides essential functions and modules for defining and rendering unit cells. It includes tools for calculating the points of cells A and B based on given dimensions, handling transformations, applying tolerances, and managing optional negative polygons. Rendering capabilities are provided for visualizing the cells and their optional cutouts.
+This module provides essential functions and modules for defining and rendering unit cells. It includes tools for calculating the points of cells A and B based on given dimensions, handling transformations, applying a clearance between the cells, and managing optional negative polygons. Rendering capabilities are provided for visualizing the cells and their optional cutouts.
 
 ### cell2rot.scad
 

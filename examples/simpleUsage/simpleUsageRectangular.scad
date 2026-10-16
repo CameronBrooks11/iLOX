@@ -16,7 +16,7 @@ height_y = 10;
 // Each point is defined as [x, y] and must form a division line
 base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
 
-// Gap between the interlocking cells in mm, measured normal to the division line
+// Gap between cells A and B in mm
 clearance = 0.2;
 
 // Define negative polygon points to create voids within the cell, each point is defined as [x, y]

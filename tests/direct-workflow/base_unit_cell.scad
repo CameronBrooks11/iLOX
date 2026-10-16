@@ -14,7 +14,7 @@ height_y = 10;
 // Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell division.
 base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
 
-// Gap between the interlocking cells in mm, measured normal to the division line
+// Gap between cells A and B in mm
 clearance = 0.2;
 
 // Define a tolerance for the top face of the unit cell

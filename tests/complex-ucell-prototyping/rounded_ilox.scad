@@ -16,9 +16,6 @@ arc1_start_angle = 90;
 arc1_end_angle = 0;
 arc1_num_points = 15;
 
-// Gap between the interlocking cells in mm, measured normal to the division line
-clearance = 0.2;
-
 // Generate the arc points
 arc1_points_list = arc_points(diameter = arc1_diameter, start_angle = arc1_start_angle, end_angle = arc1_end_angle,
                               num_points = arc1_num_points);
@@ -91,6 +88,9 @@ translate([ 2, 0, 0 ]) if (scaledinputdiv_render)
 }
 
 example_div = input_pts;
+
+// Gap between cells A and B in mm
+clearance = 0.2;
 
 // Define negative polygon points to create voids within the cell
 // Each point is defined as [x, y]

@@ -11,7 +11,7 @@ height_y = 10; // Height of the unit cell in the y-direction
 // First point must start with 1 if defining the major half of the ucell division
 example_div = [ [ 0.3, 0 ], [ 0.3, 0.4 ] ];
 
-// Gap between the interlocking cells in mm, measured normal to the division line
+// Gap between cells A and B in mm
 clearance = 0.2;
 
 // Define negative polygon points to create voids within the cell

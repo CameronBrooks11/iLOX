@@ -5,8 +5,9 @@
  * @copyright 2024
  *
  * This library provides functions to calculate the points of unit cells (cells A and B) based on given dimensions and
- * division points. It includes utilities for transforming and manipulating points, applying tolerances, and handling
- * optional negative polygons. Modules are provided to render these cells and to place spheres at specified points.
+ * division points. It includes utilities for transforming and manipulating points, separating the cells by a
+ * clearance, and handling optional negative polygons. Modules are provided to render these cells and to place spheres
+ * at specified points.
  */
 
 /**
@@ -36,19 +37,19 @@ function transformPointsList(points, width, height) = [for (p = points) transfor
 /**
  * @brief Mirrors a list of points across the lines x = 1 and y = 1.
  *
- * Subtracts each point's x and y coordinates from 1. If a third element exists (e.g., tolerance), it is preserved.
+ * Subtracts each point's x and y coordinates from 1.
  *
- * @param points Array of points to be mirrored, each point as [x, y] or [x, y, z].
+ * @param points Array of points to be mirrored, each point as [x, y].
  * @return An array of mirrored points.
  */
-function mirrorPoints(points) = [for (p = points)[1 - p[0], 1 - p[1], p[2]]];
+function mirrorPoints(points) = [for (p = points)[1 - p[0], 1 - p[1]]];
 
 /**
  * @brief Mirrors a list of points across the lines x = 1 and y = 1.
  *
- * Subtracts each point's x and y coordinates from 1. If a third element exists (e.g., tolerance), it is preserved.
+ * Subtracts each point's x and y coordinates from 1.
  *
- * @param points Array of points to be mirrored, each point as [x, y] or [x, y, z].
+ * @param points Array of points to be mirrored, each point as [x, y].
  * @return An array of mirrored points.
  */
 function mirrorPointsList(points) = [for (p = points) mirrorPoints(p)];
@@ -71,55 +72,68 @@ function dedupePolyline(points) =
     [for (i = [0:len(points) - 1]) if (i == 0 || norm(points[i] - points[i - 1]) > 1e-9) points[i]];
 
 /**
- * @brief Starts a polyline on the line y = 0.
+ * @brief Offsets a polyline sideways by a fixed distance.
  *
- * If the polyline starts inside (y >= 0), its first segment is extended back to y = 0. If it starts below, it is cut
- * where it first crosses y = 0.
+ * Moves each segment by d along its left-hand normal (right-hand for negative d), mitering interior vertices.
  *
- * @param pts Polyline, each point as [x, y], rising through y = 0 near its start.
- * @return The polyline starting on y = 0.
+ * @param points Polyline, each point as [x, y], no repeated points.
+ * @param d Offset distance.
+ * @return The offset polyline, with the same number of points.
  */
-function clipToBottom(pts) =
-    let(n = len(pts),
-        // First segment that crosses y = 0 upward (only used when the polyline starts below)
-        j = [for (i = [0:n - 2]) if (pts[i][1] < 0 && pts[i + 1][1] >= 0) i][0],
-        u = pts[1] - pts[0])
-    pts[0][1] >= 0
-        ? assert(u[1] > 1e-9, "iLOX: the division line must rise off the cell's bottom and top edges")
-              concat([pts[0] - u * pts[0][1] / u[1]], [for (i = [1:n - 1]) pts[i]])
-        : assert(!is_undef(j), "iLOX: clearance is too large for this division line")
-              let(s = pts[j + 1] - pts[j])
-                  dedupePolyline(concat([pts[j] - s * pts[j][1] / s[1]], [for (i = [j + 1:n - 1]) pts[i]]));
-
-/**
- * @brief Offsets a division line sideways by a fixed distance.
- *
- * Every segment moves by d along its left-hand normal (right-hand for negative d), so each offset segment is parallel
- * to the original at exactly |d|. Interior vertices take the miter of their two segments. The ends are then trimmed or
- * extended to the cell's bottom (y = 0) and top (y = height) edges, so where the line meets an edge at a shallow angle
- * the gap there widens to |d| / sin(angle), as a true offset does.
- *
- * @param points Division line from the bottom edge to the top edge, each point as [x, y], no repeated points.
- * @param d Offset distance; positive moves toward cell A (left of the line).
- * @param height The height of the unit cell.
- * @return The offset division line, running from the bottom edge to the top edge.
- */
-function offsetDivision(points, d, height) =
+function offsetPolyline(points, d) =
     let(n = len(points),
         dirs = [for (i = [0:n - 2])(points[i + 1] - points[i]) / norm(points[i + 1] - points[i])],
-        normals = [for (u = dirs)[-u[1], u[0]]],
-        // Ends move straight out; interior vertices take the miter of their two segments
-        miter = function(i) let(m = normals[i - 1] + normals[i], k = 1 + normals[i - 1] * normals[i])
-            assert(k > 1e-9, "iLOX: the division line cannot fold back on itself") m / k,
-        raw = [for (i = [0:n - 1]) points[i] + d * (i == 0 ? normals[0] : i == n - 1 ? normals[n - 2] : miter(i))],
-        // A segment that reverses (a notch narrower than the clearance) is only allowed if clipping removes it
-        inverted = [for (i = [0:n - 2]) if ((raw[i + 1] - raw[i]) * dirs[i] <= 0) i],
-        inside = function(p) p[1] >= 0 && p[1] <= height,
-        // Reverse and mirror top-to-bottom, so clipToBottom can clip the top end too
-        flip = function(pts)[for (i = [len(pts) - 1:-1:0])[pts[i][0], height - pts[i][1]]])
-        assert(len([for (i = inverted) if (inside(raw[i]) || inside(raw[i + 1])) i]) == 0,
-               "iLOX: clearance is too large for a short division segment; reduce clearance or simplify the line")
-            flip(clipToBottom(flip(clipToBottom(raw))));
+        normals = [for (u = dirs)[-u[1], u[0]]])
+    [for (i = [0:n - 1])
+        let(m = i == 0 ? normals[0] : i == n - 1 ? normals[n - 2] : normals[i - 1] + normals[i],
+            k = i == 0 || i == n - 1 ? 1 : 1 + normals[i - 1] * normals[i])
+        assert(k > 1e-9, "ERROR: Div line folds back on itself") points[i] + m * d / k];
+
+/**
+ * @brief Clips a polygon to one side of an axis-aligned line (one Sutherland-Hodgman step).
+ *
+ * @param poly Polygon, each point as [x, y].
+ * @param axis 0 for a vertical line x = bound, 1 for a horizontal line y = bound.
+ * @param bound Position of the line.
+ * @param side 1 keeps points at or above the bound, -1 at or below it.
+ * @return The clipped polygon.
+ */
+function clipToAxis(poly, axis, bound, side) =
+    let(n = len(poly), s = [for (p = poly) side * (p[axis] - bound)])
+    [for (i = [0:n - 1]) let(j = (i + 1) % n) each concat(
+        s[i] >= 0 ? [poly[i]] : [],
+        (s[i] >= 0) != (s[j] >= 0) ? [poly[i] + (poly[j] - poly[i]) * s[i] / (s[i] - s[j])] : [])];
+
+/**
+ * @brief Calculates the part of the unit cell left of a division line, a distance d clear of it.
+ *
+ * Offsets the line by d, extends both ends far past the cell, closes the shape counter-clockwise around the cell and
+ * clips it to the cell.
+ *
+ * @param line Division line from the bottom edge to the top edge, each point as [x, y], no repeated points.
+ * @param d Distance between the part and the line.
+ * @param width The width of the unit cell.
+ * @param height The height of the unit cell.
+ * @return The part's points.
+ */
+function cellLeftOf(line, d, width, height) =
+    let(o = offsetPolyline(line, d),
+        n = len(o),
+        center = [ width, height ] / 2,
+        r = 2 * norm([ width, height ]) + d, // far enough that the closing arc stays clear of the cell
+        start = o[0] + (o[0] - o[1]) / norm(o[0] - o[1]) * r,
+        end = o[n - 1] + (o[n - 1] - o[n - 2]) / norm(o[n - 1] - o[n - 2]) * r,
+        a0 = atan2(end[1] - center[1], end[0] - center[0]),
+        a1 = atan2(start[1] - center[1], start[0] - center[0]),
+        arc = [for (a = [a0:10:a1 < a0 ? a1 + 360 : a1]) center + r * [ cos(a), sin(a) ]],
+        shape = concat([start], o, [end], arc),
+        part = clipToAxis(clipToAxis(clipToAxis(clipToAxis(shape, 0, 0, 1), 0, width, -1), 1, 0, 1), 1, height, -1),
+        // A segment the offset reversed (a notch narrower than the clearance) would cross the rest of the part
+        inside = [for (p = o) p[0] >= 0 && p[0] <= width && p[1] >= 0 && p[1] <= height],
+        reversed = [for (i = [0:n - 2])
+                if ((o[i + 1] - o[i]) * (line[i + 1] - line[i]) <= 0 && (inside[i] || inside[i + 1])) i])
+        assert(len(reversed) == 0 && len(part) >= 3, "ERROR: clearance too large for the div line")
+            dedupePolyline(part);
 
 /**
  * @brief Calculates the points for unit cells A and B based on dimensions and division points.
@@ -134,9 +148,8 @@ function offsetDivision(points, d, height) =
  *
  * @param width The width of the unit cell.
  * @param height The height of the unit cell.
- * @param div Array of division points, each point as [x, y] in cell-normalised coordinates.
- * @param clearance Gap between cells A and B, in model units (mm), measured normal to the division line. Each cell
- * gives up half. 0 makes the cells touch.
+ * @param div Array of division points, each point as [x, y].
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line.
  * @param neg_poly (Optional) Array of negative polygon points, each point as [x, y].
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
@@ -145,22 +158,17 @@ function offsetDivision(points, d, height) =
  *         - ncell_pointsB: Points for negative polygon of cell B (if neg_poly is provided).
  */
 function calc_ucell(width, height, div, clearance, neg_poly = []) =
-    assert(is_num(clearance) && clearance >= 0, "iLOX: clearance must be a number >= 0 (mm)")
-    assert(len([for (p = div) if (len(p) != 2) p]) == 0,
-           "iLOX: division points are [x, y]; the per-point tolerance was replaced by the clearance argument (mm)")
+    assert(is_num(clearance) && clearance >= 0, "ERROR: clearance must be a number >= 0")
+    assert(len([for (p = div) if (len(p) != 2) p]) == 0, "ERROR: Div points must be [x, y]")
     let(y_val = div[0][1],
         subdiv = (y_val == 0)   ? 0                                                                 // minor
                  : (y_val == 1) ? 1                                                                 // major
                                 : assert(undef, "ERROR: Div start must be 0 (minor) or 1 (major)"), // error
-        cornersA = [ [ 0, height ], [ 0, 0 ] ],   // A side: bottom left, top left
-        cornersB = [[width, 0], [width, height]], // B side: top right, bottom right
         div_mirrored =
             subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
-        div_line = dedupePolyline(transformPoints(div_mirrored, width, height)),    // full line, bottom to top
-        div_polyA = offsetDivision(div_line, clearance / 2, height),                // cell A side of the gap
-        div_polyB = reverseArray(offsetDivision(div_line, -clearance / 2, height)), // cell B side, top to bottom
-        cell_pointsA = concat(cornersA, div_polyA),                                 // cell A points
-        cell_pointsB = concat(cornersB, div_polyB),                                 // cell B points
+        div_line = dedupePolyline(transformPoints(div_mirrored, width, height)), // full line, bottom to top
+        cell_pointsA = cellLeftOf(div_line, clearance / 2, width, height),       // cell A points
+        cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
         ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : []) // negative polygons
 
         [cell_pointsA, cell_pointsB, flatten(ncell_points)];
@@ -168,8 +176,8 @@ function calc_ucell(width, height, div, clearance, neg_poly = []) =
 /**
  * @brief Calculates the points for negative polygons of unit cells A and B based on dimensions and division points.
  *
- * Generates the points for two negative polygons by creating polygons from the division points, applying tolerances,
- * and handling optional negative polygons.
+ * Generates the points for two negative polygons by creating polygons from the division points and handling optional
+ * negative polygons.
  *
  * The subdivision is determined automatically based on the y-values of the division points:
  * - If the first division point's y-value is in the range [0, 0.5], subdiv = 0.
