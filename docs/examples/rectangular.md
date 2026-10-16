@@ -45,6 +45,8 @@ Key parameters:
 
 - `clearance` — the gap between the two interlocking halves in mm, measured
   normal to the division line.
+- `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
+  half (print B upside down).
 - `grid_n`, `grid_m` — number of grid points in X and Y.
 - `extension_factor` — stretches cells along Y (up to one cell width) to
   reduce the gaps between rows.

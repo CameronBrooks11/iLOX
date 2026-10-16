@@ -8,6 +8,7 @@
             "grid_m": "4",
             "grid_n": "5",
             "height_y": "10",
+            "part": "both",
             "show_ucell": "false",
             "substrate_height": "3",
             "width_x": "5"

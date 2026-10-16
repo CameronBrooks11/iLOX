@@ -22,13 +22,14 @@ include <src/utils/viz_utils.scad>;
  * @param pt_colors Array of colors for the points
  * @param pt_zGap Height offset for the points along the z-axis
  * @param pt_fn Number of facets used to render the points
+ * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance
  */
 module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
                       colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ], pt_diams = 0.1,
-                      pt_colors = [ "Indigo", "Violet" ], pt_zGap = 0.5, pt_fn = 12)
+                      pt_colors = [ "Indigo", "Violet" ], pt_zGap = 0.5, pt_fn = 12, tip_clearance = undef)
 {
-    base_ucell_cells =
-        calc_ucell(width = width_x, height = height_y, div = div, clearance = clearance, neg_poly = neg_poly);
+    base_ucell_cells = calc_ucell(width = width_x, height = height_y, div = div, clearance = clearance,
+                                  neg_poly = neg_poly, tip_clearance = tip_clearance);
     // Render the entire unit cell with both the division and negative polygons
     render_ucells(cells = base_ucell_cells, colors = colors);
 
@@ -54,14 +55,19 @@ module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
  * @param substrate_height Height of the substrate
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
+ * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance
+ * @param part (Optional) "A", "B" or "both": which half to render, in its assembled position (flip B to print it)
  */
 module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
-                   substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue")
+                   substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue",
+                   tip_clearance = undef, part = "both")
 {
+    assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\", \"B\" or \"both\"");
+
     // Calculate cells (A and B) using the defined dimensions and division points
     base_ucell_cells =
         calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
-                   neg_poly = base_ucell_neg_poly);
+                   neg_poly = base_ucell_neg_poly, tip_clearance = tip_clearance);
 
     // Calculate the diameter based on the apothem of the polygon
     apothem_diameter = apothem(width_x / 2, degree_n) * 2;
@@ -81,7 +87,7 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
 
     // Generate hexagon vertices for tessellation
     tess_hex_vertices = hexagons_vertices(radius = tesselation_radius, centers = tess_points, angular_offset = 30);
-    color(cellA_color) union()
+    if (part != "B") color(cellA_color) union()
     { // Place cell A instances at tessellation points with rotation
         place_rotated_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x,
                             rotate = true, cell_type = "A");
@@ -92,7 +98,7 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
                          alpha = 0.5, extrude = substrate_height);
     }
     // Place cell B instances at triangulated tessellation points with rotation
-    color(cellB_color) union()
+    if (part != "A") color(cellB_color) union()
     {
         // Place cell B instances at triangulated tessellation points with rotation
         place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri, n = degree_n, width = width_x,
@@ -119,14 +125,19 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
  * @param substrate_height Height of the substrate
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
+ * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance
+ * @param part (Optional) "A", "B" or "both": which half to render, in its assembled position (flip B to print it)
  */
 module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
-                   substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue")
+                   substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue",
+                   tip_clearance = undef, part = "both")
 {
+    assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\", \"B\" or \"both\"");
+
     // Calculate cells (A and B) using the defined dimensions and division points
     base_ucell_cells =
         calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
-                   neg_poly = base_ucell_neg_poly);
+                   neg_poly = base_ucell_neg_poly, tip_clearance = tip_clearance);
 
     extension = extension_factor * width_x;
 
@@ -142,21 +153,27 @@ module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
     // Generate hexagon vertices for tessellation
     tess_sq_vertices = squares_vertices(side = tesselation_width, centers = tess_points);
 
-    // Place cell A instances at tessellation points with rotation
-    place_linear_cells(cells = base_ucell_cells, positions = tess_points, width = width_x, cell_type = "A",
-                       color = cellA_color, extension = extension);
+    if (part != "B")
+    {
+        // Place cell A instances at tessellation points with rotation
+        place_linear_cells(cells = base_ucell_cells, positions = tess_points, width = width_x, cell_type = "A",
+                           color = cellA_color, extension = extension);
 
-    // Render substrate as solid hexagons beneath cells
-    color(cellA_color) translate([ 0, 0, -substrate_height ])
-        generic_poly(vertices = tess_sq_vertices, paths = [[ 0, 1, 2, 3, 0 ]], centers = tess_points, alpha = 0.5,
-                     extrude = substrate_height);
+        // Render substrate as solid hexagons beneath cells
+        color(cellA_color) translate([ 0, 0, -substrate_height ])
+            generic_poly(vertices = tess_sq_vertices, paths = [[ 0, 1, 2, 3, 0 ]], centers = tess_points, alpha = 0.5,
+                         extrude = substrate_height);
+    }
 
-    // Place cell B instances at triangulated tessellation points with rotation
-    place_linear_cells(cells = base_ucell_cells, positions = tess_points_midp, width = width_x, cell_type = "B",
-                       color = cellB_color, extension = extension);
+    if (part != "A")
+    {
+        // Place cell B instances at triangulated tessellation points with rotation
+        place_linear_cells(cells = base_ucell_cells, positions = tess_points_midp, width = width_x, cell_type = "B",
+                           color = cellB_color, extension = extension);
 
-    // Render substrate as solid hexagons beneath cells
-    color(cellB_color) translate([ 0, 0, height_y ])
-        generic_poly(vertices = tess_sq_vertices, paths = [[ 0, 1, 2, 3, 0 ]], centers = tess_points_midp, alpha = 0.5,
-                     extrude = substrate_height);
+        // Render substrate as solid hexagons beneath cells
+        color(cellB_color) translate([ 0, 0, height_y ])
+            generic_poly(vertices = tess_sq_vertices, paths = [[ 0, 1, 2, 3, 0 ]], centers = tess_points_midp,
+                         alpha = 0.5, extrude = substrate_height);
+    }
 }

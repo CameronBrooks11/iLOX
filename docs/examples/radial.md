@@ -45,6 +45,8 @@ Key parameters:
   interlocking halves.
 - `clearance` — the gap between the two halves in mm, measured normal to the
   division line.
+- `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
+  half (print B upside down).
 - `degree_n` — order of rotational symmetry for each cell (6 = hexagonal).
 - `levels` — how many rings of hexagons the lattice grows outward.
 - `packing_factor` — extra spacing between cells, from none (0) to half a cell

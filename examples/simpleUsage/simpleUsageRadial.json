@@ -8,6 +8,7 @@
             "height_y": "10",
             "levels": "4",
             "packing_factor": "0.3",
+            "part": "both",
             "show_ucell": "false",
             "width_x": "5"
         }

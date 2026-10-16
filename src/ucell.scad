@@ -188,14 +188,17 @@ function polygonEdges(poly) = [for (i = [0:len(poly) - 1])[poly[i], poly[(i + 1)
  * @param div Array of division points, each point as [x, y].
  * @param clearance Gap between cells A and B in mm, measured normal to the division line.
  * @param neg_poly (Optional) Array of negative polygon points, each point as [x, y].
+ * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance.
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
  *         - cell_pointsB: Points for cell B.
  *         - ncell_pointsA: Points for negative polygon of cell A (if neg_poly is provided).
  *         - ncell_pointsB: Points for negative polygon of cell B (if neg_poly is provided).
  */
-function calc_ucell(width, height, div, clearance, neg_poly = []) =
+function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance = undef) =
     assert(is_num(clearance) && clearance >= 0, "ERROR: clearance must be a number >= 0")
+    assert(is_undef(tip_clearance) || is_num(tip_clearance) && tip_clearance >= 0 && tip_clearance < height,
+           "ERROR: tip_clearance must be a number >= 0 and below the cell height")
     assert(len([for (p = div) if (len(p) != 2) p]) == 0, "ERROR: Div points must be [x, y]")
     let(y_val = div[0][1],
         subdiv = (y_val == 0)   ? 0                                                                 // minor
@@ -204,7 +207,9 @@ function calc_ucell(width, height, div, clearance, neg_poly = []) =
         div_mirrored =
             subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
         div_line = dedupePolyline(transformPoints(div_mirrored, width, height)), // full line, bottom to top
-        cell_pointsA = cellLeftOf(div_line, clearance / 2, width, height),       // cell A points
+        tip = is_undef(tip_clearance) ? clearance : tip_clearance,
+        cell_pointsA =
+            dropCollinear(clipToAxis(cellLeftOf(div_line, clearance / 2, width, height), 1, height - tip, -1)),
         cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
         ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : [], // negative polygons
         // Cell B is cell A turned 180 degrees, so checking A covers both

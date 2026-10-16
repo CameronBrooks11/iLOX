@@ -1,6 +1,7 @@
 // Checks the A/B clearance (#21): both cells stay inside the unit cell without crossing themselves or each other,
-// every vertex of one is at least `clearance` from the other, and the cut sides more than `clearance` from the cell's
-// edges lie exactly `clearance` / 2 from the division line. Prints PASS.
+// every vertex of one is at least `clearance` from the other, the cut sides more than `clearance` from the cell's
+// edges lie exactly `clearance` / 2 from the division line, and each tip stops `clearance` short of the opposite
+// substrate. Prints PASS.
 //
 // Run: openscad -o clearance.echo tests/clearance/clearance_check.scad
 
@@ -56,6 +57,8 @@ for (cs = cases, c = clearances)
         for (p = poly)
         {
             assert(p[0] > -eps && p[0] < w + eps && p[1] > -eps && p[1] < h + eps, str(tag, p, " is outside the cell"));
+            assert(k == 0 ? p[1] < h - c + eps : p[1] > c - eps,
+                   str(tag, p, " is within clearance of the other substrate"));
             assert(dist(p, other) > c - eps, str(tag, p, " is ", dist(p, other), " from the other cell"));
         }
         for (s = cut_segments(poly, w, h))
