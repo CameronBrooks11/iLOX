@@ -168,9 +168,24 @@ function dropCollinear(poly) =
 function segmentDistance(p, a, b) = let(ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - a - ab * t);
 
 /**
+ * @brief Tests whether p lies on the segment a-b.
+ */
+function onSegment(p, a, b) = turn(a, b, p) == 0 && (p - a) * (b - a) >= -1e-9 && (p - b) * (a - b) >= -1e-9;
+
+/**
  * @brief Lists a polygon's edges, each as [start, end].
  */
 function polygonEdges(poly) = [for (i = [0:len(poly) - 1])[poly[i], poly[(i + 1) % len(poly)]]];
+
+/**
+ * @brief Gives the bounding box of a segment as [xmin, xmax, ymin, ymax].
+ */
+function segmentBox(e) = [ min(e[0][0], e[1][0]), max(e[0][0], e[1][0]), min(e[0][1], e[1][1]), max(e[0][1], e[1][1]) ];
+
+/**
+ * @brief Tests whether two bounding boxes come within m of each other.
+ */
+function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[3] + m && b[2] <= a[3] + m;
 
 /**
  * @brief Calculates the points for unit cells A and B based on dimensions and division points.
@@ -178,10 +193,8 @@ function polygonEdges(poly) = [for (i = [0:len(poly) - 1])[poly[i], poly[(i + 1)
  * Generates the points for two unit cells by creating polygons from the division points, separating them by the
  * clearance, and handling optional negative polygons.
  *
- * The subdivision is determined automatically based on the y-values of the division points:
- * - If the first division point's y-value is in the range [0, 0.5], subdiv = 0.
- * - If the first division point's y-value is in the range [0.5, 1], subdiv = 1.
- * - If not in either range, an error is thrown.
+ * The subdivision is determined by the first division point's y-value: 0 for the minor half (subdiv = 0), 1 for the
+ * major half (subdiv = 1); anything else is an error.
  *
  * @param width The width of the unit cell.
  * @param height The height of the unit cell.
@@ -192,8 +205,7 @@ function polygonEdges(poly) = [for (i = [0:len(poly) - 1])[poly[i], poly[(i + 1)
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
  *         - cell_pointsB: Points for cell B.
- *         - ncell_pointsA: Points for negative polygon of cell A (if neg_poly is provided).
- *         - ncell_pointsB: Points for negative polygon of cell B (if neg_poly is provided).
+ *         - [ncell_pointsA, ncell_pointsB]: Negative polygons of cells A and B (empty if neg_poly is not provided).
  */
 function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance = undef) =
     assert(is_num(clearance) && clearance >= 0, "ERROR: clearance must be a number >= 0")
@@ -215,16 +227,24 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
         // Cell B is cell A turned 180 degrees, so checking A covers both
         edgesA = polygonEdges(cell_pointsA),
         edgesB = polygonEdges(cell_pointsB),
-        n = len(edgesA))
-        // A split cell shows up as edges doubling back along the unit cell's border
-        assert(len([for (i = [0:n - 1], j = [i + 1:n - 1])
-                   let(e = edgesA[i], f = edgesA[j]) if (segmentsCross(e[0], e[1], f[0], f[1]) ||
-                                                        segmentsOverlap(e[0], e[1], f[0], f[1])) 1]) == 0,
+        boxA = [for (e = edgesA) segmentBox(e)],
+        boxB = [for (e = edgesB) segmentBox(e)],
+        n = len(edgesA),
+        gaps = [for (p = cell_pointsA, k = [0:n - 1]) if (boxesNear([ p[0], p[0], p[1], p[1] ], boxB[k], clearance))
+                segmentDistance(p, edgesB[k][0], edgesB[k][1])])
+        // A split cell shows up as edges doubling back along the unit cell's border, or touching at a point
+        assert(len([for (i = [0:n - 1], j = [i + 1:1:n - 1]) let(e = edgesA[i], f = edgesA[j])
+                   if (boxesNear(boxA[i], boxA[j], 1e-9) &&
+                       (segmentsCross(e[0], e[1], f[0], f[1]) || segmentsOverlap(e[0], e[1], f[0], f[1]) ||
+                        j != i + 1 && !(i == 0 && j == n - 1) &&
+                            (onSegment(f[0], e[0], e[1]) || onSegment(f[1], e[0], e[1]) ||
+                             onSegment(e[0], f[0], f[1]) || onSegment(e[1], f[0], f[1])))) 1]) == 0,
                "ERROR: Div line folds or splits the cells at this clearance")
         assert(len([for (e = edgesA) if (abs(e[0][1]) < 1e-9 && abs(e[1][1]) < 1e-9 && norm(e[1] - e[0]) > 1e-9) 1]),
                "ERROR: Div line leaves cell A off its substrate")
-        assert(len([for (e = edgesA, f = edgesB) if (segmentsCross(e[0], e[1], f[0], f[1])) 1]) == 0 &&
-                   min([for (p = cell_pointsA, f = edgesB) segmentDistance(p, f[0], f[1])]) > clearance - 1e-6,
+        assert(len([for (i = [0:n - 1], k = [0:n - 1]) let(e = edgesA[i], f = edgesB[k])
+                       if (boxesNear(boxA[i], boxB[k], 1e-9) && segmentsCross(e[0], e[1], f[0], f[1])) 1]) == 0 &&
+                   (len(gaps) == 0 || min(gaps) > clearance - 1e-6),
                "ERROR: Div line brings the cells closer than the clearance")
 
             [cell_pointsA, cell_pointsB, flatten(ncell_points)];

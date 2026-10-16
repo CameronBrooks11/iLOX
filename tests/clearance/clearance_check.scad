@@ -1,9 +1,10 @@
 // Checks the A/B clearance (#21): both cells stay inside the unit cell without crossing themselves or each other,
-// every vertex of one is at least `clearance` from the other, the cut sides more than `clearance` from the cell's
-// edges lie exactly `clearance` / 2 from the division line, and each tip stops `clearance` short of the opposite
-// substrate. Prints PASS.
+// every vertex of one is at least `clearance` from the other, and the cut sides more than `clearance` from the cell's
+// edges lie exactly `clearance` / 2 from the division line and run parallel to it, and each tip stops `clearance`
+// short of the opposite substrate. Prints PASS.
 //
-// Run: openscad -o clearance.echo tests/clearance/clearance_check.scad
+// Run: openscad -o clearance.stl tests/clearance/clearance_check.scad
+// It exits non-zero on a failure: the cube at the end, the only geometry, is reached only when every check passed.
 
 include <../../iLOX.scad>;
 
@@ -25,12 +26,21 @@ clearances = [ 0, 0.2, 0.5 ];
 
 function seg_dist(p, a, b) = let(ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - (a + ab * t));
 
-// Segments of a cell that are not on the unit cell's edges: the sides facing the other cell
-function cut_segments(poly, w, h) = [for (i = [0:len(poly) - 1]) let(a = poly[i], b = poly[(i + 1) % len(poly)])
+// Segments of a cell that are not on the unit cell's edges or a tip face (y = tip, y = h - tip): the sides facing the
+// other cell
+function cut_segments(poly, w, h, tip) = [for (i = [0:len(poly) - 1]) let(a = poly[i], b = poly[(i + 1) % len(poly)])
         if (!(abs(a[0]) < eps && abs(b[0]) < eps || abs(a[0] - w) < eps && abs(b[0] - w) < eps ||
-              abs(a[1]) < eps && abs(b[1]) < eps || abs(a[1] - h) < eps && abs(b[1] - h) < eps))[a, b]];
+              [for (y = [ 0, h, tip, h - tip ]) if (abs(a[1] - y) < eps && abs(b[1] - y) < eps) 1] != []))[a, b]];
 
 function dist(p, segs) = min([for (s = segs) seg_dist(p, s[0], s[1])]);
+
+// The division line built from div itself (div plus its copy turned 180 degrees about the cell centre), as segments
+function division_line(div, w, h) =
+    let(turned = [for (i = [len(div) - 1:-1:0])[1 - div[i][0], 1 - div[i][1]]],
+        pts = div[0][1] == 0 ? concat(div, turned) : concat([for (i = [len(turned) - 1:-1:0]) turned[i]],
+                                                            [for (i = [len(div) - 1:-1:0]) div[i]]))
+        [for (i = [0:len(pts) - 2]) if (norm(pts[i + 1] - pts[i]) > eps)
+                [[ w * pts[i][0], h * pts[i][1] ], [ w * pts[i + 1][0], h * pts[i + 1][1] ]]];
 
 function unit(v) = v / norm(v);
 
@@ -47,13 +57,12 @@ for (cs = cases, c = clearances)
     w = cs[1];
     h = cs[2];
     cells = calc_ucell(width = w, height = h, div = cs[3], clearance = c);
-    zero = calc_ucell(width = w, height = h, div = cs[3], clearance = 0)[0];
-    line = cut_segments(zero, w, h);
+    line = division_line(cs[3], w, h);
     tag = str("FAIL ", cs[0], " clearance=", c, ": ");
     for (k = [0:1])
     {
         poly = cells[k];
-        other = cut_segments(cells[1 - k], w, h);
+        other = cut_segments(cells[1 - k], w, h, c);
         for (p = poly)
         {
             assert(p[0] > -eps && p[0] < w + eps && p[1] > -eps && p[1] < h + eps, str(tag, p, " is outside the cell"));
@@ -61,13 +70,12 @@ for (cs = cases, c = clearances)
                    str(tag, p, " is within clearance of the other substrate"));
             assert(dist(p, other) > c - eps, str(tag, p, " is ", dist(p, other), " from the other cell"));
         }
-        for (s = cut_segments(poly, w, h))
+        for (s = cut_segments(poly, w, h, c))
         {
             m = (s[0] + s[1]) / 2;
             assert(min(m[0], m[1], w - m[0], h - m[1]) < c + eps || abs(dist(m, line) - c / 2) < eps,
                    str(tag, "midpoint ", m, " is ", dist(m, line), " from the division line"));
-            assert(len([for (i = [0:len(zero) - 1]) let(t = zero[(i + 1) % len(zero)] - zero[i])
-                            if (norm(t) > eps && side([ 0, 0 ], unit(s[1] - s[0]), unit(t)) == 0) 1]) > 0,
+            assert(len([for (t = line) if (side([ 0, 0 ], unit(s[1] - s[0]), unit(t[1] - t[0])) == 0) 1]) > 0,
                    str(tag, "side ", s, " is not parallel to the division line"));
         }
         assert(len(crossings(poly, poly)) == 0, str(tag, "a cell crosses itself"));
@@ -76,3 +84,4 @@ for (cs = cases, c = clearances)
 }
 
 echo("PASS");
+cube(1);
