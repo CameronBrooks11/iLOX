@@ -203,13 +203,18 @@ function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[
  * with mitered corners, so a feature too small for the clearance, such as a barb narrower than it, is lost and the gap
  * there is wider than the clearance.
  * @param neg_poly (Optional) Array of negative polygon points, each point as [x, y].
+ * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance.
+ * Must be below half the cell height; that alone does not keep the halves overlapping or interlocked.
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
  *         - cell_pointsB: Points for cell B.
  *         - [ncell_pointsA, ncell_pointsB]: Negative polygons of cells A and B (empty if neg_poly is not provided).
  */
-function calc_ucell(width, height, div, clearance, neg_poly = []) =
+function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance = undef) =
+    let(tip = is_undef(tip_clearance) ? clearance : tip_clearance)
     assert(is_num(clearance) && clearance >= 0, "ERROR: clearance must be a number >= 0")
+    assert(is_num(tip) && tip >= 0 && tip < height / 2,
+           "ERROR: tip_clearance (default: the clearance) must be a number >= 0 and below half the cell height")
     assert(len([for (p = div) if (len(p) != 2) p]) == 0, "ERROR: Div points must be [x, y]")
     let(y_val = div[0][1],
         subdiv = (y_val == 0)   ? 0                                                                 // minor
@@ -218,7 +223,8 @@ function calc_ucell(width, height, div, clearance, neg_poly = []) =
         div_mirrored =
             subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
         div_line = dedupePolyline(transformPoints(div_mirrored, width, height)), // full line, bottom to top
-        cell_pointsA = cellLeftOf(div_line, clearance / 2, width, height),       // cell A points
+        fullA = cellLeftOf(div_line, clearance / 2, width, height),             // cell A before the tip clip
+        cell_pointsA = dropCollinear(clipToAxis(fullA, 1, height - tip, -1)), // cell A points
         cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
         ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : [], // negative polygons
         // Cell B is cell A turned 180 degrees, so checking A covers both
@@ -236,7 +242,7 @@ function calc_ucell(width, height, div, clearance, neg_poly = []) =
                         j != i + 1 && !(i == 0 && j == n - 1) &&
                             (onSegment(f[0], e[0], e[1]) || onSegment(f[1], e[0], e[1]) ||
                              onSegment(e[0], f[0], f[1]) || onSegment(e[1], f[0], f[1])))) 1]) == 0,
-               "ERROR: Div line folds or splits the cells at this clearance")
+               "ERROR: Div line folds or splits the cells at this clearance and tip_clearance")
         assert(len([for (e = edgesA) if (abs(e[0][1]) < 1e-9 && abs(e[1][1]) < 1e-9 && norm(e[1] - e[0]) > 1e-9) 1]),
                "ERROR: Div line leaves cell A off its substrate")
         assert(len([for (i = [0:n - 1], k = [0:n - 1]) let(e = edgesA[i], f = edgesB[k])

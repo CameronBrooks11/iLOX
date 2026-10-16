@@ -48,7 +48,7 @@ base_scaled_ucell_point_colors = [ "Indigo", "Orange" ];
 // Calculate cells (A and B) using the defined dimensions and division points
 base_ucell_cells =
     calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
-               neg_poly = base_ucell_neg_polys);
+               neg_poly = base_ucell_neg_polys, tip_clearance = 0); // the top-edge negative above leaves the tip gap
 
 // Make sure to view from the top!!!
 if (ucell_render)

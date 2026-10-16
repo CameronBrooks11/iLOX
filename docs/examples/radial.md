@@ -36,7 +36,8 @@ degree_n = 6;
 levels = 4;
 packing_factor = 0.3; // [0:1]
 
-radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor);
+radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
+            part = "both");
 ```
 
 Key parameters:
@@ -46,6 +47,12 @@ Key parameters:
 - `clearance` — the gap between the two halves in mm, measured normal to the
   division line. A feature of the line too small for the clearance, such as a
   barb narrower than it, is lost in the offset, and the gap there is wider.
+- `tip_clearance` — optional gap between each cell's tip and the opposite
+  substrate, in mm, below half the cell height; defaults to `clearance`, and `0`
+  gives full-height cells. A large value can cut a cell short of interlocking,
+  and a clip just above a horizontal face can leave a thin ledge.
+- `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
+  half (print B upside down).
 - `degree_n` — order of rotational symmetry for each cell (6 = hexagonal).
 - `levels` — how many rings of hexagons the lattice grows outward.
 - `packing_factor` — extra spacing between cells, from none (0) to half a cell

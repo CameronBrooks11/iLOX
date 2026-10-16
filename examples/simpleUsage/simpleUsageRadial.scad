@@ -19,6 +19,9 @@ base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
 // Gap between cells A and B in mm
 clearance = 0.2;
 
+// Half to render: both to view the joint, A or B to export one printable half (print B upside down)
+part = "both"; // [both, A, B]
+
 // Define negative polygon points to create voids within the cell, each point is defined as [x, y]
 base_ucell_neg_poly = [
     [
@@ -43,4 +46,5 @@ packing_factor = 0.3; // [0:1]
 if (show_ucell)
     ucell_designer(width_x, height_y, base_ucell_div, clearance);
 else
-    radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor);
+    radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
+                part = part);
