@@ -58,7 +58,8 @@ function division_line(div, w, h) =
 function unit(v) = v / norm(v);
 
 // How high cell A reaches with no tip clip: the top edge, unless the clearance band along the line's last segment,
-// extended, leaves the cell through its left edge first
+// extended, leaves the cell through its left edge first. Assumes that last segment sets A's top, which holds for every
+// case here but not, for example, for a vertical last segment within clearance / 2 of the left edge.
 function full_top(line, c, w, h) =
     let(s = line[len(line) - 1], u = unit(s[1] - s[0]), q = s[1] + [ -u[1], u[0] ] * c / 2,
         x_top = q[0] + (h - q[1]) / u[1] * u[0])

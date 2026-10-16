@@ -23,7 +23,7 @@ include <src/utils/viz_utils.scad>;
  * @param pt_zGap Height offset for the points along the z-axis
  * @param pt_fn Number of facets used to render the points
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance,
- * below half the cell height, which keeps the halves overlapping but not necessarily interlocked
+ * below half the cell height; that alone does not keep the halves overlapping or interlocked
  */
 module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
                       colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ], pt_diams = 0.1,
@@ -57,7 +57,7 @@ module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance,
- * below half the cell height, which keeps the halves overlapping but not necessarily interlocked
+ * below half the cell height; that alone does not keep the halves overlapping or interlocked
  * @param part (Optional) "A", "B" or "both": which half to render, in its assembled position (flip B to print it)
  */
 module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
@@ -128,7 +128,7 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance,
- * below half the cell height, which keeps the halves overlapping but not necessarily interlocked
+ * below half the cell height; that alone does not keep the halves overlapping or interlocked
  * @param part (Optional) "A", "B" or "both": which half to render, in its assembled position (flip B to print it)
  */
 module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m, extension_factor,

@@ -204,7 +204,7 @@ function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[
  * there is wider than the clearance.
  * @param neg_poly (Optional) Array of negative polygon points, each point as [x, y].
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance.
- * Must be below half the cell height, so the halves still overlap; that alone does not keep them interlocked.
+ * Must be below half the cell height; that alone does not keep the halves overlapping or interlocked.
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
  *         - cell_pointsB: Points for cell B.
@@ -242,7 +242,7 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
                         j != i + 1 && !(i == 0 && j == n - 1) &&
                             (onSegment(f[0], e[0], e[1]) || onSegment(f[1], e[0], e[1]) ||
                              onSegment(e[0], f[0], f[1]) || onSegment(e[1], f[0], f[1])))) 1]) == 0,
-               "ERROR: Div line folds or splits the cells at this clearance")
+               "ERROR: Div line folds or splits the cells at this clearance and tip_clearance")
         assert(len([for (e = edgesA) if (abs(e[0][1]) < 1e-9 && abs(e[1][1]) < 1e-9 && norm(e[1] - e[0]) > 1e-9) 1]),
                "ERROR: Div line leaves cell A off its substrate")
         assert(len([for (i = [0:n - 1], k = [0:n - 1]) let(e = edgesA[i], f = edgesB[k])
