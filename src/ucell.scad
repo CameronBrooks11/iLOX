@@ -202,6 +202,7 @@ function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[
  * @param clearance Gap between cells A and B in mm, measured normal to the division line.
  * @param neg_poly (Optional) Array of negative polygon points, each point as [x, y].
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance.
+ * Below half the cell height, where the halves would stop overlapping.
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
  *         - cell_pointsB: Points for cell B.
@@ -209,8 +210,8 @@ function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[
  */
 function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance = undef) =
     assert(is_num(clearance) && clearance >= 0, "ERROR: clearance must be a number >= 0")
-    assert(is_undef(tip_clearance) || is_num(tip_clearance) && tip_clearance >= 0 && tip_clearance < height,
-           "ERROR: tip_clearance must be a number >= 0 and below the cell height")
+    assert(is_undef(tip_clearance) || is_num(tip_clearance) && tip_clearance >= 0 && tip_clearance < height / 2,
+           "ERROR: tip_clearance must be a number >= 0 and below half the cell height")
     assert(len([for (p = div) if (len(p) != 2) p]) == 0, "ERROR: Div points must be [x, y]")
     let(y_val = div[0][1],
         subdiv = (y_val == 0)   ? 0                                                                 // minor

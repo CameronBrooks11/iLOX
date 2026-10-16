@@ -1,6 +1,6 @@
 // Checks the A/B clearance (#21): both cells stay inside the unit cell without crossing themselves or each other,
-// every vertex of one is at least `clearance` from the other, and the cut sides more than `clearance` from the cell's
-// edges lie exactly `clearance` / 2 from the division line and run parallel to it, and each tip stops `clearance`
+// every vertex of one is at least `clearance` from the other, the cut sides more than `clearance` from the cell's
+// edges lie exactly `clearance` / 2 from the division line and run parallel to it, and each tip stops `tip_clearance`
 // short of the opposite substrate. Prints PASS.
 //
 // Run: openscad -o clearance.stl tests/clearance/clearance_check.scad
@@ -23,6 +23,8 @@ cases = [
 ];
 
 clearances = [ 0, 0.2, 0.5 ];
+
+tips = [ undef, 0, 1 ]; // undef: the default, which is the clearance
 
 function seg_dist(p, a, b) = let(ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - (a + ab * t));
 
@@ -52,25 +54,29 @@ function crosses(a, b, c, d) = side(a, b, c) * side(a, b, d) < 0 && side(c, d, a
 function crossings(p, q) = [for (i = [0:len(p) - 1], j = [0:len(q) - 1])
         let(a = p[i], b = p[(i + 1) % len(p)], c = q[j], d = q[(j + 1) % len(q)]) if (crosses(a, b, c, d))[i, j]];
 
-for (cs = cases, c = clearances)
+for (cs = cases, c = clearances, t = tips)
 {
     w = cs[1];
     h = cs[2];
-    cells = calc_ucell(width = w, height = h, div = cs[3], clearance = c);
+    tip = is_undef(t) ? c : t;
+    cells = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = t);
     line = division_line(cs[3], w, h);
-    tag = str("FAIL ", cs[0], " clearance=", c, ": ");
+    tag = str("FAIL ", cs[0], " clearance=", c, " tip_clearance=", t, ": ");
+    // A tip reaches height - tip_clearance, unless the clearance band already keeps it lower
+    top = min(max([for (p = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = 0)[0]) p[1]]),
+              h - tip);
+    assert(abs(max([for (p = cells[0]) p[1]]) - top) < eps && abs(min([for (p = cells[1]) p[1]]) - (h - top)) < eps,
+           str(tag, "a tip does not stop tip_clearance short of the opposite substrate"));
     for (k = [0:1])
     {
         poly = cells[k];
-        other = cut_segments(cells[1 - k], w, h, c);
+        other = cut_segments(cells[1 - k], w, h, tip);
         for (p = poly)
         {
             assert(p[0] > -eps && p[0] < w + eps && p[1] > -eps && p[1] < h + eps, str(tag, p, " is outside the cell"));
-            assert(k == 0 ? p[1] < h - c + eps : p[1] > c - eps,
-                   str(tag, p, " is within clearance of the other substrate"));
             assert(dist(p, other) > c - eps, str(tag, p, " is ", dist(p, other), " from the other cell"));
         }
-        for (s = cut_segments(poly, w, h, c))
+        for (s = cut_segments(poly, w, h, tip))
         {
             m = (s[0] + s[1]) / 2;
             assert(min(m[0], m[1], w - m[0], h - m[1]) < c + eps || abs(dist(m, line) - c / 2) < eps,

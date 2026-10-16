@@ -36,7 +36,8 @@ degree_n = 6;
 levels = 4;
 packing_factor = 0.3; // [0:1]
 
-radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor);
+radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
+            part = "both");
 ```
 
 Key parameters:

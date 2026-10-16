@@ -38,7 +38,7 @@ substrate_height = 3;
 extension_factor = 0.5; // [0:0.1:1]
 
 linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m,
-            extension_factor, substrate_height);
+            extension_factor, substrate_height, part = "both");
 ```
 
 Key parameters:
