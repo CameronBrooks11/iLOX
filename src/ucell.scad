@@ -132,7 +132,7 @@ function cellLeftOf(line, d, width, height) =
         // The end segments set the extensions, so the offset must not shorten them to nothing or turn them round
         assert((o[1] - o[0]) * (line[1] - line[0]) > 1e-9 && (o[n - 1] - o[n - 2]) * (line[n - 1] - line[n - 2]) > 1e-9,
                "ERROR: clearance too large for the div line")
-        assert(len(part) >= 3, "ERROR: clearance too large for the div line") dropCollinear(part);
+        assert(len(part) >= 3, "ERROR: clearance leaves nothing of the cell") dropCollinear(part);
 
 /**
  * @brief Gives the side of the line through a and b that p lies on: 1 left, -1 right, 0 on the line.
@@ -161,6 +161,15 @@ function dropCollinear(poly) =
         m = len(d),
         keep = [for (i = [0:m - 1]) if (turn(d[(i + m - 1) % m], d[i], d[(i + 1) % m]) != 0) d[i]])
         len(keep) == n ? poly : dropCollinear(keep);
+
+/**
+ * @brief Tests whether segment a-b is segment c-d moved sideways by d: parallel to it, at distance d, and overlapping
+ * it when projected onto it.
+ */
+function isOffsetOf(a, b, c, d, dist) =
+    let(u = (d - c) / norm(d - c), v = (b - a) / norm(b - a), s = [ (a - c) * u, (b - c) * u ])
+        abs(u[0] * v[1] - u[1] * v[0]) < 1e-6 && abs(abs(u[0] * (a - c)[1] - u[1] * (a - c)[0]) - dist) < 1e-6 &&
+        min(max(s), norm(d - c)) - max(min(s), 0) > 1e-9;
 
 /**
  * @brief Calculates the distance from p to the segment a-b.
@@ -221,8 +230,8 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
         div_mirrored =
             subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
         div_line = dedupePolyline(transformPoints(div_mirrored, width, height)), // full line, bottom to top
-        cell_pointsA =
-            dropCollinear(clipToAxis(cellLeftOf(div_line, clearance / 2, width, height), 1, height - tip, -1)),
+        fullA = cellLeftOf(div_line, clearance / 2, width, height),             // cell A before the tip clip
+        cell_pointsA = dropCollinear(clipToAxis(fullA, 1, height - tip, -1)), // cell A points
         cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
         ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : [], // negative polygons
         // Cell B is cell A turned 180 degrees, so checking A covers both
@@ -233,15 +242,15 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
         n = len(edgesA),
         gaps = [for (p = cell_pointsA, k = [0:n - 1]) if (boxesNear([ p[0], p[0], p[1], p[1] ], boxB[k], clearance))
                 segmentDistance(p, edgesB[k][0], edgesB[k][1])],
-        // Midpoints of A's cut sides, away from the cell's edges, with their distance from the division line
+        // Cut sides of A (edges not on the unit cell's border) that are not an offset of any division segment,
+        // taken before the tip clip, which only removes material and can cut a side short
         lineBoxes = [for (i = [0:len(div_line) - 2]) segmentBox([ div_line[i], div_line[i + 1] ])],
-        sides = [for (e = edgesA) let(m = (e[0] + e[1]) / 2)
-                if (min(m[0], m[1], width - m[0], height - m[1]) > clearance + 1e-9 &&
-                    !(abs(e[0][1] - (height - tip)) < 1e-9 && abs(e[1][1] - (height - tip)) < 1e-9)) // not the tip
-                    let(d = [for (i = [0:len(div_line) - 2])
-                                if (boxesNear([ m[0], m[0], m[1], m[1] ], lineBoxes[i], clearance / 2 + 1e-6))
-                                    segmentDistance(m, div_line[i], div_line[i + 1])])
-                        len(d) > 0 ? min(d) : undef])
+        stray = [for (e = polygonEdges(fullA)) let(box = segmentBox(e))
+                if (!([for (b = [[ 0, 0 ], [ 0, width ], [ 1, 0 ], [ 1, height ]])
+                           if (abs(e[0][b[0]] - b[1]) < 1e-9 && abs(e[1][b[0]] - b[1]) < 1e-9) 1] != []) &&
+                    [for (i = [0:len(div_line) - 2])
+                        if (boxesNear(box, lineBoxes[i], clearance / 2 + 1e-6) &&
+                            isOffsetOf(e[0], e[1], div_line[i], div_line[i + 1], clearance / 2)) 1] == []) e])
         // A split cell shows up as edges doubling back along the unit cell's border, or touching at a point
         assert(len([for (i = [0:n - 1], j = [i + 1:1:n - 1]) let(e = edgesA[i], f = edgesA[j])
                    if (boxesNear(boxA[i], boxA[j], 1e-9) &&
@@ -256,8 +265,8 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
                        if (boxesNear(boxA[i], boxB[k], 1e-9) && segmentsCross(e[0], e[1], f[0], f[1])) 1]) == 0 &&
                    (len(gaps) == 0 || min(gaps) > clearance - 1e-6),
                "ERROR: Div line brings the cells closer than the clearance")
-        // A side further than half the clearance from the line means the offset swallowed a feature
-        assert(len([for (d = sides) if (is_undef(d) || abs(d - clearance / 2) > 1e-6) 1]) == 0,
+        // Where the offset swallowed a feature, what is left is a side pushed off the end of its division segment
+        assert(stray == [],
                "ERROR: Div line has a feature too narrow for the clearance")
 
             [cell_pointsA, cell_pointsB, flatten(ncell_points)];

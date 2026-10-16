@@ -1,7 +1,7 @@
 // Checks the A/B clearance (#21): both cells stay inside the unit cell without crossing themselves or each other,
-// every vertex of one is at least `clearance` from the other, the cut sides more than `clearance` from the cell's
-// edges lie exactly `clearance` / 2 from the division line and run parallel to it, and each tip stops `tip_clearance`
-// short of the opposite substrate. Prints PASS.
+// every vertex of one is at least `clearance` from the other, every cut side (before the tip clip) is a division
+// segment moved `clearance` / 2 sideways: parallel to it, at that distance, and overlapping it, and each tip stops
+// `tip_clearance` short of the opposite substrate. Prints PASS.
 //
 // Run: openscad --hardwarnings -o clearance.stl tests/clearance/clearance_check.scad
 // It exits non-zero on a failure: the cube at the end, the only geometry, is reached only when every check passed.
@@ -12,11 +12,18 @@ include <../../iLOX.scad>;
 eps = 1e-6;
 
 cases = [
-    // [name, width, height, div]
+    // [name, width, height, div, clearances (optional), tip_clearances (optional); defaults below]
     [ "vertical", 5, 10, [ [ 0.3, 0 ], [ 0.3, 0.4 ] ] ],
     [ "t-slot", 10, 10, [ [ 0.3, 0 ], [ 0.3, 0.4 ], [ 0.5, 0.4 ], [ 0.5, 0.5 ] ] ],
     [ "slanted", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ] ],
     [ "leaning-right", 5, 10, [ [ 0.3, 0 ], [ 0.5, 0.1 ], [ 0.5, 0.4 ] ] ],
+    // A 1 mm tip clip at clearance 0.5 cuts off the part of cell A between the zig-zag's strands, so no 1 mm tip here
+    [ "zig-zag", 10, 10, [ [ 0.4, 0 ], [ 0.4, 0.3 ], [ 0.475, 0.17009618943233417 ], [ 0.475, 0.45 ], [ 0.5, 0.5 ] ],
+      undef, [ undef, 0 ] ],
+    // A tip lead-in: the tip clip cuts the side next to the tip face short
+    [ "tip-lead-in", 5, 10, [ [ 0.4, 0 ], [ 0.5, 0.05 ], [ 0.5, 0.4 ] ], [ 0, 0.2, 0.4 ] ],
+    // A 0.18 mm step: its miter corners lie past the step's ends; at clearance 0.5 the step is too narrow
+    [ "t-slot-step", 10, 10, [ [ 0.482, 0 ], [ 0.482, 0.3 ], [ 0.5, 0.3 ], [ 0.5, 0.5 ] ], [ 0, 0.2 ] ],
     [ "arc", 10, 10, shift_points(arc_points(diameter = 0.5, start_angle = 90, end_angle = -90, num_points = 15), 0.5,
                                   0.75) ],
     [ "arc-fine", 10, 10, shift_points(arc_points(diameter = 0.5, start_angle = 90, end_angle = -90, num_points = 60),
@@ -54,6 +61,12 @@ function full_top(line, c, w, h) =
         x_top = q[0] + (h - q[1]) / u[1] * u[0])
         x_top >= 0 ? h : q[1] + (0 - q[0]) / u[0] * u[1];
 
+// Segment a-b is segment c-d moved sideways by dist: parallel, at that distance, and overlapping it along its length
+function offset_of(a, b, c, d, dist) =
+    let(u = unit(d - c), s = [ (a - c) * u, (b - c) * u ])
+        abs(u[0] * unit(b - a)[1] - u[1] * unit(b - a)[0]) < eps &&
+        abs(abs(u[0] * (a - c)[1] - u[1] * (a - c)[0]) - dist) < eps && min(max(s), norm(d - c)) - max(min(s), 0) > eps;
+
 function side(a, b, p) = let(v = (b - a)[0] * (p - a)[1] - (b - a)[1] * (p - a)[0]) abs(v) < eps ? 0 : sign(v);
 
 // Segments a-b and c-d cross at a point inside both
@@ -62,12 +75,13 @@ function crosses(a, b, c, d) = side(a, b, c) * side(a, b, d) < 0 && side(c, d, a
 function crossings(p, q) = [for (i = [0:len(p) - 1], j = [0:len(q) - 1])
         let(a = p[i], b = p[(i + 1) % len(p)], c = q[j], d = q[(j + 1) % len(q)]) if (crosses(a, b, c, d))[i, j]];
 
-for (cs = cases, c = clearances, t = tips)
+for (cs = cases, c = is_undef(cs[4]) ? clearances : cs[4], t = is_undef(cs[5]) ? tips : cs[5])
 {
     w = cs[1];
     h = cs[2];
     tip = is_undef(t) ? c : t;
     cells = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = t);
+    full = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = 0);
     line = division_line(cs[3], w, h);
     tag = str("FAIL ", cs[0], " clearance=", c, " tip_clearance=", t, ": ");
     top = min(full_top(line, c, w, h), h - tip);
@@ -83,14 +97,9 @@ for (cs = cases, c = clearances, t = tips)
             assert(p[0] > -eps && p[0] < w + eps && p[1] > -eps && p[1] < h + eps, str(tag, p, " is outside the cell"));
             assert(dist(p, other) > c - eps, str(tag, p, " is ", dist(p, other), " from the other cell"));
         }
-        for (s = cut_segments(poly, w, h, tip))
-        {
-            m = (s[0] + s[1]) / 2;
-            assert(min(m[0], m[1], w - m[0], h - m[1]) < c + eps || abs(dist(m, line) - c / 2) < eps,
-                   str(tag, "midpoint ", m, " is ", dist(m, line), " from the division line"));
-            assert(len([for (t = line) if (side([ 0, 0 ], unit(s[1] - s[0]), unit(t[1] - t[0])) == 0) 1]) > 0,
-                   str(tag, "side ", s, " is not parallel to the division line"));
-        }
+        for (s = cut_segments(full[k], w, h, 0))
+            assert([for (t = line) if (offset_of(s[0], s[1], t[0], t[1], c / 2)) 1] != [],
+                   str(tag, "side ", s, " is not a division segment moved clearance / 2 sideways"));
         assert(len(crossings(poly, poly)) == 0, str(tag, "a cell crosses itself"));
     }
     assert(len(crossings(cells[0], cells[1])) == 0, str(tag, "the cells cross"));
