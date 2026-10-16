@@ -59,7 +59,7 @@ function unit(v) = v / norm(v);
 function full_top(line, c, w, h) =
     let(s = line[len(line) - 1], u = unit(s[1] - s[0]), q = s[1] + [ -u[1], u[0] ] * c / 2,
         x_top = q[0] + (h - q[1]) / u[1] * u[0])
-        x_top >= 0 ? h : q[1] + (0 - q[0]) / u[0] * u[1];
+        x_top >= 0 || abs(u[0]) < eps ? h : q[1] + (0 - q[0]) / u[0] * u[1];
 
 // Segment a-b is segment c-d moved sideways by dist: parallel, at that distance, and overlapping it along its length
 function offset_of(a, b, c, d, dist) =
