@@ -44,7 +44,9 @@ linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, g
 Key parameters:
 
 - `clearance` — the gap between the two interlocking halves in mm, measured
-  normal to the division line.
+  normal to the division line. A feature of the line too small for the
+  clearance, such as a barb narrower than it, is lost in the offset, and the
+  gap there is wider.
 - `grid_n`, `grid_m` — number of grid points in X and Y.
 - `extension_factor` — stretches cells along Y (up to one cell width) to
   reduce the gaps between rows.

@@ -163,15 +163,6 @@ function dropCollinear(poly) =
         len(keep) == n ? poly : dropCollinear(keep);
 
 /**
- * @brief Tests whether segment a-b is segment c-d moved sideways by d: parallel to it, at distance d, and overlapping
- * it when projected onto it.
- */
-function isOffsetOf(a, b, c, d, dist) =
-    let(u = (d - c) / norm(d - c), v = (b - a) / norm(b - a), s = [ (a - c) * u, (b - c) * u ])
-        abs(u[0] * v[1] - u[1] * v[0]) < 1e-6 && abs(abs(u[0] * (a - c)[1] - u[1] * (a - c)[0]) - dist) < 1e-6 &&
-        min(max(s), norm(d - c)) - max(min(s), 0) > 1e-9;
-
-/**
  * @brief Calculates the distance from p to the segment a-b.
  */
 function segmentDistance(p, a, b) = let(ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - a - ab * t);
@@ -208,7 +199,9 @@ function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[
  * @param width The width of the unit cell.
  * @param height The height of the unit cell.
  * @param div Array of division points, each point as [x, y].
- * @param clearance Gap between cells A and B in mm, measured normal to the division line.
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line. The division line is offset
+ * with mitered corners, so a feature too small for the clearance, such as a barb narrower than it, is lost and the gap
+ * there is wider than the clearance.
  * @param neg_poly (Optional) Array of negative polygon points, each point as [x, y].
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
@@ -235,15 +228,7 @@ function calc_ucell(width, height, div, clearance, neg_poly = []) =
         boxB = [for (e = edgesB) segmentBox(e)],
         n = len(edgesA),
         gaps = [for (p = cell_pointsA, k = [0:n - 1]) if (boxesNear([ p[0], p[0], p[1], p[1] ], boxB[k], clearance))
-                segmentDistance(p, edgesB[k][0], edgesB[k][1])],
-        // Cut sides of A (edges not on the unit cell's border) that are not an offset of any division segment
-        lineBoxes = [for (i = [0:len(div_line) - 2]) segmentBox([ div_line[i], div_line[i + 1] ])],
-        stray = [for (k = [0:n - 1]) let(e = edgesA[k])
-                if (!([for (b = [[ 0, 0 ], [ 0, width ], [ 1, 0 ], [ 1, height ]])
-                           if (abs(e[0][b[0]] - b[1]) < 1e-9 && abs(e[1][b[0]] - b[1]) < 1e-9) 1] != []) &&
-                    [for (i = [0:len(div_line) - 2])
-                        if (boxesNear(boxA[k], lineBoxes[i], clearance / 2 + 1e-6) &&
-                            isOffsetOf(e[0], e[1], div_line[i], div_line[i + 1], clearance / 2)) 1] == []) k])
+                segmentDistance(p, edgesB[k][0], edgesB[k][1])])
         // A split cell shows up as edges doubling back along the unit cell's border, or touching at a point
         assert(len([for (i = [0:n - 1], j = [i + 1:1:n - 1]) let(e = edgesA[i], f = edgesA[j])
                    if (boxesNear(boxA[i], boxA[j], 1e-9) &&
@@ -258,9 +243,6 @@ function calc_ucell(width, height, div, clearance, neg_poly = []) =
                        if (boxesNear(boxA[i], boxB[k], 1e-9) && segmentsCross(e[0], e[1], f[0], f[1])) 1]) == 0 &&
                    (len(gaps) == 0 || min(gaps) > clearance - 1e-6),
                "ERROR: Div line brings the cells closer than the clearance")
-        // Where the offset swallowed a feature, what is left is a side pushed off the end of its division segment
-        assert(stray == [],
-               "ERROR: Div line has a feature too narrow for the clearance")
 
             [cell_pointsA, cell_pointsB, flatten(ncell_points)];
 

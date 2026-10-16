@@ -44,7 +44,8 @@ Key parameters:
 - `base_ucell_div` — the division line that splits the unit cell into the two
   interlocking halves.
 - `clearance` — the gap between the two halves in mm, measured normal to the
-  division line.
+  division line. A feature of the line too small for the clearance, such as a
+  barb narrower than it, is lost in the offset, and the gap there is wider.
 - `degree_n` — order of rotational symmetry for each cell (6 = hexagonal).
 - `levels` — how many rings of hexagons the lattice grows outward.
 - `packing_factor` — extra spacing between cells, from none (0) to half a cell
