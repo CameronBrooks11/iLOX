@@ -47,6 +47,13 @@ function division_line(div, w, h) =
 
 function unit(v) = v / norm(v);
 
+// How high cell A reaches with no tip clip: the top edge, unless the clearance band along the line's last segment,
+// extended, leaves the cell through its left edge first
+function full_top(line, c, w, h) =
+    let(s = line[len(line) - 1], u = unit(s[1] - s[0]), q = s[1] + [ -u[1], u[0] ] * c / 2,
+        x_top = q[0] + (h - q[1]) / u[1] * u[0])
+        x_top >= 0 ? h : q[1] + (0 - q[0]) / u[0] * u[1];
+
 function side(a, b, p) = let(v = (b - a)[0] * (p - a)[1] - (b - a)[1] * (p - a)[0]) abs(v) < eps ? 0 : sign(v);
 
 // Segments a-b and c-d cross at a point inside both
@@ -63,9 +70,7 @@ for (cs = cases, c = clearances, t = tips)
     cells = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = t);
     line = division_line(cs[3], w, h);
     tag = str("FAIL ", cs[0], " clearance=", c, " tip_clearance=", t, ": ");
-    // A tip reaches height - tip_clearance, unless the clearance band already keeps it lower
-    top = min(max([for (p = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = 0)[0]) p[1]]),
-              h - tip);
+    top = min(full_top(line, c, w, h), h - tip);
     assert(abs(max([for (p = cells[0]) p[1]]) - top) < eps && abs(min([for (p = cells[1]) p[1]]) - (h - top)) < eps,
            str(tag, "a tip does not stop tip_clearance short of the opposite substrate"));
     for (k = [0:1])

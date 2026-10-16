@@ -2,7 +2,7 @@
 // end is reached only if the case was wrongly accepted.
 //
 // Run every index of `cases`:
-//   for i in 0 1 2 3 4 5 6 7 8 9; do
+//   for i in 0 1 2 3 4 5 6 7 8 9 10 11; do
 //     openscad -D case=$i -o out.stl tests/clearance/rejected_inputs.scad && echo "case $i was not rejected"
 //   done
 
@@ -11,7 +11,7 @@ include <../../iLOX.scad>;
 case = -1;
 
 cases = [
-    // [name, width, height, div, clearance]
+    // [name, width, height, div, clearance, tip_clearance (optional)]
     [ "barb narrower than the clearance", 5, 10, [ [ 0.5, 0 ], [ 0.5, 0.4 ], [ 0.46, 0.1 ], [ 0.46, 0.45 ] ], 0.2 ],
     [ "barbs swallowed by the offset", 10, 5, [ [ 0.5, 0 ], [ 0.7, 0.2 ], [ 0.4, 0.5 ] ], 1.0 ],
     [ "self-crossing line", 5, 10, [ [ 0.5, 0 ], [ 0.2, 0.8 ], [ 0.8, 0.8 ] ], 0.2 ],
@@ -22,10 +22,12 @@ cases = [
     [ "flat start along the bottom edge", 10, 10, [ [ 0.3, 0 ], [ 0.5, 0 ], [ 0.5, 0.4 ] ], 0.2 ],
     [ "old [x, y, tolerance] points", 5, 10, [ [ 0.5, 0, 0.01 ], [ 0.3, 0.4, 0.01 ] ], 0.2 ],
     [ "negative clearance", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.4 ] ], -0.1 ],
+    [ "tip_clearance at half the cell height", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], 0.2, 5 ],
+    [ "default tip_clearance above half the cell height", 20, 2, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], 1.2 ],
 ];
 
 assert(case >= 0 && case < len(cases), str("case must be 0 to ", len(cases) - 1));
 cs = cases[case];
 echo(str("case ", case, ": ", cs[0]));
-cells = calc_ucell(width = cs[1], height = cs[2], div = cs[3], clearance = cs[4]);
+cells = calc_ucell(width = cs[1], height = cs[2], div = cs[3], clearance = cs[4], tip_clearance = cs[5]);
 cube(1);
