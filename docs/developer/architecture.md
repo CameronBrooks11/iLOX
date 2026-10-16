@@ -22,7 +22,7 @@ The unit geometry refers to how the surface is bisected from +y to -y to form th
 
 ![](../images/unit1.png)
 
-Adding a tolerance on this line:
+Adding a clearance on this line (a gap in mm, measured normal to the line):
 
 ![](../images/unit2.png)
 

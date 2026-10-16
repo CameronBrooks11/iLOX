@@ -11,8 +11,11 @@ width_x = 5;
 // Height of the unit cell in the y-direction
 height_y = 10;
 
-// Points are [x, y, tolerance], with the first as 0 for the minor (bottom) or 1 for the major (top) ucell division.
-base_ucell_div = [ [ 0.5, 0, 0.01 ], [ 0.3, 0.1, 0.01 ], [ 0.3, 0.4, 0.01 ] ];
+// Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell division.
+base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
+
+// Gap between cells A and B in mm
+clearance = 0.2;
 
 // Define a tolerance for the top face of the unit cell
 ucell_top_face_tol = 0.01; // [0:0.001:0.05]
@@ -44,7 +47,8 @@ base_scaled_ucell_point_colors = [ "Indigo", "Orange" ];
 
 // Calculate cells (A and B) using the defined dimensions and division points
 base_ucell_cells =
-    calc_ucell(width = width_x, height = height_y, div = base_ucell_div, neg_poly = base_ucell_neg_polys);
+    calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
+               neg_poly = base_ucell_neg_polys);
 
 // Make sure to view from the top!!!
 if (ucell_render)

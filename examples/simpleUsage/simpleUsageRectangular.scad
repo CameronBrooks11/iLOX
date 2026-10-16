@@ -13,8 +13,11 @@ width_x = 5;
 // Height of the unit cell in the y-direction
 height_y = 10;
 
-// Each point is defined as [x, y, tolerance] and must form a division line
-base_ucell_div = [ [ 0.5, 0, 0.01 ], [ 0.3, 0.1, 0.01 ], [ 0.3, 0.4, 0.01 ] ];
+// Each point is defined as [x, y] and must form a division line
+base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
+
+// Gap between cells A and B in mm
+clearance = 0.2;
 
 // Define negative polygon points to create voids within the cell, each point is defined as [x, y]
 base_ucell_neg_poly = [
@@ -40,7 +43,7 @@ extension_factor = 0.5; // [0:0.1:1]
 
 // Select whether to render the 2D unit cell to design or the final 3D radial tessellation
 if (show_ucell)
-    ucell_designer(width_x, height_y, base_ucell_div);
+    ucell_designer(width_x, height_y, base_ucell_div, clearance);
 else
-    linear_iLOX(width_x, height_y, base_ucell_div, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
+    linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
                 substrate_height);

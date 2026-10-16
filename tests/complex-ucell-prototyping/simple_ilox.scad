@@ -5,11 +5,14 @@ width_x = 5;   // Width of the unit cell in the x-direction
 height_y = 10; // Height of the unit cell in the y-direction
 
 // Define division points for creating the cell's internal structure
-// Each point is defined as [x, y, tolerance]
+// Each point is defined as [x, y]
 // Must form a division line 
 // First point must start with 0 if defining the minor half of the ucell division
 // First point must start with 1 if defining the major half of the ucell division
-example_div = [ [ 0.3, 0, 0.01 ], [ 0.3, 0.4, 0.01 ] ];
+example_div = [ [ 0.3, 0 ], [ 0.3, 0.4 ] ];
+
+// Gap between cells A and B in mm
+clearance = 0.2;
 
 // Define negative polygon points to create voids within the cell
 // Each point is defined as [x, y]
@@ -22,7 +25,8 @@ ucell_render = true; // Flag to render the unit cells or omit them
 
 // Calculate cells (A and B) using the defined dimensions and division points
 example_cells =
-    calc_ucell(width = width_x, height = height_y, div = example_div, neg_poly = example_neg_poly);
+    calc_ucell(width = width_x, height = height_y, div = example_div, clearance = clearance,
+               neg_poly = example_neg_poly);
 
 echo("example_cells: ", example_cells);
 

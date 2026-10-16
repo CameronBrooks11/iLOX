@@ -163,19 +163,20 @@ function is_within_radius(point, radius, removal_points) =
  * @param start_angle The starting angle of the arc (in degrees).
  * @param end_angle The ending angle of the arc (in degrees).
  * @param num_points The number of points along the arc, defining its resolution.
- * @param z_val The z-coordinate value for the arc points.
+ * @param z_val (Optional) The z-coordinate value for the arc points.
  *
- * @return A list of [x, y] points representing the arc.
+ * @return A list of [x, y] points representing the arc, or [x, y, z_val] points if z_val is given.
  */
-function arc_points(diameter, start_angle, end_angle, num_points, z_val = 0) =
+function arc_points(diameter, start_angle, end_angle, num_points, z_val = undef) =
   let (
     radius = diameter / 2
   ) [
-      for (i = [0:num_points]) [
-        radius * cos(start_angle + (end_angle - start_angle) * i / num_points),
-        radius * sin(start_angle + (end_angle - start_angle) * i / num_points),
-        z_val,
-      ],
+      for (i = [0:num_points]) let (
+        p = [
+          radius * cos(start_angle + (end_angle - start_angle) * i / num_points),
+          radius * sin(start_angle + (end_angle - start_angle) * i / num_points),
+        ]
+      ) is_undef(z_val) ? p : concat(p, z_val),
   ];
 /**
  * @brief Shifts a list of points by a given offset.
