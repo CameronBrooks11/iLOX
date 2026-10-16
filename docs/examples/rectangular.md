@@ -44,10 +44,13 @@ linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, g
 Key parameters:
 
 - `clearance` — the gap between the two interlocking halves in mm, measured
-  normal to the division line.
+  normal to the division line. A feature of the line too small for the
+  clearance, such as a barb narrower than it, is lost in the offset, and the
+  gap there is wider.
 - `tip_clearance` — optional gap between each cell's tip and the opposite
   substrate, in mm, below half the cell height; defaults to `clearance`, and `0`
-  gives full-height cells.
+  gives full-height cells. A large value can cut a cell short of interlocking,
+  and a clip just above a horizontal face can leave a thin ledge.
 - `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
   half (print B upside down).
 - `grid_n`, `grid_m` — number of grid points in X and Y.

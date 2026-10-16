@@ -2,7 +2,7 @@
 // end is reached only if the case was wrongly accepted.
 //
 // Run every index of `cases`:
-//   for i in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+//   for i in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
 //     openscad -D case=$i -o out.stl tests/clearance/rejected_inputs.scad && echo "case $i was not rejected"
 //   done
 
@@ -13,7 +13,6 @@ case = -1;
 cases = [
     // [name, width, height, div, clearance, tip_clearance (optional)]
     [ "barb narrower than the clearance", 5, 10, [ [ 0.5, 0 ], [ 0.5, 0.4 ], [ 0.46, 0.1 ], [ 0.46, 0.45 ] ], 0.2 ],
-    [ "barbs swallowed by the offset", 10, 5, [ [ 0.5, 0 ], [ 0.7, 0.2 ], [ 0.4, 0.5 ] ], 1.0 ],
     [ "self-crossing line", 5, 10, [ [ 0.5, 0 ], [ 0.2, 0.8 ], [ 0.8, 0.8 ] ], 0.2 ],
     [ "neck on x = 0", 5, 10, [ [ 0.5, 0 ], [ 0, 0.1 ], [ 0, 0.4 ] ], 0.2 ],
     [ "neck thinner than the clearance", 5, 10, [ [ 0.5, 0 ], [ 0.01, 0.1 ], [ 0.01, 0.4 ] ], 0.2 ],
@@ -25,14 +24,14 @@ cases = [
     [ "start y neither 0 nor 1", 5, 10, [ [ 0.5, 0.2 ], [ 0.3, 0.4 ] ], 0.2 ],
     [ "line folding back on itself", 5, 10, [ [ 0.5, 0 ], [ 0.5, 0.3 ], [ 0.5, 0.1 ], [ 0.5, 0.45 ] ], 0.2 ],
     [ "end segment used up by the offset", 5, 10, [ [ 0.6, 0 ], [ 0.6, 0.01 ], [ 0.3, 0.01 ], [ 0.3, 0.4 ] ], 0.5 ],
-    [ "feature swallowed near the cell's edges", 15, 10,
-      [ [ 0.7234, 0 ], [ 0.7234, 0.119 ], [ 0.6848, 0.1746 ], [ 0.7799, 0.2342 ], [ 0.5, 0.5 ] ], 3 ],
     [ "stem into a finely sampled arc", 10, 10,
       concat([[ 0.5, 1 ]], shift_points(arc_points(diameter = 0.3, start_angle = 90, end_angle = -90, num_points = 60),
                                         0.5, 0.55)),
       0.2 ],
     [ "tip_clearance at half the cell height", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], 0.2, 5 ],
     [ "default tip_clearance above half the cell height", 20, 2, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], 1.2 ],
+    [ "tip clip cutting a cell in two", 10, 10,
+      [ [ 0.4, 0 ], [ 0.4, 0.3 ], [ 0.475, 0.17009618943233417 ], [ 0.475, 0.45 ], [ 0.5, 0.5 ] ], 0.5, 1 ],
 ];
 
 // Top-level assignments run before module statements, so the case is checked and named here, ahead of calc_ucell

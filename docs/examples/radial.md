@@ -45,10 +45,12 @@ Key parameters:
 - `base_ucell_div` — the division line that splits the unit cell into the two
   interlocking halves.
 - `clearance` — the gap between the two halves in mm, measured normal to the
-  division line.
+  division line. A feature of the line too small for the clearance, such as a
+  barb narrower than it, is lost in the offset, and the gap there is wider.
 - `tip_clearance` — optional gap between each cell's tip and the opposite
   substrate, in mm, below half the cell height; defaults to `clearance`, and `0`
-  gives full-height cells.
+  gives full-height cells. A large value can cut a cell short of interlocking,
+  and a clip just above a horizontal face can leave a thin ledge.
 - `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
   half (print B upside down).
 - `degree_n` — order of rotational symmetry for each cell (6 = hexagonal).

@@ -17,12 +17,15 @@ cases = [
     [ "t-slot", 10, 10, [ [ 0.3, 0 ], [ 0.3, 0.4 ], [ 0.5, 0.4 ], [ 0.5, 0.5 ] ] ],
     [ "slanted", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ] ],
     [ "leaning-right", 5, 10, [ [ 0.3, 0 ], [ 0.5, 0.1 ], [ 0.5, 0.4 ] ] ],
-    // A 1 mm tip clip at clearance 0.5 cuts off the part of cell A between the zig-zag's strands, so no 1 mm tip here
     [ "zig-zag", 10, 10, [ [ 0.4, 0 ], [ 0.4, 0.3 ], [ 0.475, 0.17009618943233417 ], [ 0.475, 0.45 ], [ 0.5, 0.5 ] ],
-      undef, [ undef, 0 ] ],
+      [ 0, 0.2 ] ],
+    // At clearance 0.5 a 1 mm tip clip cuts off the part of cell A between the strands (rejected_inputs has it)
+    [ "zig-zag", 10, 10, [ [ 0.4, 0 ], [ 0.4, 0.3 ], [ 0.475, 0.17009618943233417 ], [ 0.475, 0.45 ], [ 0.5, 0.5 ] ],
+      [0.5], [ undef, 0 ] ],
     // A tip lead-in: the tip clip cuts the side next to the tip face short
     [ "tip-lead-in", 5, 10, [ [ 0.4, 0 ], [ 0.5, 0.05 ], [ 0.5, 0.4 ] ], [ 0, 0.2, 0.4 ] ],
-    // A 0.18 mm step: its miter corners lie past the step's ends; at clearance 0.5 the step is too narrow
+    // A 0.18 mm step: its outer miter corner lies past the step's end; at clearance 0.5 a whole side of the cell does,
+    // which this check's overlap rule does not model
     [ "t-slot-step", 10, 10, [ [ 0.482, 0 ], [ 0.482, 0.3 ], [ 0.5, 0.3 ], [ 0.5, 0.5 ] ], [ 0, 0.2 ] ],
     [ "arc", 10, 10, shift_points(arc_points(diameter = 0.5, start_angle = 90, end_angle = -90, num_points = 15), 0.5,
                                   0.75) ],
