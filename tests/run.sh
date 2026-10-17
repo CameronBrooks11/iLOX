@@ -21,7 +21,7 @@ if run --hardwarnings tests/clearance/clearance_check.scad; then ok clearance_ch
 # The file's own range assertion gives the last case. Every case must stop on one of calc_ucell's assertions, whose
 # messages start "ERROR:"; a parser error does not count.
 run -D case=-1 tests/clearance/rejected_inputs.scad
-last=$(grep -o 'case must be 0 to [0-9]*' "$out/log" | grep -o '[0-9]*$')
+last=$(grep -o 'case must be 0 to [0-9]*' "$out/log" | head -n1 | grep -o '[0-9]*$')
 if [ -z "$last" ]; then
     fail "rejected_inputs: case count"
 else
