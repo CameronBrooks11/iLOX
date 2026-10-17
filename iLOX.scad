@@ -70,14 +70,8 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
 
     // Each B cell faces three A cells, one cell width away, across a flat side of their hexagonal extrusions. Widening
     // the extrusions by 1 / cos(30) puts each flat side at the profile's x, so a section between neighbours is the
-    // unit cell and the gap is the clearance.
-    module hex_cells(positions, cell_type)
-    {
-        for (pos = positions)
-            translate(pos) scale([ 1 / cos(30), 1 / cos(30), 1 ]) place_rotated_cells(
-                cells = base_ucell_cells, positions = [[ 0, 0 ]], n = 6, width = width_x, rotate = true,
-                cell_type = cell_type);
-    }
+    // unit cell and the gap is the clearance. Positions are scaled down to cancel the widening.
+    widen = [ 1 / cos(30), 1 / cos(30), 1 ];
 
     // Generate hexagon centers for tessellation
     tess_points = hexagons_centers_radial(radius = width_x, levels = levels);
@@ -89,7 +83,8 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
     tess_hex_vertices = hexagons_vertices(radius = width_x, centers = tess_points, angular_offset = 30);
     if (part != "B") color(cellA_color) union()
     { // Place cell A instances at tessellation points with rotation
-        hex_cells(tess_points, "A");
+        scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points * cos(30), n = 6,
+                                         width = width_x, rotate = true, cell_type = "A");
 
         // Render substrate as solid hexagons beneath cells
         translate([ 0, 0, -substrate_height ])
@@ -100,7 +95,8 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
     if (part != "A") color(cellB_color) union()
     {
         // Place cell B instances at triangulated tessellation points with rotation
-        hex_cells(tess_points_tri, "B");
+        scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri * cos(30), n = 6,
+                                         width = width_x, rotate = true, cell_type = "B");
 
         // Render substrate as solid hexagons beneath cells
         translate([ 0, 0, height_y ]) generic_poly(vertices = tess_hex_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]],
