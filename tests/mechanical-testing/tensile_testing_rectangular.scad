@@ -6,12 +6,12 @@
  * as per ASTM D638 Type I dimensions, integrating the previously defined cell structures.
  */
 
-zFite = $preview ? 0.1 : 0; // Set the z-fighting offset for preview mode
+z_fight = $preview ? 0.1 : 0; // Set the z-fighting offset for preview mode
 
 // Should be kept true. Flag to clear the render, can be set to any value to reset the render state.
-rectlinear_tess_derender = true;
+rectilinear_tess_derender = true;
 
-include <../direct-workflow/tesselation_rectangular.scad> // Include the final stage in the direct workflow
+include <../direct-workflow/tessellation_rectangular.scad> // Include the final stage in the direct workflow
 
 // Dimensions based on ASTM D638 Type I tensile test specimen. Source:
 // https://www.researchgate.net/publication/346730095/figure/fig1/AS:1083887929303061@1635430428214/Dimensions-of-the-tensile-test-specimen-ASTM-D638-type-I.jpg
@@ -36,14 +36,14 @@ min_y = min([for (center = shifted_tess_points) center[1]]); // Minimum y-coordi
 max_y = max([for (center = shifted_tess_points) center[1]]); // Maximum y-coordinate in the tessellation points.
 
 // connection_width = standard_tensile_specimen_width + extra_width_tensile_connector;    // Width of the narrow section
-connection_width = (max_y + tesselation_width) * 2;
+connection_width = (max_y + tessellation_width) * 2;
 // connection_length = standard_tensile_specimen_length + extra_length_tensile_connector; // Length of the specimen
 connection_length =
     (standard_tensile_specimen_length + extra_length_tensile_connector) / 2; // cut short for testing samples
 
 // Adjust from the center of the cells to the edge of the cells
-min_y_edge = min_y - tesselation_width;
-max_y_edge = max_y + tesselation_width;
+min_y_edge = min_y - tessellation_width;
+max_y_edge = max_y + tessellation_width;
 // Width of the cut slots to allow bend, depth is automatically set to the half the substrate height
 cut_width = 2;
 cut_depth = substrate_height / 4;
@@ -62,7 +62,7 @@ tensile_ilox_specimen();
 // Render the tensile test specimen with integrated cells
 module tensile_ilox_specimen()
 {
-    connection_length_edge = connection_length + max_x + tesselation_width;
+    connection_length_edge = connection_length + max_x + tessellation_width;
 
     difference()
     {
@@ -94,9 +94,9 @@ module tensile_ilox_specimen()
         for (i = [0:1])
         {
             mirror([ i, 0, 0 ]) color("Salmon")
-                translate([ max_x + tesselation_width + cut_width / 2, 0, substrate_height / 2 + cut_depth ])
+                translate([ max_x + tessellation_width + cut_width / 2, 0, substrate_height / 2 + cut_depth ])
 
-                    cube([ cut_width, max_y_edge * 2 + zFite, substrate_height ], center = true);
+                    cube([ cut_width, max_y_edge * 2 + z_fight, substrate_height ], center = true);
         }
     }
 }
@@ -109,7 +109,7 @@ module tensile_ilox_holder()
         // Base rectangle for the holder
         color("DarkGrey") cube(
             [
-                max_x * 2 + tesselation_width * 2 + holder_extra_width * 2, max_x * 2 + holder_extra_width * 2,
+                max_x * 2 + tessellation_width * 2 + holder_extra_width * 2, max_x * 2 + holder_extra_width * 2,
                 holder_thickness
             ],
             center = true);
@@ -118,8 +118,8 @@ module tensile_ilox_holder()
         for (i = [0:1])
         {
             mirror([ i, 0, 0 ]) color("Salmon")
-                translate([ max_x + tesselation_width + cut_width / 2, 0, holder_thickness / 2 ])
-                    cube([ cut_width * 2 + cut_tol, max_y_edge * 2, holder_thickness * 2 + zFite ], center = true);
+                translate([ max_x + tessellation_width + cut_width / 2, 0, holder_thickness / 2 ])
+                    cube([ cut_width * 2 + cut_tol, max_y_edge * 2, holder_thickness * 2 + z_fight ], center = true);
         }
     }
 }

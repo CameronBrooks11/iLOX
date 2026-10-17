@@ -19,15 +19,15 @@ if (rotx_render)
     // Define a radial separation distance between the cells for adjustment
     radial_separation_distance = 0.5;
 
-    subtrate_width = width_x * 2 + radiusapo(radial_separation_distance, degree_n) * 2;
+    substrate_width = width_x * 2 + radiusapo(radial_separation_distance, degree_n) * 2;
 
     // Place cell A instances by directly accessing the ucell_rotX_A() module usually called by place_rotated_cells()
     // for ucell A instances this is effectively the same way how it's called in place_rotated_cells()
     ucell_rotX_A(cells = base_ucell_cells, n = degree_n, color = "OliveDrab");
 
-    // Give the floating A cell a subtrate to sit upon
+    // Give the floating A cell a substrate to sit upon
     translate([ 0, 0, -single_substrate_thickness / 2 ]) color("OliveDrab") rotate([ 0, 0, 360 / (degree_n * 2) ])
-        cylinder(d = subtrate_width, h = single_substrate_thickness, center = true, $fn = degree_n);
+        cylinder(d = substrate_width, h = single_substrate_thickness, center = true, $fn = degree_n);
 
     // Place cell B instances split over rotated 3 rotational extrusions
     for (i = [0:degree_n / 2 - 1])
@@ -47,5 +47,5 @@ if (rotx_render)
     // Connect the floating B cell halves using a cylindrical extrusion
     translate([ 0, 0, height_y + single_substrate_thickness / 2 ]) color("CadetBlue")
         rotate([ 0, 0, 360 / (degree_n * 2) ])
-            cylinder(d = subtrate_width, h = single_substrate_thickness, center = true, $fn = degree_n);
+            cylinder(d = substrate_width, h = single_substrate_thickness, center = true, $fn = degree_n);
 }
