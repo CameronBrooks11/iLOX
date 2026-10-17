@@ -35,7 +35,7 @@ iLOX needs [tessella](https://github.com/CameronBrooks11/tessella), as `include 
 git clone https://github.com/CameronBrooks11/tessella.git
 ```
 
-CI tests against tessella commit `e6e97ed`, the ref in `.github/workflows/test.yml`.
+CI tests against the tessella ref in `.github/workflows/test.yml`.
 
 For batch exports of parameter sets, [scadbatch](https://github.com/CameronBrooks11/scadbatch) is optional.
 
@@ -55,7 +55,7 @@ This can be found under `tests/direct-workflow` and is a sequential set of scrip
 
 ### Mechanical Testing
 
-The `tests/mechanical-testing` directory includes scripts that apply serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
+The `tests/mechanical-testing` directory includes scripts that serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
 
 ## Library Structure
 
@@ -97,7 +97,7 @@ This file provides utility functions for point operations such as sorting, calcu
 
 ### sorted.scad
 
-A helper file for implementing sorting utilities used by `point_utils.scad` for ordering points based on a specified key function. Used from [dotSCAD](https://github.com/JustinSDK/dotSCAD) under the LGPL-3.0; see [License](#license).
+A helper file for implementing sorting utilities used by `point_utils.scad` for ordering points based on a specified key function. From dotSCAD; see [License](#license).
 
 ### regpoly_utils.scad
 
@@ -117,12 +117,11 @@ This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
 Third-party code and dependencies:
 
-- `src/utils/sorted.scad` is from Justin Lin's [dotSCAD](https://github.com/JustinSDK/dotSCAD), under the [GNU Lesser General Public License v3.0](LICENSE.LGPL-3.0).
+- `src/utils/sorted.scad` is from Justin Lin's [dotSCAD](https://github.com/JustinSDK/dotSCAD), under the [GNU Lesser General Public License v3.0](src/utils/LICENSE.LGPL-3.0).
 - [tessella](https://github.com/CameronBrooks11/tessella), required at run time, is under the GNU Affero General Public License v3.0.
 - The docs site under `docs/` started from the [just-the-docs template](https://github.com/just-the-docs/just-the-docs-template), under the [MIT License](docs/LICENSE).
 
 ## Acknowledgements
 
-- Utilizes the `sorted.scad` module from the [dotSCAD library](https://github.com/JustinSDK/dotSCAD).
 - Based on geometric principles and algorithms for tessellation and unit cell generation, inspired by recent advances in geometric computing and mechanical metamaterials.
 - Development is heavily nature-inspired by the various natural structures that allow for interconnection.
