@@ -21,16 +21,16 @@ scaled_packing = 1.0 + packing_factor * 0.5; // Scaled packing factor for grid s
 echo("Scaled packing factor: ", scaled_packing);
 
 // Grid radius based on apothem diameter and scaled packing factor
-tesselation_radius = apothem_diameter * scaled_packing;
+tessellation_radius = apothem_diameter * scaled_packing;
 
 // Generate hexagon centers for tessellation
-tess_points = hexagons_centers_radial(radius = tesselation_radius, levels = levels);
+tess_points = hexagons_centers_radial(radius = tessellation_radius, levels = levels);
 
 // Generate triangulated center points for cell B instances
 tess_points_tri = triangulated_center_points(tess_points);
 
 // Generate hexagon vertices for tessellation
-tess_hex_vertices = hexagons_vertices(radius = tesselation_radius, centers = tess_points, angular_offset = 30);
+tess_hex_vertices = hexagons_vertices(radius = tessellation_radius, centers = tess_points, angular_offset = 30);
 
 if (radial_tess_render)
 {

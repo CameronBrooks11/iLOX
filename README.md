@@ -77,7 +77,7 @@ docs/
 
 ### iLOX.scad
 
-The `iLOX.scad` file serves as the main entry point for the project, including the external `tessella` library for tessellation. It also includes the internal `src/` SCAD files such as `cell2rot.scad`, `cell2linear.scad`, and `ucell.scad` to define the key functions for unit cell creation and rendering. It also includes modular, high-level implementations of both the rotational extrusion + radial tesselation and rectilinear extrusion + rectangular tesselation cases.
+The `iLOX.scad` file serves as the main entry point for the project, including the external `tessella` library for tessellation. It also includes the internal `src/` SCAD files such as `cell2rot.scad`, `cell2linear.scad`, and `ucell.scad` to define the key functions for unit cell creation and rendering. It also includes modular, high-level implementations of both the rotational extrusion + radial tessellation and rectilinear extrusion + rectangular tessellation cases.
 
 ### ucell.scad
 
