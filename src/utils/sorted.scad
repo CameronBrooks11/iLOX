@@ -11,7 +11,7 @@
  *
  * @see https://openhome.cc/eGossip/OpenSCAD/lib3x-sorted.html
  *
- * Modified by Cameron K. Brooks, December 2024: dotSCAD's src/util/sorted.scad and src/util/_impl/_sorted_impl.scad
+ * Modified by Cameron K. Brooks, October 2024: dotSCAD's src/util/sorted.scad and src/util/_impl/_sorted_impl.scad
  * combined into this file, with formatting and documentation changes.
  *
  */
