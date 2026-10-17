@@ -13,7 +13,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
     - [Basic Usage](#basic-usage)
     - [Tests](#tests)
     - [Direct Workflow](#direct-workflow)
-    - [Tensile Specimens](#tensile-specimens)
+    - [Mechanical Testing](#mechanical-testing)
   - [Library Structure](#library-structure)
     - [iLOX.scad](#iloxscad)
     - [ucell.scad](#ucellscad)
@@ -29,17 +29,15 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
 
 ## Dependencies
 
-Download and place the following libraries in your OpenSCAD libraries folder:
+iLOX needs [tessella](https://github.com/CameronBrooks11/tessella), as `include <tessella/tess.scad>`. Clone it into your OpenSCAD libraries folder, keeping the folder name lowercase:
 
-1.  [CameronBrooks11/tessella](https://github.com/CameronBrooks11/Tessella)
-    1.  Currently, this is the only explicitly required dependency!
-    2.  Ensure it is placed in your OpenSCAD libraries folder.
-2.  [thehans/FunctionalOpenSCAD](https://github.com/thehans/FunctionalOpenSCAD)
-    1.  Not currently needed!
-    2.  Will be incorportated in the future to increase workflow flexibility.
-3.  [CameronBrooks11/OpenSCAD-Batch-Export](https://github.com/CameronBrooks11/OpenSCAD-Batch-Export)
-    1.  _If batch exporting is required for testing or iteration._
-    2.  Provides a cross-platform, user-friendly GUI for mass-exporting parametric OpenSCAD scripts to .stl files from .csv or .json.
+```
+git clone https://github.com/CameronBrooks11/tessella.git
+```
+
+CI tests against the tessella ref in `.github/workflows/test.yml`.
+
+For batch exports of parameter sets, [scadbatch](https://github.com/CameronBrooks11/scadbatch) is optional.
 
 ## Usage
 
@@ -55,30 +53,31 @@ The `examples/simpleUsage/` folder contains `simpleUsageRadial.scad` and `simple
 
 This can be found under `tests/direct-workflow` and is a sequential set of scripts that utilize the full source of this library to demonstrate the full functionality of the library for both the rotational-radial and rectilinear-rectangular cases.
 
-### Tensile Specimens
+### Mechanical Testing
 
-The `tests/tensileSpecimens` directory includes scripts that apply serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
+The `tests/mechanical-testing` directory includes scripts that serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
 
 ## Library Structure
 
 ```
-D:.
-│   iLOX.scad
-├───src
-│   │   cell2linear.scad
-│   │   cell2rot.scad
-│   │   ucell.scad
-│   │
-│   └───utils
-│           point_utils.scad
-│           regpoly_utils.scad
-│           sorted.scad
-│           viz_utils.scad
+iLOX.scad
+src/
+    cell2linear.scad
+    cell2rot.scad
+    ucell.scad
+    utils/
+        point_utils.scad
+        regpoly_utils.scad
+        sorted.scad
+        viz_utils.scad
+examples/
+tests/
+docs/
 ```
 
 ### iLOX.scad
 
-The `iLOX.scad` file serves as the main entry point for the project, including essential external libraries like `FunctionalOpenSCAD` and `tessella` to handle functional of point data and tessellation tasks. It also includes the internal `src/` SCAD files such as `cell2rot.scad`, `cell2linear.scad`, and `ucell.scad` to define the key functions for unit cell creation and rendering. It also includes modular, high-level implementations of both the rotational extrusion + radial tesselation and rectilinear extrusion + rectangular tesselation cases.
+The `iLOX.scad` file serves as the main entry point for the project, including the external `tessella` library for tessellation. It also includes the internal `src/` SCAD files such as `cell2rot.scad`, `cell2linear.scad`, and `ucell.scad` to define the key functions for unit cell creation and rendering. It also includes modular, high-level implementations of both the rotational extrusion + radial tesselation and rectilinear extrusion + rectangular tesselation cases.
 
 ### ucell.scad
 
@@ -98,7 +97,7 @@ This file provides utility functions for point operations such as sorting, calcu
 
 ### sorted.scad
 
-A helper file for implementing sorting utilities used by `point_utils.scad` for ordering points based on a specified key function. Used from [dotSCAD](https://github.com/bjnortier/dotSCAD).
+A helper file for implementing sorting utilities used by `point_utils.scad` for ordering points based on a specified key function. From dotSCAD; see [License](#license).
 
 ### regpoly_utils.scad
 
@@ -116,8 +115,13 @@ For details on the conceptual background and explanations related logic of the p
 
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
+Third-party code and dependencies:
+
+- `src/utils/sorted.scad` is from Justin Lin's [dotSCAD](https://github.com/JustinSDK/dotSCAD), under the [GNU Lesser General Public License v3.0](src/utils/LICENSE.LGPL-3.0).
+- [tessella](https://github.com/CameronBrooks11/tessella), required at run time, is under the GNU Affero General Public License v3.0.
+- The docs site under `docs/` started from the [just-the-docs template](https://github.com/just-the-docs/just-the-docs-template), under the [MIT License](docs/LICENSE).
+
 ## Acknowledgements
 
-- Utilizes the `sorted.scad` module from the [dotSCAD library](https://github.com/bjnortier/dotSCAD).
 - Based on geometric principles and algorithms for tessellation and unit cell generation, inspired by recent advances in geometric computing and mechanical metamaterials.
 - Development is heavily nature-inspired by the various natural structures that allow for interconnection.
