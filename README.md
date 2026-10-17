@@ -11,6 +11,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
   - [Dependencies](#dependencies)
   - [Usage](#usage)
     - [Basic Usage](#basic-usage)
+    - [Tests](#tests)
     - [Direct Workflow](#direct-workflow)
     - [Tensile Specimens](#tensile-specimens)
   - [Library Structure](#library-structure)
@@ -45,6 +46,10 @@ Download and place the following libraries in your OpenSCAD libraries folder:
 ### Basic Usage
 
 The `examples/simpleUsage/` folder contains `simpleUsageRadial.scad` and `simpleUsageRectangular.scad` which demonstrate how to use high level modules of the library.
+
+### Tests
+
+`tests/run.sh` runs the checks in `tests/clearance` and exports each example, exiting non-zero on any failure; `OPENSCAD` picks the binary. CI runs it on every pull request with OpenSCAD 2021.01 and a 2026 snapshot.
 
 ### Direct Workflow
 

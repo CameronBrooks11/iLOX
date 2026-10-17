@@ -36,7 +36,8 @@ jobs:
         # iLOX.scad does `include <tessella/tess.scad>`; OpenSCAD resolves
         # angle-bracket includes relative to the including file first, so a
         # tessella/ directory beside iLOX.scad satisfies it for both the CLI
-        # render below and the staged customizer project tree.
+        # render below and the staged customizer project tree. test.yml uses
+        # the same ref; update both.
         uses: actions/checkout@v7
         with:
           repository: CameronBrooks11/tessella
@@ -73,7 +74,8 @@ jobs:
         #
         # Snapshots are pruned after roughly eight months. When this 404s, pick
         # a newer build from https://files.openscad.org/snapshots/ and update
-        # both values -- each AppImage has a .sha256 published beside it.
+        # both values here and in test.yml -- each AppImage has a .sha256
+        # published beside it.
         #
         # --appimage-extract-and-run avoids needing FUSE, which the runners
         # do not provide.
