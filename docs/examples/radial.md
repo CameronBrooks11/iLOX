@@ -55,8 +55,8 @@ Key parameters:
 Each cell is a hexagonal extrusion of its half of the unit cell, and each B
 cell faces three A cells one `width_x` apart, across flat sides, so the gap
 between them is `clearance` as in the 2D cell. Cells of the same half sit corner
-to corner, √3 × `width_x` apart, so a cell wider than 0.75 × `width_x` from its
-axis merges with its neighbours into one web.
+to corner, √3 × `width_x` apart, so a cell whose profile reaches past 0.75 ×
+`width_x` merges with its neighbours into one web.
 
 Set `show_ucell = true` in the full example file to inspect the 2D unit cell
 with `ucell_designer` before tessellating it.
