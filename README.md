@@ -11,6 +11,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
   - [Dependencies](#dependencies)
   - [Usage](#usage)
     - [Basic Usage](#basic-usage)
+    - [Tests](#tests)
     - [Direct Workflow](#direct-workflow)
     - [Tensile Specimens](#tensile-specimens)
   - [Library Structure](#library-structure)

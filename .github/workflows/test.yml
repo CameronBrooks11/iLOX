@@ -11,17 +11,19 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        # The snapshot pages.yml renders with, and the Debian/Ubuntu package (2021.01).
+        # The snapshot pages.yml pins, and the Debian/Ubuntu package (2021.01).
         openscad: [snapshot, apt]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
       - name: Checkout tessella (OpenSCAD library dependency)
-        # Same pin as pages.yml; a tessella/ directory beside iLOX.scad satisfies `include <tessella/tess.scad>`.
+        # Same ref as pages.yml; a tessella/ directory beside iLOX.scad
+        # satisfies `include <tessella/tess.scad>`.
         uses: actions/checkout@v7
         with:
           repository: CameronBrooks11/tessella
