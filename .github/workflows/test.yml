@@ -1,0 +1,58 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The snapshot pages.yml renders with, and the Debian/Ubuntu package (2021.01).
+        openscad: [snapshot, apt]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Checkout tessella (OpenSCAD library dependency)
+        # Same pin as pages.yml; a tessella/ directory beside iLOX.scad satisfies `include <tessella/tess.scad>`.
+        uses: actions/checkout@v7
+        with:
+          repository: CameronBrooks11/tessella
+          ref: e6e97ed4f6849a82c4507855de74a13d019f94e5
+          path: tessella
+
+      - name: Install OpenSCAD snapshot
+        if: matrix.openscad == 'snapshot'
+        # Same AppImage and checksum as pages.yml; update both together.
+        env:
+          OPENSCAD_SNAPSHOT: OpenSCAD-2026.08.19-x86_64.AppImage
+          OPENSCAD_SHA256: fdd818025e890f465ffacffbe7d0c6fa3ebeb3f7c18ee860a909ab41396be643
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libgl1 libopengl0 libfontconfig1 libharfbuzz0b
+          curl -fSL -o /tmp/openscad.AppImage "https://files.openscad.org/snapshots/${OPENSCAD_SNAPSHOT}"
+          echo "${OPENSCAD_SHA256}  /tmp/openscad.AppImage" | sha256sum -c -
+          chmod +x /tmp/openscad.AppImage
+          printf '#!/bin/sh\nexec /tmp/openscad.AppImage --appimage-extract-and-run "$@"\n' > /tmp/openscad
+          chmod +x /tmp/openscad
+          echo "OPENSCAD=/tmp/openscad" >> "$GITHUB_ENV"
+
+      - name: Install OpenSCAD from apt
+        if: matrix.openscad == 'apt'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openscad
+          echo "OPENSCAD=openscad" >> "$GITHUB_ENV"
+
+      - name: Run tests
+        run: |
+          "$OPENSCAD" --version
+          tests/run.sh
