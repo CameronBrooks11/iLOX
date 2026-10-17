@@ -50,9 +50,7 @@ module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
  * @param clearance Gap between cells A and B in mm, measured normal to the division line.
  * @param base_ucell_neg_poly Define points for a polygon to act as a negative to create voids within the cell, each
  * point is defined as [x, y]
- * @param degree_n Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
  * @param levels Number of levels for tessellation pattern
- * @param packing_factor Packing factor
  * @param substrate_height Height of the substrate
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
@@ -60,9 +58,8 @@ module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
  * below half the cell height; that alone does not keep the halves overlapping or interlocked
  * @param part (Optional) "A", "B" or "both": which half to render, in its assembled position (flip B to print it)
  */
-module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
-                   substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue",
-                   tip_clearance = undef, part = "both")
+module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, levels, substrate_height = 1,
+                   cellA_color = "ForestGreen", cellB_color = "MidnightBlue", tip_clearance = undef, part = "both")
 {
     assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\", \"B\" or \"both\"");
 
@@ -71,28 +68,28 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
         calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
                    neg_poly = base_ucell_neg_poly, tip_clearance = tip_clearance);
 
-    // Calculate the diameter based on the apothem of the polygon
-    apothem_diameter = apothem(width_x / 2, degree_n) * 2;
-
-    // Scaled packing factor for grid spacing (1.0 to 1.5)
-    // This means the user can decide between no spacing up to 50% of their unit cells width of spacing
-    scaled_packing = 1.0 + packing_factor * 0.5;
-
-    // Grid radius based on apothem diameter and scaled packing factor
-    tesselation_radius = apothem_diameter * scaled_packing;
+    // Each B cell faces three A cells, one cell width away, across a flat side of their hexagonal extrusions. Widening
+    // the extrusions by 1 / cos(30) puts each flat side at the profile's x, so a section between neighbours is the
+    // unit cell and the gap is the clearance.
+    module hex_cells(positions, cell_type)
+    {
+        for (pos = positions)
+            translate(pos) scale([ 1 / cos(30), 1 / cos(30), 1 ]) place_rotated_cells(
+                cells = base_ucell_cells, positions = [[ 0, 0 ]], n = 6, width = width_x, rotate = true,
+                cell_type = cell_type);
+    }
 
     // Generate hexagon centers for tessellation
-    tess_points = hexagons_centers_radial(radius = tesselation_radius, levels = levels);
+    tess_points = hexagons_centers_radial(radius = width_x, levels = levels);
 
     // Generate triangulated center points for cell B instances
     tess_points_tri = triangulated_center_points(tess_points);
 
     // Generate hexagon vertices for tessellation
-    tess_hex_vertices = hexagons_vertices(radius = tesselation_radius, centers = tess_points, angular_offset = 30);
+    tess_hex_vertices = hexagons_vertices(radius = width_x, centers = tess_points, angular_offset = 30);
     if (part != "B") color(cellA_color) union()
     { // Place cell A instances at tessellation points with rotation
-        place_rotated_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x,
-                            rotate = true, cell_type = "A");
+        hex_cells(tess_points, "A");
 
         // Render substrate as solid hexagons beneath cells
         translate([ 0, 0, -substrate_height ])
@@ -103,8 +100,7 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
     if (part != "A") color(cellB_color) union()
     {
         // Place cell B instances at triangulated tessellation points with rotation
-        place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri, n = degree_n, width = width_x,
-                            rotate = true, cell_type = "B");
+        hex_cells(tess_points_tri, "B");
 
         // Render substrate as solid hexagons beneath cells
         translate([ 0, 0, height_y ]) generic_poly(vertices = tess_hex_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]],

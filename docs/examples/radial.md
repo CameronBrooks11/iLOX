@@ -31,13 +31,10 @@ clearance = 0.2;
 // Negative polygons cut voids out of the cell
 base_ucell_neg_poly = [ [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ] ];
 
-// Rotational symmetry, tessellation levels, packing
-degree_n = 6;
+// Rings of hexagons in the lattice
 levels = 4;
-packing_factor = 0.3; // [0:1]
 
-radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, degree_n, levels, packing_factor,
-            part = "both");
+radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, levels, part = "both");
 ```
 
 Key parameters:
@@ -53,10 +50,13 @@ Key parameters:
   and a clip just above a horizontal face can leave a thin ledge.
 - `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
   half (print B upside down).
-- `degree_n` — order of rotational symmetry for each cell (6 = hexagonal).
 - `levels` — how many rings of hexagons the lattice grows outward.
-- `packing_factor` — extra spacing between cells, from none (0) to half a cell
-  width (1).
+
+Each cell is a hexagonal extrusion of its half of the unit cell, and each B
+cell faces three A cells one `width_x` apart, across flat sides, so the gap
+between them is `clearance` as in the 2D cell. Neighbouring cells of the same
+half sit corner to corner, 1.5 × `width_x` apart across their flat sides; a cell
+reaching past 0.75 × `width_x` merges with its neighbours into one web.
 
 Set `show_ucell = true` in the full example file to inspect the 2D unit cell
 with `ucell_designer` before tessellating it.
