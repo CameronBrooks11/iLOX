@@ -135,9 +135,9 @@ jobs:
         # preserved so relative `use <../../iLOX.scad>` still resolves.
         run: |
           mkdir -p publish-staging/examples/simpleUsage publish-staging/tessella
-          cp iLOX.scad publish-staging/
+          cp iLOX.scad LICENSE publish-staging/
           cp -r src publish-staging/src
-          cp tessella/tess.scad publish-staging/tessella/
+          cp tessella/tess.scad tessella/LICENSE publish-staging/tessella/
           cp -r tessella/src publish-staging/tessella/src
           cp examples/simpleUsage/*.scad examples/simpleUsage/*.json publish-staging/examples/simpleUsage/
 
