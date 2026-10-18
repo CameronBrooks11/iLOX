@@ -137,16 +137,16 @@ module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
     extension = extension_factor * width_x;
 
     // Grid radius based on apothem diameter and scaled packing factor
-    tesselation_width = width_x * 2;
+    tessellation_width = width_x * 2;
 
     // Generate hexagon centers for tessellation
-    tess_points = squares_centers_rect(side = tesselation_width, n = grid_n, m = grid_m);
+    tess_points = squares_centers_rect(side = tessellation_width, n = grid_n, m = grid_m);
 
     // Generate triangulated center points for cell B instances
     tess_points_midp = square_midpoints(tess_points);
 
     // Generate hexagon vertices for tessellation
-    tess_sq_vertices = squares_vertices(side = tesselation_width, centers = tess_points);
+    tess_sq_vertices = squares_vertices(side = tessellation_width, centers = tess_points);
 
     if (part != "B")
     {

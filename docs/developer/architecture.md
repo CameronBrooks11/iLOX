@@ -10,10 +10,10 @@ This serves as a walkthrough of the logic behind the library including the conce
 
 ## Conceptual Overview
 
-The idea is that we have two surfaces and we want to connect or fasten them together by adding geomtrically interlocking geometry to all or a portion of the surfaces such that applying a force normally (perpendicular) engages (snaps) the surfaces together. A similar method of fastening can be observed in velocro. The approach to creating this geometry herein consists of three main parts:
+The idea is that we have two surfaces and we want to connect or fasten them together by adding geometrically interlocking geometry to all or a portion of the surfaces such that applying a force normally (perpendicular) engages (snaps) the surfaces together. A similar method of fastening can be observed in Velcro. The approach to creating this geometry herein consists of three main parts:
 
 1. Generation of the unit geometry,
-2. Tesselation of the position lattice,
+2. Tessellation of the position lattice,
 3. Selective positioning of geometry onto lattice.
 
 ## Unit Geometry
@@ -34,7 +34,7 @@ The surface to be bisected must consider leaving sufficient substrate on the +y 
 
 ## Tess
 
-_Tesselation of the position vector lattice_
+_Tessellation of the position vector lattice_
 
 **USES TESSELLA NOW**
 
@@ -56,7 +56,7 @@ For a polygon to be tessellable, it must satisfy certain conditions:
 
 Triangles:
 
-- 6 triangles form a hexagon, redundant; despite being more simple and elementary it makes the interation with the unit geometry
+- 6 triangles form a hexagon, redundant; despite being more simple and elementary it makes the interaction with the unit geometry
 
 Squares:
 
@@ -70,7 +70,7 @@ Hexagons
 - O
 -
 
-### Corresponding Triangulated Tesselation
+### Corresponding Triangulated Tessellation
 
 To generate the lattice for the B unit cells, a triangulation algorithm is employed. This approach is chosen over directly modifying the base tessellation (such as by removing a level or deriving from it) because it offers greater flexibility. Specifically, it allows for the application of intermediate transformations or operations to the base tessellation without the need to replicate these changes for the corresponding B unit cell tessellation. This could include operations like scaling, rotation, or surface mapping onto complex geometries.
 

@@ -3,10 +3,10 @@ use <../../iLOX.scad>;
 // Should be kept true. Flag to derender rotational extrusions
 rotx_derender = true;
 
-include <extrusion_rectlinear.scad>;
+include <extrusion_rectilinear.scad>;
 
 // Derender radial tessellation (defaults to false if undefined)
-rectlinear_tess_render = is_undef(rectlinear_tess_derender) ? true : false;
+rectilinear_tess_render = is_undef(rectilinear_tess_derender) ? true : false;
 
 // Number of grid points in the X direction
 grid_n = 4;
@@ -21,18 +21,18 @@ extension_factor = 0.5; // [0:0.1:1]
 extension = extension_factor * width_x;
 
 // Grid radius based on apothem diameter and scaled packing factor
-tesselation_width = width_x * 2;
+tessellation_width = width_x * 2;
 
 // Generate hexagon centers for tessellation
-tess_points = squares_centers_rect(side = tesselation_width, n = grid_n, m = grid_m);
+tess_points = squares_centers_rect(side = tessellation_width, n = grid_n, m = grid_m);
 
 // Generate triangulated center points for cell B instances
 tess_points_midp = square_midpoints(tess_points);
 
 // Generate hexagon vertices for tessellation
-tess_sq_vertices = squares_vertices(side = tesselation_width, centers = tess_points);
+tess_sq_vertices = squares_vertices(side = tessellation_width, centers = tess_points);
 
-if (rectlinear_tess_render)
+if (rectilinear_tess_render)
 {
     // Place cell A instances at tessellation points with rotation
     place_linear_cells(cells = base_ucell_cells, positions = tess_points, width = width_x, cell_type = "A",
