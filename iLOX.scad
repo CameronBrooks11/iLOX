@@ -136,7 +136,7 @@ module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
 
     extension = extension_factor * width_x;
 
-    // Grid radius based on apothem diameter and scaled packing factor
+    // Grid spacing: A rails two cell widths apart, with a B rail midway
     tessellation_width = width_x * 2;
 
     // Generate hexagon centers for tessellation

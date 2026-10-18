@@ -8,20 +8,18 @@ include <base_unit_cell.scad>;
 // rotx_derender = true;
 rotx_render = is_undef(rotx_derender) ? true : false;
 
-// Number of sides for the rotational symmetry (e.g., 6 for hexagonal)
-degree_n = 6;
+// The extrusions are hexagonal, $fn = 6, and face their neighbours across a flat side. Widening them by 1 / cos(30)
+// puts each flat side at the profile's x, so a section between neighbours one cell width apart is the unit cell and the
+// gap is the clearance. Positions are scaled down to cancel the widening.
+widen = [ 1 / cos(30), 1 / cos(30), 1 ];
 
-// Calculate the diameter based on the apothem of the polygon
-apothem_radius = apothem(width_x / 2, degree_n);
-apothem_diameter = apothem_radius * 2;
-
-if (rotx_render)
+if (rotx_render) scale(widen)
 {
     // Place cell A at the specified position
-    place_rotated_cells(cells = base_ucell_cells, positions = [[ 0, 0 ]], n = degree_n, width = width_x,
-                        cell_type = "A", color = "OliveDrab");
+    place_rotated_cells(cells = base_ucell_cells, positions = [[ 0, 0 ]], n = 6, width = width_x, cell_type = "A",
+                        color = "OliveDrab");
 
-    // Place cell B instances at the specified positions
-    place_rotated_cells(cells = base_ucell_cells, positions = [[apothem_diameter, 0]], n = degree_n, width = width_x,
+    // Place cell B one cell width away
+    place_rotated_cells(cells = base_ucell_cells, positions = [[width_x * cos(30), 0]], n = 6, width = width_x,
                         cell_type = "B", color = "CadetBlue");
 }

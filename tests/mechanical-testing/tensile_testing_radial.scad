@@ -68,8 +68,8 @@ module tensile_ilox_specimen()
             // Translate upwards by the substrate height to position the cells correctly
             translate([ 0, 0, substrate_height ])
                 // Place cell A instances at the filtered tessellation points with rotation
-                place_rotated_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x,
-                                    rotate = true, cell_type = "A", color = "Teal");
+                scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points * cos(30), n = 6,
+                                                 width = width_x, rotate = true, cell_type = "A", color = "Teal");
 
             // Extrude the tensile test specimen shape to the substrate height
             for (i = [0:1])

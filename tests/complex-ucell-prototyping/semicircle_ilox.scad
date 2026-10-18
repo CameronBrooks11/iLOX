@@ -117,8 +117,9 @@ positions_B = [  // Positions for cell B instances
     ]
 ];
 
-// Translate and rotate to position the cells correctly
-translate([ width_x * 3, 0, 0 ])
+// Translate and rotate to position the cells correctly. Widening by 1 / cos(30) puts each flat side of the hexagonal
+// extrusions at the profile's x and the B cells one cell width from A, so the gap is the clearance
+translate([ width_x * 3, 0, 0 ]) scale([ 1 / cos(30), 1 / cos(30), 1 ])
 {
     // Place cell A at the specified position
     place_rotated_cells(cells = example_cells, positions = positions_A, n = degree_n, width = width_x, cell_type = "A",
