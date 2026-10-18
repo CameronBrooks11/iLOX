@@ -13,6 +13,7 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
     - [Basic Usage](#basic-usage)
     - [Tests](#tests)
     - [Direct Workflow](#direct-workflow)
+    - [Specimens](#specimens)
     - [Mechanical Testing](#mechanical-testing)
   - [Library Structure](#library-structure)
     - [iLOX.scad](#iloxscad)
@@ -47,11 +48,15 @@ The `examples/simpleUsage/` folder contains `simpleUsageRadial.scad` and `simple
 
 ### Tests
 
-`tests/run.sh` runs the checks in `tests/clearance` and exports each example, exiting non-zero on any failure; `OPENSCAD` picks the binary. CI runs it on every pull request with OpenSCAD 2021.01 and a 2026 snapshot.
+`tests/run.sh` runs the checks in `tests/clearance`, exports each example and each coupon in `specimens/ladder.csv`, exiting non-zero on any failure; `OPENSCAD` picks the binary. CI runs it on every pull request with OpenSCAD 2021.01 and a 2026 snapshot.
 
 ### Direct Workflow
 
 This can be found under `tests/direct-workflow` and is a sequential set of scripts that utilize the full source of this library to demonstrate the full functionality of the library for both the rotational-radial and rectilinear-rectangular cases.
+
+### Specimens
+
+`specimens/` holds the pilot coupons: small linear and radial joints, one half or both in place, with a ladder of clearances and substrate thicknesses to export with scadbatch. See [specimens/README.md](specimens/README.md).
 
 ### Mechanical Testing
 
@@ -71,6 +76,7 @@ src/
         sorted.scad
         viz_utils.scad
 examples/
+specimens/
 tests/
 docs/
 ```
