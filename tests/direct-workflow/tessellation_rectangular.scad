@@ -20,7 +20,7 @@ substrate_height = 2;
 extension_factor = 0.5; // [0:0.1:1]
 extension = extension_factor * width_x;
 
-// Grid radius based on apothem diameter and scaled packing factor
+// Grid spacing: A rails two cell widths apart, with a B rail midway
 tessellation_width = width_x * 2;
 
 // Generate hexagon centers for tessellation
