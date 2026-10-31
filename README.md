@@ -57,7 +57,7 @@ The `examples/simpleUsage/` folder contains `simpleUsageRadial.scad` and `simple
 
 `specimens/` holds the parts for physical testing:
 
-- `specimens/tensile`: strips for the test machine with a joint in the middle, built on `concept/direct-workflow`. See [specimens/tensile/README.md](specimens/tensile/README.md).
+- `specimens/tensile`: strips for the test machine with a joint in the middle, built on `concept/direct-workflow`, and the clamp that holds them. See [specimens/tensile/README.md](specimens/tensile/README.md).
 - `specimens/pilot`: small linear and radial coupons, one half or both in place, with a ladder of clearances and substrate thicknesses to export with scadbatch. See [specimens/pilot/README.md](specimens/pilot/README.md).
 
 ## Library Structure
