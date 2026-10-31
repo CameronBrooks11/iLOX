@@ -52,13 +52,17 @@ for f in examples/simpleUsage/*.scad; do
     done
 done
 
+for f in specimens/tensile/*.scad; do
+    if run --hardwarnings "$f"; then ok "$f"; else fail "$f"; fi
+done
+
 # Every row of the coupon ladder, passed as scadbatch passes a CSV row: one -D per column, text quoted. OpenSCAD ignores
 # a -D that names no variable, so each column must be one of the model's top-level parameters.
-IFS=, read -r -a cols <specimens/ladder.csv
+IFS=, read -r -a cols <specimens/pilot/ladder.csv
 for col in "${cols[@]:1}"; do
-    if grep -q "^$col = " specimens/coupon.scad; then ok "ladder column $col"; else
+    if grep -q "^$col = " specimens/pilot/coupon.scad; then ok "ladder column $col"; else
         : >"$out/log"
-        fail "ladder column $col is not a parameter of specimens/coupon.scad"
+        fail "ladder column $col is not a parameter of specimens/pilot/coupon.scad"
     fi
 done
 while IFS=, read -r -a row; do
@@ -71,11 +75,11 @@ while IFS=, read -r -a row; do
             defs+=(-D "${cols[i]}=\"${row[i]}\"")
         fi
     done
-    if run --hardwarnings "${defs[@]}" specimens/coupon.scad; then
+    if run --hardwarnings "${defs[@]}" specimens/pilot/coupon.scad; then
         ok "ladder ${row[0]}"
     else
         fail "ladder ${row[0]}"
     fi
-done < <(tail -n +2 specimens/ladder.csv)
+done < <(tail -n +2 specimens/pilot/ladder.csv)
 
 exit $failed

@@ -12,9 +12,8 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
   - [Usage](#usage)
     - [Basic Usage](#basic-usage)
     - [Tests](#tests)
-    - [Direct Workflow](#direct-workflow)
+    - [Concept](#concept)
     - [Specimens](#specimens)
-    - [Mechanical Testing](#mechanical-testing)
   - [Library Structure](#library-structure)
     - [iLOX.scad](#iloxscad)
     - [ucell.scad](#ucellscad)
@@ -48,19 +47,18 @@ The `examples/simpleUsage/` folder contains `simpleUsageRadial.scad` and `simple
 
 ### Tests
 
-`tests/run.sh` runs the checks in `tests/clearance`, exports each example and each coupon in `specimens/ladder.csv`, exiting non-zero on any failure; `OPENSCAD` picks the binary. CI runs it on every pull request with OpenSCAD 2021.01 and a 2026 snapshot.
+`tests/run.sh` runs the checks in `tests/clearance`, exports each example, each tensile specimen and each coupon in `specimens/pilot/ladder.csv`, exiting non-zero on any failure; `OPENSCAD` picks the binary. CI runs it on every pull request with OpenSCAD 2021.01 and a 2026 snapshot.
 
-### Direct Workflow
+### Concept
 
-This can be found under `tests/direct-workflow` and is a sequential set of scripts that utilize the full source of this library to demonstrate the full functionality of the library for both the rotational-radial and rectilinear-rectangular cases.
+`concept/` shows how the library's pieces build up to a joint. `concept/direct-workflow` is a sequence of scripts, from the unit cell through single extrusions to full tessellations, for both the rotational-radial and rectilinear-rectangular cases; later scripts include earlier ones. `concept/ucell-prototyping` holds experiments with other unit cell shapes.
 
 ### Specimens
 
-`specimens/` holds the pilot coupons: small linear and radial joints, one half or both in place, with a ladder of clearances and substrate thicknesses to export with scadbatch. See [specimens/README.md](specimens/README.md).
+`specimens/` holds the parts for physical testing:
 
-### Mechanical Testing
-
-The `tests/mechanical-testing` directory includes scripts that serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
+- `specimens/tensile`: strips for the test machine with a joint in the middle, built on `concept/direct-workflow`. See [specimens/tensile/README.md](specimens/tensile/README.md).
+- `specimens/pilot`: small linear and radial coupons, one half or both in place, with a ladder of clearances and substrate thicknesses to export with scadbatch. See [specimens/pilot/README.md](specimens/pilot/README.md).
 
 ## Library Structure
 
@@ -76,7 +74,10 @@ src/
         sorted.scad
         viz_utils.scad
 examples/
+concept/
 specimens/
+    pilot/
+    tensile/
 tests/
 docs/
 ```
