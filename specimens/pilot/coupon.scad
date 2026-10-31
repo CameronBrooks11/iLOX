@@ -1,7 +1,7 @@
 // Pilot coupon: one half, or both halves in place, of a small linear or radial iLOX joint, laid out to print.
 // ladder.csv lists every coupon of the clearance ladder for scadbatch; see README.md.
 
-use <../iLOX.scad>;
+use <../../iLOX.scad>;
 
 // -----------------------------------
 // Parameters
