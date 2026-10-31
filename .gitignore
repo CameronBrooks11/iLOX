@@ -5,3 +5,12 @@
 tessella/
 rendered/
 publish-staging/
+
+# Local working files, such as working.tmp/
+*.tmp
+
+# Exports from openscad -o or scadbatch; none are committed
+*.stl
+*.off
+*.3mf
+*.csg
