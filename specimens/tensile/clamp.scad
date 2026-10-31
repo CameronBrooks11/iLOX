@@ -1,174 +1,225 @@
-// Clamp for the tensile specimens. The strip wraps the block, bending at its slots, and the jaws press its ends
-// against the block on two M5 cap screws through the window. An M12 bolt through the plate mounts it to the tester.
-// The joint faces away from the plate, so two clamps, one per half, pull it apart.
+/**
+ * @file clamp.scad
+ * @brief Clamp that holds one tensile specimen strip in the test machine.
+ *
+ * The strip wraps the base's block, bending at its slots, with the joint facing away from the block. Two jaws hang
+ * from the plate on dovetails and press the strip's ends against the block, drawn in by two screws through the
+ * block's window. A bolt through the plate mounts the clamp to the machine. One clamp holds each half of a joint,
+ * so a pair pulls the joint apart normal to it.
+ *
+ * Origin: centre of the block's bottom face, where the strip's inner face sits. +z runs up to the plate.
+ */
 
-// Part to render, in its assembled position
+/* [Render] */
+// Part to render, in its assembled position. Print two jaws.
 part = "assembly"; // [assembly, base, jaw]
 
-// Specimen substrate thickness, and the extra gap between jaw and block
-strip = 2;
-strip_fit = 0.9;
+$fn = $preview ? 48 : 96;
 
-// Block [width, depth, height]
-block = [ 47.8, 45, 50 ];
-// Jaw thickness, and the height of the block bottom above the jaw bottom
-jaw_t = 22.1;
-block_z = 1.9;
-// Radius of the rounded outer bottom edge of each jaw
-jaw_round_r = 26.18;
+tensile_clamp(part = part);
 
-plate_t = 10;
-plate_chamfer = 2.6;
+// --- hardware ---------------------------------------------------------------------------------------------------
+// Each row is [ name, bore, nut_across_flats, head_diameter ], with print clearance included.
+CLAMP_M5 = [ "M5", 5.2, 8.6, 8.6 ];
+CLAMP_M12 = [ "M12", 12.3, 19, 19 ];
 
-// Window through the block for the screws: [width, height], height of its floor, corner chamfer
-window = [ 27.8, 30 ];
-window_z = 10;
-window_chamfer = 4;
+function clamp_hw_name(hw) = hw[0];
+function clamp_hw_bore(hw) = hw[1];
+function clamp_hw_nut_af(hw) = hw[2];
+function clamp_hw_head_d(hw) = hw[3];
 
-// M12 mounting bolt: bore, hex pockets across flats, pocket depths above the window and in the plate top
-m12_bore = 12.3;
-m12_hex = 19;
-m12_ceiling_depth = 4;
-m12_top_depth = 6;
-pocket_chamfer = 0.4;
-
-// M5 cap screws through jaws and block: bore, nut and head pockets, pocket depth, y offset, height above block bottom
-m5_bore = 5.2;
-m5_nut = 8.6;
-m5_head = 8.6;
-m5_pocket_depth = 14.1;
-m5_y = 15;
-m5_z = 30.75;
-
-// Dovetails joining the jaws to the plate: y offset, width at the top, depth, half angle, fit, fillet radius
-dt_y = 11.25;
-dt_w = 14.7;
-dt_depth = 5.2;
-dt_angle = 30;
-dt_fit = 0.2;
-dt_fillet = 0.8;
-
-$fn = 64;
-
-jaw_x = block[0] / 2 + strip + strip_fit; // inner face of a jaw
-plate_x = jaw_x + jaw_t;                  // plate half length
-plate_z = block_z + block[2];             // plate underside
-
-assert(m5_z - m5_bore / 2 > window_z && m5_z + m5_bore / 2 < window_z + window[1], "ERROR: M5 screws miss the window");
-
-// Dovetail cross-section in (y, z) about y = 0, from the plate underside up, with a filleted mouth
-module dovetail2d()
+/**
+ * Draw the clamp, or one of its parts, in its assembled position.
+ *
+ * @param part           "assembly", "base" or "jaw" (the jaw on the -x side; the other is it turned 180 about z)
+ * @param strip          [ thickness, width, wrap ]: the specimen strip and the length of it that wraps the block
+ * @param strip_fit      gap between jaw and strip before the screws are tightened
+ * @param side_margin    block depth beyond the strip on each side
+ * @param block_height   height of the block from its bottom face to the plate
+ * @param jaw            [ thickness, overhang, round_radius ]: overhang is how far the jaws reach below the block;
+ *                       the outer bottom edge is rounded at round_radius, the arc ending at the inner bottom corner
+ * @param plate          [ thickness, chamfer ]
+ * @param window         [ width, height, floor, chamfer ]: the opening through the block for the screws
+ * @param screw          hardware row for the jaw screws
+ * @param screw_spacing  distance between the two jaw screws, along y
+ * @param screw_height   height of the jaw screws above the block bottom
+ * @param screw_pocket   depth of the head and nut pockets in each jaw
+ * @param mount          hardware row for the mounting bolt
+ * @param mount_pockets  [ ceiling, top ]: depths of the hex pockets above the window and in the plate top
+ * @param dovetail       [ offset, width, depth, half_angle, fit, fillet ]: two per jaw at y = +-offset
+ * @param edge_chamfer   chamfer on the mouths of the mounting-bolt hex pockets
+ */
+module tensile_clamp(part = "assembly", strip = [ 2, 40, 47.8 ], strip_fit = 0.9, side_margin = 2.5,
+                     block_height = 50, jaw = [ 22.1, 1.9, 26.18 ], plate = [ 10, 2.6 ], window = [ 27.8, 30, 10, 4 ],
+                     screw = CLAMP_M5, screw_spacing = 30, screw_height = 30.75, screw_pocket = 14.1,
+                     mount = CLAMP_M12, mount_pockets = [ 4, 6 ], dovetail = [ 11.25, 14.7, 5.2, 30, 0.2, 0.8 ],
+                     edge_chamfer = 0.4)
 {
-    bottom = dt_w - 2 * dt_depth * tan(dt_angle);
-    offset(r = -dt_fillet) offset(delta = dt_fillet) union()
-    {
-        polygon([ [ -bottom / 2, 0 ], [ bottom / 2, 0 ], [ dt_w / 2, dt_depth ], [ -dt_w / 2, dt_depth ] ]);
-        translate([ -dt_w / 2 - 1, -dt_depth ]) square([ dt_w + 2, dt_depth ]);
-    }
+    assert(part == "assembly" || part == "base" || part == "jaw",
+           str("tensile_clamp: part must be \"assembly\", \"base\" or \"jaw\", got: ", part));
+    assert(len(strip) == 3 && min(strip) > 0, str("tensile_clamp: strip must be 3 positive numbers, got: ", strip));
+    assert(strip_fit >= 0, str("tensile_clamp: strip_fit must be >= 0, got: ", strip_fit));
+    assert(window[0] < strip[2], str("tensile_clamp: window width (", window[0], ") must be < the block width (",
+                                     strip[2], ")"));
+    assert(window[2] + window[1] < block_height,
+           str("tensile_clamp: window top (", window[2] + window[1], ") must be below the plate (", block_height, ")"));
+    assert(abs(screw_height - window[2] - window[1] / 2) + clamp_hw_bore(screw) / 2 < window[1] / 2 - window[3],
+           str("tensile_clamp: screws at height ", screw_height, " must pass through the straight part of the window"));
+    assert(screw_pocket < jaw[0], str("tensile_clamp: screw_pocket (", screw_pocket, ") must be < the jaw thickness (",
+                                      jaw[0], ")"));
+    assert(jaw[2] >= jaw[0], str("tensile_clamp: jaw round_radius (", jaw[2], ") must be >= the jaw thickness (",
+                                 jaw[0], ")"));
+    assert(dovetail[0] + dovetail[1] / 2 < strip[1] / 2 + side_margin,
+           str("tensile_clamp: dovetails at +-", dovetail[0], " overrun the block depth"));
+
+    block = [ strip[2], strip[1] + 2 * side_margin, block_height ];
+    jaw_x = block[0] / 2 + strip[0] + strip_fit; // inner face of a jaw
+    plate_x = jaw_x + jaw[0];                    // half the plate length
+
+    if (part != "jaw")
+        color("Silver") _clamp_base(block, plate_x, plate, window, screw, screw_spacing, screw_height, mount,
+                                    mount_pockets, dovetail, edge_chamfer);
+    if (part != "base")
+        for (turn = part == "jaw" ? [0] : [ 0, 180 ])
+            rotate([ 0, 0, turn ]) color("SteelBlue")
+                _clamp_jaw(block, jaw_x, jaw, screw, screw_spacing, screw_height, screw_pocket, dovetail);
 }
 
-module dovetails(x0, x1)
+module _clamp_base(block, plate_x, plate, window, screw, screw_spacing, screw_height, mount, mount_pockets, dovetail,
+                   edge_chamfer)
 {
-    for (s = [ -1, 1 ])
-        translate([ x0, s * dt_y, plate_z ]) rotate([ 90, 0, 90 ]) linear_extrude(x1 - x0) children();
-}
+    top = block[2] + plate[0];
+    window_top = window[2] + window[1];
+    af = clamp_hw_nut_af(mount);
 
-// Corners on ±y
-module hex_pocket(af, depth)
-{
-    rotate([ 0, 0, 90 ]) cylinder(d = af / cos(30), h = depth, $fn = 6);
-}
-
-// Opening the mouth of a hex pocket by pocket_chamfer
-module hex_chamfer(af)
-{
-    rotate([ 0, 0, 90 ])
-        cylinder(d1 = (af + 2 * pocket_chamfer) / cos(30), d2 = af / cos(30), h = pocket_chamfer, $fn = 6);
-}
-
-module base()
-{
     difference()
     {
         union()
         {
-            translate([ -block[0] / 2, -block[1] / 2, block_z ]) cube([ block[0], block[1], block[2] ]);
-            hull()
-            {
-                translate([ -plate_x, -block[1] / 2, plate_z ])
-                    cube([ 2 * plate_x, block[1], plate_t - plate_chamfer ]);
-                translate([ -plate_x + plate_chamfer, -block[1] / 2 + plate_chamfer, plate_z ])
-                    cube([ 2 * (plate_x - plate_chamfer), block[1] - 2 * plate_chamfer, plate_t ]);
-            }
+            translate([ -block[0] / 2, -block[1] / 2, 0 ]) cube(block);
+            translate([ 0, 0, block[2] ]) _chamfered_slab([ 2 * plate_x, block[1], plate[0] ], plate[1]);
         }
-        // Window
-        translate([ 0, 0, block_z + window_z + window[1] / 2 ]) rotate([ 90, 0, 0 ])
-            linear_extrude(block[1] + 1, center = true)
-        {
-            w = window[0] / 2;
-            h = window[1] / 2;
-            c = window_chamfer;
-            polygon([
-                [ w - c, -h ], [ w, c - h ], [ w, h - c ], [ w - c, h ], [ c - w, h ], [ -w, h - c ], [ -w, c - h ],
-                [ c - w, -h ]
-            ]);
-        }
-        // M12: open from below into the window, a pocket above it, the bore, and a pocket in the plate top
-        translate([ 0, 0, block_z - 1 ]) hex_pocket(m12_hex, window_z + 1);
-        translate([ 0, 0, block_z + window_z + window[1] - 1 ]) hex_pocket(m12_hex, m12_ceiling_depth + 1);
-        translate([ 0, 0, block_z + window_z + window[1] ]) hex_chamfer(m12_hex);
-        cylinder(d = m12_bore, h = plate_z + plate_t + 1);
-        translate([ 0, 0, plate_z + plate_t - m12_top_depth ]) hex_pocket(m12_hex, m12_top_depth + 1);
-        translate([ 0, 0, plate_z + plate_t ]) mirror([ 0, 0, 1 ]) hex_chamfer(m12_hex);
-        // M5 through the block walls
-        for (s = [ -1, 1 ])
-            translate([ 0, s * m5_y, block_z + m5_z ]) rotate([ 0, 90, 0 ])
-                cylinder(d = m5_bore, h = block[0] + 1, center = true);
-        // Dovetail grooves in the plate underside, from the block outward
-        for (s = [ -1, 1 ])
-            dovetails(s > 0 ? block[0] / 2 : -plate_x - 1, s > 0 ? plate_x + 1 : -block[0] / 2) dovetail2d();
+
+        // Window, front to back
+        translate([ 0, 0, window[2] + window[1] / 2 ]) rotate([ 90, 0, 0 ])
+            linear_extrude(block[1] + 2, center = true) _chamfered_rect([ window[0], window[1] ], window[3]);
+
+        // Mounting bolt: open from below into the window, a pocket above it, the bore, and a pocket in the plate top
+        translate([ 0, 0, -1 ]) _hex_prism(af, window[2] + 1);
+        translate([ 0, 0, window_top - 1 ]) _hex_prism(af, mount_pockets[0] + 1);
+        translate([ 0, 0, window_top ]) _hex_chamfer(af, edge_chamfer);
+        translate([ 0, 0, -1 ]) cylinder(d = clamp_hw_bore(mount), h = top + 2);
+        translate([ 0, 0, top - mount_pockets[1] ]) _hex_prism(af, mount_pockets[1] + 1);
+        translate([ 0, 0, top ]) mirror([ 0, 0, 1 ]) _hex_chamfer(af, edge_chamfer);
+
+        // Jaw screws, through both block walls
+        for (y = [ -1, 1 ] * screw_spacing / 2)
+            translate([ 0, y, screw_height ]) rotate([ 0, 90, 0 ])
+                cylinder(d = clamp_hw_bore(screw), h = block[0] + 2, center = true);
+
+        // Dovetail grooves in the plate underside, from each block face out past the plate end
+        for (side = [ -1, 1 ])
+            translate([ side * (block[0] / 2 + plate_x + 1) / 2, 0, block[2] ])
+                _dovetail_run(plate_x - block[0] / 2 + 1, dovetail) _dovetail_profile(dovetail);
     }
 }
 
 // The jaw on the -x side
-module jaw()
+module _clamp_jaw(block, jaw_x, jaw, screw, screw_spacing, screw_height, screw_pocket, dovetail)
 {
-    cz = sqrt(jaw_round_r ^ 2 - (jaw_round_r - jaw_t) ^ 2); // round centre height: arc meets the inner bottom corner
+    thickness = jaw[0];
+    overhang = jaw[1];
+    r = jaw[2];
+    plate_x = jaw_x + thickness;
+    fit = dovetail[4];
+    // Centre height of the rounded edge, so the arc meets the inner bottom corner
+    round_z = sqrt(r ^ 2 - (r - thickness) ^ 2);
+
     difference()
     {
         union()
         {
-            translate([ 0, block[1] / 2, 0 ]) rotate([ 90, 0, 0 ]) linear_extrude(block[1]) intersection()
+            rotate([ 90, 0, 0 ]) linear_extrude(block[1], center = true) translate([ -plate_x, -overhang ])
+                intersection()
             {
-                translate([ -plate_x, 0 ]) square([ jaw_t, plate_z - dt_fit ]);
+                square([ thickness, overhang + block[2] - fit ]);
                 union()
                 {
-                    translate([ -plate_x + jaw_round_r, cz ]) circle(r = jaw_round_r, $fn = 256);
-                    translate([ -plate_x, cz ]) square([ jaw_t, plate_z ]);
+                    translate([ r, round_z ]) circle(r = r, $fn = 256);
+                    translate([ 0, round_z ]) square([ thickness, block[2] + overhang ]);
                 }
             }
-            dovetails(-plate_x, -jaw_x) offset(r = dt_fillet) offset(delta = -dt_fillet) offset(delta = -dt_fit)
-                dovetail2d();
+
+            translate([ -(jaw_x + plate_x) / 2, 0, block[2] ]) _dovetail_run(thickness, dovetail)
+                offset(r = dovetail[5]) offset(delta = -dovetail[5]) offset(delta = -fit) _dovetail_profile(dovetail);
         }
-        for (s = [ -1, 1 ])
-            translate([ -plate_x - 1, s * m5_y, block_z + m5_z ]) rotate([ 0, 90, 0 ])
+
+        // Screw bores, with the nut pocket on +y and the head pocket on -y; the other jaw is turned, so each screw
+        // has its head on one jaw and its nut on the other
+        for (side = [ -1, 1 ])
+            translate([ -plate_x - 1, side * screw_spacing / 2, screw_height ]) rotate([ 0, 90, 0 ])
             {
-                cylinder(d = m5_bore, h = jaw_t + 2);
-                if (s > 0)
-                    hex_pocket(m5_nut, m5_pocket_depth + 1);
+                cylinder(d = clamp_hw_bore(screw), h = thickness + 2);
+                if (side > 0)
+                    _hex_prism(clamp_hw_nut_af(screw), screw_pocket + 1);
                 else
-                    cylinder(d = m5_head, h = m5_pocket_depth + 1);
+                    cylinder(d = clamp_hw_head_d(screw), h = screw_pocket + 1);
             }
     }
 }
 
-if (part == "base")
-    base();
-else if (part == "jaw")
-    jaw();
-else if (part == "assembly")
+// Dovetail cross-section in (y, z), opening at z = 0 and widening upward, with a filleted mouth. The band below the
+// mouth lets the fillet form; it lies outside the plate.
+module _dovetail_profile(dovetail)
 {
-    color("Silver") base();
-    color("SteelBlue") jaw();
-    color("SteelBlue") rotate([ 0, 0, 180 ]) jaw();
+    width = dovetail[1];
+    depth = dovetail[2];
+    mouth = width - 2 * depth * tan(dovetail[3]);
+    fillet = dovetail[5];
+
+    offset(r = -fillet) offset(delta = fillet) union()
+    {
+        polygon([ [ -mouth / 2, 0 ], [ mouth / 2, 0 ], [ width / 2, depth ], [ -width / 2, depth ] ]);
+        translate([ -width / 2 - 1, -depth ]) square([ width + 2, depth ]);
+    }
+}
+
+// The pair of dovetails, run along x for length, centred on the origin, from a 2D profile child
+module _dovetail_run(length, dovetail)
+{
+    for (y = [ -1, 1 ] * dovetail[0])
+        translate([ -length / 2, y, 0 ]) rotate([ 90, 0, 90 ]) linear_extrude(length) children();
+}
+
+// Rectangle centred on the origin, corners cut at 45 degrees by chamfer
+module _chamfered_rect(size, chamfer)
+{
+    w = size[0] / 2;
+    h = size[1] / 2;
+    c = chamfer;
+    polygon([ [ w - c, -h ], [ w, c - h ], [ w, h - c ], [ w - c, h ], [ c - w, h ], [ -w, h - c ], [ -w, c - h ],
+              [ c - w, -h ] ]);
+}
+
+// Slab centred on the origin in x and y, standing on z = 0, its top edges chamfered at 45 degrees
+module _chamfered_slab(size, chamfer)
+{
+    hull()
+    {
+        translate([ -size[0] / 2, -size[1] / 2, 0 ]) cube([ size[0], size[1], size[2] - chamfer ]);
+        translate([ -size[0] / 2 + chamfer, -size[1] / 2 + chamfer, 0 ])
+            cube([ size[0] - 2 * chamfer, size[1] - 2 * chamfer, size[2] ]);
+    }
+}
+
+// Hex prism of the given across-flats size, corners on the y axis
+module _hex_prism(af, h)
+{
+    rotate([ 0, 0, 90 ]) cylinder(d = af / cos(30), h = h, $fn = 6);
+}
+
+// Countersink opening a hex pocket's mouth at z = 0 by chamfer, narrowing upward
+module _hex_chamfer(af, chamfer)
+{
+    rotate([ 0, 0, 90 ]) cylinder(d1 = (af + 2 * chamfer) / cos(30), d2 = af / cos(30), h = chamfer, $fn = 6);
 }
