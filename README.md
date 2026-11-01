@@ -100,7 +100,7 @@ This module extends `ucell.scad` by enabling linear extrusion of unit cells. It 
 
 ### point_utils.scad
 
-This file provides utility functions for point operations such as sorting, calculating distances, and filtering points. It includes tools for generating midpoints, triangulating grids, and determining point proximity.
+This file provides utility functions for point operations: sorting grid centers, placing points midway between them or at the centres of their triangles, and generating and shifting arcs of points.
 
 ### sorted.scad
 
@@ -108,7 +108,7 @@ A helper file for implementing sorting utilities used by `point_utils.scad` for 
 
 ### regpoly_utils.scad
 
-This file contains functions for working with regular polygons, such as calculating the central angle, apothem, and radius. These utilities assist in positioning and rotating regular polygons.
+This file contains functions for working with regular polygons: the central angle, half of it, and the apothem. These utilities assist in positioning and rotating regular polygons.
 
 ### viz_utils.scad
 

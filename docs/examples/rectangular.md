@@ -11,6 +11,9 @@ instances (green) on the grid points over one substrate, cell B instances
 (blue) on the grid midpoints under the other. An extension factor stretches
 cells along Y to close the gaps a square lattice would otherwise leave.
 
+The rails lock the halves against pull-off and across the rails, and slide
+freely along them: the halves assemble by sliding one onto the other.
+
 {% include openscad.html model="rectangular" live="rectangular-live" title="Rectangular iLOX Tessellation" %}
 
 Source: [`examples/simpleUsage/simpleUsageRectangular.scad`](https://github.com/CameronBrooks11/iLOX/blob/main/examples/simpleUsage/simpleUsageRectangular.scad)
@@ -53,7 +56,8 @@ Key parameters:
   and a clip just above a horizontal face can leave a thin ledge.
 - `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
   half (print B upside down).
-- `grid_n`, `grid_m` — number of grid points in X and Y.
+- `grid_n`, `grid_m` — number of grid points in X and Y; `grid_n` at least 2,
+  since the B rails sit between the A rails.
 - `extension_factor` — stretches cells along Y (up to one cell width) to
   reduce the gaps between rows.
 - `substrate_height` — thickness of the solid backing each side of cells sits

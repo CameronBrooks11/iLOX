@@ -1,7 +1,7 @@
 // Checks the A/B clearance (#21): both cells stay inside the unit cell without crossing themselves or each other,
 // every vertex of one is at least `clearance` from the other, every cut side (before the tip clip) is a division
 // segment moved `clearance` / 2 sideways: parallel to it, at that distance, and overlapping it, and each tip stops
-// `tip_clearance` short of the opposite substrate. Prints PASS.
+// `tip_clearance` short of the opposite substrate. Also checks the shape of the voids calc_ucell returns. Prints PASS.
 //
 // Run: openscad --hardwarnings -o clearance.stl tests/clearance/clearance_check.scad
 // It exits non-zero on a failure: the cube at the end, the only geometry, is reached only when every check passed.
@@ -108,6 +108,15 @@ for (cs = cases, c = is_undef(cs[4]) ? clearances : cs[4], t = is_undef(cs[5]) ?
     }
     assert(len(crossings(cells[0], cells[1])) == 0, str(tag, "the cells cross"));
 }
+
+// The voids come back as [voids of A, voids of B], each a list of polygons, empty without neg_poly
+no_voids = calc_ucell(width = 5, height = 10, div = cases[2][3], clearance = 0.2)[2];
+assert(no_voids == [ [], [] ], str("FAIL voids without neg_poly: ", no_voids));
+one_void = calc_ucell(width = 5, height = 10, div = cases[2][3], clearance = 0.2,
+                      neg_poly = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]])[2];
+assert(len(one_void) == 2 && len(one_void[0]) == 1 && len(one_void[1]) == 1 &&
+           norm(one_void[1][0][0] - [ 1.5, 2 ]) < eps,
+       str("FAIL voids with one neg_poly polygon: ", one_void));
 
 echo("PASS");
 cube(1);

@@ -188,6 +188,16 @@ function segmentBox(e) = [ min(e[0][0], e[1][0]), max(e[0][0], e[1][0]), min(e[0
 function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[3] + m && b[2] <= a[3] + m;
 
 /**
+ * @brief Tests whether q is a polygon: a list of at least 3 [x, y] points.
+ */
+function isPolygon(q) = is_list(q) && len(q) >= 3 && len([for (p = q) if (!is_list(p) || len(p) != 2) 1]) == 0;
+
+/**
+ * @brief Tests whether polys is a list of polygons.
+ */
+function isPolygonList(polys) = is_list(polys) && len([for (q = polys) if (!isPolygon(q)) 1]) == 0;
+
+/**
  * @brief Calculates the points for unit cells A and B based on dimensions and division points.
  *
  * Generates the points for two unit cells by creating polygons from the division points, separating them by the
@@ -202,13 +212,14 @@ function boxesNear(a, b, m) = a[0] <= b[1] + m && b[0] <= a[1] + m && a[2] <= b[
  * @param clearance Gap between cells A and B in mm, measured normal to the division line. The division line is offset
  * with mitered corners, so a feature too small for the clearance, such as a barb narrower than it, is lost and the gap
  * there is wider than the clearance.
- * @param neg_poly (Optional) Array of negative polygon points, each point as [x, y].
+ * @param neg_poly (Optional) Voids to cut from cell A: a list of polygons, each a list of at least 3 [x, y] points
+ * normalised to the cell. Cell B gets them turned 180 degrees.
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance.
  * Must be below half the cell height; that alone does not keep the halves overlapping or interlocked.
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
  *         - cell_pointsB: Points for cell B.
- *         - [ncell_pointsA, ncell_pointsB]: Negative polygons of cells A and B (empty if neg_poly is not provided).
+ *         - [ncell_pointsA, ncell_pointsB]: The void polygons of cells A and B, each a list, empty without neg_poly.
  */
 function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance = undef) =
     let(tip = is_undef(tip_clearance) ? clearance : tip_clearance)
@@ -216,6 +227,8 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
     assert(is_num(tip) && tip >= 0 && tip < height / 2,
            "ERROR: tip_clearance (default: the clearance) must be a number >= 0 and below half the cell height")
     assert(len([for (p = div) if (len(p) != 2) p]) == 0, "ERROR: Div points must be [x, y]")
+    assert(isPolygonList(neg_poly),
+           "ERROR: neg_poly must be a list of polygons, each at least 3 [x, y] points; wrap a single polygon in [ ]")
     let(y_val = div[0][1],
         subdiv = (y_val == 0)   ? 0                                                                 // minor
                  : (y_val == 1) ? 1                                                                 // major
@@ -226,7 +239,7 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
         fullA = cellLeftOf(div_line, clearance / 2, width, height),             // cell A before the tip clip
         cell_pointsA = dropCollinear(clipToAxis(fullA, 1, height - tip, -1)), // cell A points
         cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
-        ncell_points = len(neg_poly) > 0 ? calc_ucell_voids(width, height, neg_poly) : [], // negative polygons
+        ncell_points = calc_ucell_voids(width, height, neg_poly), // void polygons of A and B
         // Cell B is cell A turned 180 degrees, so checking A covers both
         edgesA = polygonEdges(cell_pointsA),
         edgesB = polygonEdges(cell_pointsB),
@@ -250,24 +263,20 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
                    (len(gaps) == 0 || min(gaps) > clearance - 1e-6),
                "ERROR: Div line brings the cells closer than the clearance")
 
-            [cell_pointsA, cell_pointsB, flatten(ncell_points)];
+            [cell_pointsA, cell_pointsB, ncell_points];
 
 /**
- * @brief Calculates the points for negative polygons of unit cells A and B based on dimensions and division points.
+ * @brief Calculates the void polygons of unit cells A and B.
  *
- * Scales the negative polygons to the cell for cell A, and turns them 180 degrees about the cell centre for cell B.
+ * Scales the polygons to the cell for cell A, and turns them 180 degrees about the cell centre for cell B.
  *
  * @param width The width of the unit cell.
  * @param height The height of the unit cell.
- * @param poly Array of negative polygon points, each point as [x, y].
- * @return An array containing:
- *         - ncell_pointsA: Points for negative polygon of cell A.
- *         - ncell_pointsB: Points for negative polygon of cell B.
+ * @param poly List of polygons, each a list of [x, y] points normalised to the cell.
+ * @return [ncell_pointsA, ncell_pointsB]: the polygons for cells A and B, each a list, empty if poly is.
  */
-function calc_ucell_voids(width, height, poly = [[]]) =
-    let(ncell_pointsA = len(poly) > 0 ? transformPointsList(poly, width, height) : [],
-        ncell_pointsB = len(poly) > 0 ? transformPointsList(mirrorPointsList(poly), width, height) : [])
-        [[ncell_pointsA], [ncell_pointsB]];
+function calc_ucell_voids(width, height, poly) =
+    [ transformPointsList(poly, width, height), transformPointsList(mirrorPointsList(poly), width, height) ];
 
 /**
  * @brief Renders unit cells with optional negative border offset.
@@ -276,65 +285,34 @@ function calc_ucell_voids(width, height, poly = [[]]) =
  * are modified by applying an offset to produce a border cutout. This turns a simple
  * rectangle into a rectangle with a rectangular hole inside.
  *
- * @param cells An array of cell polygons: [cell_pointsA, cell_pointsB, ncell_pointsA, ncell_pointsB].
+ * @param cells The cells as calc_ucell returns them: [cell_pointsA, cell_pointsB, [ncell_pointsA, ncell_pointsB]].
  * @param colors An array of colors to use for the polygons:
  *               0 -> cell_pointsA,
  *               1 -> cell_pointsB,
  *               2 -> ncell_pointsA,
  *               3 -> ncell_pointsB.
- * @param neg_border The width of the border offset to apply to negative polygons. Defaults to 0.1.
+ * @param neg_border The width of the border offset to apply to negative polygons. Defaults to 0.05.
  */
 module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Navy" ], neg_border = 0.05)
 {
-    // Unpack calculated cell points
-    cell_pointsA = cells[0];
-    cell_pointsB = cells[1];
-    ncell_pointsA = cells[2][0];
-    ncell_pointsB = cells[2][1];
-
-    echo("ncell_pointsA new: ", ncell_pointsA);
-    echo("ncell_pointsB new: ", ncell_pointsB);
-
     // Draw the main cell polygons
-    color(colors[0]) polygon(points = cell_pointsA);
-    color(colors[1]) polygon(points = cell_pointsB);
+    color(colors[0]) polygon(points = cells[0]);
+    color(colors[1]) polygon(points = cells[1]);
 
-    // Draw the negative polygons if they exist
-    translate([ 0, 0, 0.005 ]) if (!is_undef(ncell_pointsA))
-    {
-        for (i = [0:len(ncell_pointsA) - 1])
+    // Draw each void as a border inside its cell
+    translate([ 0, 0, 0.005 ]) for (k = [0:1])
+        color(colors[2 + k]) for (v = cells[2][k]) difference()
         {
-            // negative cell points A
-            color(colors[2]) difference()
-            { // Create a bordered negative shape by cutting out an offset portion inside it
-                intersection()
-                {
-                    polygon(points = ncell_pointsA[i]);
-                    polygon(points = cell_pointsA);
-                }
-
-                offset(r = -neg_border) intersection()
-                {
-                    polygon(points = ncell_pointsA[i]);
-                    polygon(points = cell_pointsA);
-                }
+            intersection()
+            {
+                polygon(points = v);
+                polygon(points = cells[k]);
             }
 
-            // negative cell points B
-            color(colors[3]) difference()
+            offset(r = -neg_border) intersection()
             {
-                intersection()
-                {
-                    polygon(points = ncell_pointsB[i]);
-                    polygon(points = cell_pointsB);
-                }
-
-                offset(r = -neg_border) intersection()
-                {
-                    polygon(points = ncell_pointsB[i]);
-                    polygon(points = cell_pointsB);
-                }
+                polygon(points = v);
+                polygon(points = cells[k]);
             }
         }
-    }
 }

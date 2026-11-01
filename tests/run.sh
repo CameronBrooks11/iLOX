@@ -50,6 +50,18 @@ for f in examples/simpleUsage/*.scad; do
     for part in both A B; do
         if run --hardwarnings -D "part=\"$part\"" "$f"; then ok "$f part=$part"; else fail "$f part=$part"; fi
     done
+    if run --hardwarnings -D "base_ucell_neg_poly=[]" "$f"; then ok "$f without voids"; else fail "$f without voids"; fi
+done
+
+# A grid one cell wide has no B cells, so the tessellation modules must refuse it
+for check in "examples/simpleUsage/simpleUsageRadial.scad levels=1" \
+    "examples/simpleUsage/simpleUsageRectangular.scad grid_n=1"; do
+    read -r f def <<<"$check"
+    if ! run -D "$def" "$f" && grep -q 'failed: "ERROR: ' "$out/log"; then
+        ok "$f rejects $def"
+    else
+        fail "$f rejects $def"
+    fi
 done
 
 for f in specimens/tensile/*.scad; do

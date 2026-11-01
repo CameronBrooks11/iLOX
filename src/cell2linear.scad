@@ -10,8 +10,6 @@
  *
  */
 
-use <utils/regpoly_utils.scad>;
-
 /**
  * @brief Places 'A' or 'B' type linear cells at specified positions.
  *
@@ -66,8 +64,8 @@ module ucell_linX_A(cells, width, extension = 0, color = "OliveDrab")
             linear_extrude(extrusion_depth) difference()
         {
             polygon(points = cells[0]); // Main cell polygon
-            for (i = [0:len(cells[2][0]) - 1])
-                polygon(points = cells[2][0][i]); // Optional negative polygon        }
+            for (v = cells[2][0])
+                polygon(points = v); // Voids
         }
     }
 }
@@ -92,8 +90,8 @@ module ucell_linX_B(cells, width, extension = 0, cc = false, color = "CadetBlue"
             linear_extrude(extrusion_depth) difference()
         {
             polygon(points = cells[1]); // Main cell polygon
-            for (i = [0:len(cells[2][1]) - 1])
-                polygon(points = cells[2][1][i]); // Optional negative polygon        }
+            for (v = cells[2][1])
+                polygon(points = v); // Voids
         }
     }
 }
