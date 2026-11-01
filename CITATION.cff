@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: If you use iLOX, please cite it using these metadata.
+type: software
+title: "iLOX: InterLocking Orthogonal eXtrusions"
+abstract: >-
+  An OpenSCAD library for joints that print as two separate parts and
+  interlock. A 2D unit cell is split along a division line into two halves, a
+  clearance apart, which are extruded and repeated across two substrates as
+  linear rails or radial pins.
+authors:
+  - given-names: Cameron K.
+    family-names: Brooks
+version: 0.1.0
+date-released: "2026-11-01"
+license: MPL-2.0
+repository-code: "https://github.com/CameronBrooks11/iLOX"
+url: "https://cameronbrooks11.github.io/iLOX/"
+keywords:
+  - openscad
+  - 3d-printing
+  - parametric-design
+  - tessellation
+  - interlocking

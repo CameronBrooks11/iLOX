@@ -8,13 +8,13 @@ nav_order: 2
 ## Install
 
 iLOX is tested with OpenSCAD 2021.01 and a 2026 development snapshot. It needs
-[tessella](https://github.com/CameronBrooks11/tessella). Clone both into your
-OpenSCAD libraries folder (**File > Show Library Folder** in OpenSCAD), keeping
-the folder names as they clone:
+[tessella](https://github.com/CameronBrooks11/tessella) 0.1.0. Clone both into
+your OpenSCAD libraries folder (**File > Show Library Folder** in OpenSCAD),
+keeping the folder names as they clone:
 
 ```
 git clone https://github.com/CameronBrooks11/iLOX.git
-git clone https://github.com/CameronBrooks11/tessella.git
+git clone --branch v0.1.0 https://github.com/CameronBrooks11/tessella.git
 ```
 
 ## First render
