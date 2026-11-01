@@ -3,15 +3,17 @@
 All notable changes to iLOX, in the form of
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-No version has been tagged yet. Below Unreleased, the history is grouped into
-dated periods reconstructed from the commits. A period marked as a candidate tag
-ends at a commit that [#30] could tag retroactively.
+0.1.0 is the first tagged version. Below it, the history before 0.1.0 is grouped
+into dated periods reconstructed from the commits. A period marked as a
+candidate tag ends at a commit that [#30] could have tagged retroactively.
 
 ## [Unreleased]
 
-2026-10-16 to 2026-11-01. This becomes the first tagged release ([#30]). Each
-breaking change is relative to the last candidate tag, `b859cf8`. The library
-code did not change between that commit and [#22].
+## [0.1.0] - 2026-11-01
+
+The changes of 2026-10-16 to 2026-11-01. Needs tessella 0.1.0. Each breaking
+change is relative to the last candidate tag, `b859cf8`. The library code did
+not change between that commit and [#22].
 
 ### Changed
 
@@ -269,7 +271,8 @@ syntax error.
   replacing copies of dotSCAD's modules, and notes on the geometry.
 - `tricho.scad`: a stem and cap built from stacked hexagonal cylinders.
 
-[Unreleased]: https://github.com/CameronBrooks11/iLOX/compare/b859cf8...HEAD
+[Unreleased]: https://github.com/CameronBrooks11/iLOX/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/CameronBrooks11/iLOX/compare/b859cf8...v0.1.0
 [#12]: https://github.com/CameronBrooks11/iLOX/pull/12
 [#14]: https://github.com/CameronBrooks11/iLOX/pull/14
 [#17]: https://github.com/CameronBrooks11/iLOX/pull/17

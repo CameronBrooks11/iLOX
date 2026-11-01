@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: CameronBrooks11/tessella
-          ref: 6a9cc241326e7d598ab497bcd262fd7a99e49fca
+          ref: 6a9cc241326e7d598ab497bcd262fd7a99e49fca # v0.1.0
           path: tessella
 
       - name: Setup Ruby
