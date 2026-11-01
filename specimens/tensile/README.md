@@ -4,7 +4,7 @@ Strips for the test machine with an iLOX joint in the middle.
 
 - `tensile_testing_rectangular.scad`: linear rails, from `concept/direct-workflow/tessellation_rectangular.scad`.
 - `tensile_testing_radial.scad`: radial pins, from `concept/direct-workflow/tessellation_radial.scad`.
-- `clamp.scad`: the clamp that holds one strip in the tester, as `part = "base"`, `"jaw"` (print two) or `"assembly"`. `tensile_clamp()` sizes the block and jaws from the strip it holds (`strip = [ thickness, width, wrap ]`); `use <clamp.scad>` to call it with other arguments.
+- `clamp.scad`: the clamp that holds one strip in the tester, as `part = "base"`, `"jaw"` (print two) or `"assembly"`. `tensile_clamp()` sizes the block and jaws from the strip it holds (`strip_t`, `strip_w`, `wrap`); `use <clamp.scad>` to call it with other arguments.
 
 Each specimen script builds one part: a strip carrying A cells, as wide as the joint (40 mm) and as long as half of ASTM D638 Type I's 165 mm plus the joint (107.5 mm for the rectangular part). Print the part twice. Turned over, the second print is the mating half: offset it by one cell width (5 mm) across the rails, or by one cell width at 30° to the strip for the radial pins, and the two engage with a gap equal to `clearance` all round.
 
