@@ -14,7 +14,7 @@ naming the module, the argument and the value, such as
 
 Every module takes the same cell:
 
-| Argument | Default | |
+| Argument | Default | Meaning |
 | --- | --- | --- |
 | `width` | | Width of the unit cell in mm. |
 | `height` | | Height of the unit cell in mm; the height of the extrusions. |
@@ -29,7 +29,7 @@ Pins on a hexagonal lattice: A pins at the hexagon centres on one substrate, B
 pins between them on the other. Each B pin faces three A pins one `width` apart,
 so the gap between them is `clearance`.
 
-| Argument | Default | |
+| Argument | Default | Meaning |
 | --- | --- | --- |
 | `levels` | `2` | Rings of A pins, a whole number of at least 2. |
 | `substrate_height` | `1` | Thickness of each substrate in mm. |
@@ -42,7 +42,7 @@ Rails on a rectangular grid: A rails two cell widths apart on one substrate, B
 rails midway between them on the other. The rails lock against pull-off and
 across the rails, and slide along them.
 
-| Argument | Default | |
+| Argument | Default | Meaning |
 | --- | --- | --- |
 | `grid_n` | `3` | Number of A rails, along X, a whole number of at least 2. |
 | `grid_m` | `2` | Number of cells along each rail, along Y, a whole number of at least 1. |
@@ -56,7 +56,7 @@ across the rails, and slide along them.
 The 2D unit cell, its halves, their voids and their points, for designing a
 division line. Preview only: it mixes 2D shapes and point spheres.
 
-| Argument | Default | |
+| Argument | Default | Meaning |
 | --- | --- | --- |
 | `colors` | `[ "GreenYellow", "Aqua", "Red", "DarkRed" ]` | Cell A, cell B, voids of A, voids of B. |
 | `point_d` | `0.1` | Diameter of the spheres marking the points. |

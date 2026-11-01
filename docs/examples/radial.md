@@ -34,8 +34,8 @@ voids = [ [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ] ];
 // Rings of hexagons in the lattice
 levels = 4;
 
-ilox_radial(width = width, height = height, div = div, clearance = clearance, voids = voids, levels = levels,
-            part = "both");
+ilox_radial(width = width, height = height, div = div, clearance = clearance,
+            voids = voids, levels = levels, part = "both");
 ```
 
 Key parameters:

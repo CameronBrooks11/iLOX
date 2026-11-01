@@ -27,7 +27,7 @@ concurrency:
 jobs:
   # Build job
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -115,7 +115,7 @@ jobs:
               "examples/simpleUsage/$model.scad" -o "rendered/$model.off"
             xvfb-run -a /tmp/openscad.AppImage --appimage-extract-and-run \
               "examples/simpleUsage/$model.scad" -o "rendered/$model.png" \
-              --imgsize=1000,750 --viewall --autocenter
+              --imgsize=1000,750 --viewall --autocenter --colorscheme="Tomorrow Night"
 
             # Fail loudly if the OFF came out colorless. Without this the only
             # symptom is embeds quietly reverting to the viewer's default yellow,
@@ -159,7 +159,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
     steps:
       - name: Deploy to GitHub Pages

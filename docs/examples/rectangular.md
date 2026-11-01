@@ -40,8 +40,10 @@ grid_m = 4;
 substrate_height = 3;
 extension_factor = 0.5; // [0:0.1:1]
 
-ilox_linear(width = width, height = height, div = div, clearance = clearance, voids = voids, grid_n = grid_n,
-            grid_m = grid_m, extension_factor = extension_factor, substrate_height = substrate_height, part = "both");
+ilox_linear(width = width, height = height, div = div, clearance = clearance,
+            voids = voids, grid_n = grid_n, grid_m = grid_m,
+            extension_factor = extension_factor,
+            substrate_height = substrate_height, part = "both");
 ```
 
 Key parameters:

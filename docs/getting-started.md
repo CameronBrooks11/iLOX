@@ -22,7 +22,8 @@ git clone https://github.com/CameronBrooks11/tessella.git
 ```openscad
 use <iLOX/iLOX.scad>;
 
-ilox_radial(width = 5, height = 10, div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], clearance = 0.2);
+ilox_radial(width = 5, height = 10, clearance = 0.2,
+            div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ]);
 ```
 
 This renders both halves of a 26 x 25 mm radial joint in their assembled
