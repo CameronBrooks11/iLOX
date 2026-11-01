@@ -50,7 +50,8 @@ Key parameters:
   and a clip just above a horizontal face can leave a thin ledge.
 - `part` — `"both"` to view the joint, or `"A"` / `"B"` to export one printable
   half (print B upside down).
-- `levels` — how many rings of hexagons the lattice grows outward.
+- `levels` — how many rings of hexagons the lattice grows outward; at least 2,
+  since the B cells sit between the A cells.
 
 Each cell is a hexagonal extrusion of its half of the unit cell, and each B
 cell faces three A cells one `width_x` apart, across flat sides, so the gap

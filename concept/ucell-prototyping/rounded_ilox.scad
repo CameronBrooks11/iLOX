@@ -101,7 +101,7 @@ add_neg_poly = [
 ];
 example_neg_poly1 = shift_points(stem_pts, -clearance / width_x, 0);
 example_neg_poly2 = shift_points(add_neg_poly, -clearance / width_x, 0);
-example_neg_poly = [ example_neg_poly1, example_neg_poly2 ];
+example_neg_poly = [example_neg_poly2]; // example_neg_poly1 has two points, so it encloses nothing to cut
 
 if (inputnegpoly_render)
 {

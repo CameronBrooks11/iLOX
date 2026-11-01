@@ -15,8 +15,7 @@ include <src/utils/viz_utils.scad>;
  * @param height_y Height of the unit cell in the y-direction
  * @param div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell division.
  * @param clearance Gap between cells A and B in mm, measured normal to the division line.
- * @param neg_poly Define points for a polygon to act as a negative to create voids within the cell, each point is
- * defined as [x, y]
+ * @param neg_poly Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to the cell
  * @param colors Array of colors for the cell and negative polygon
  * @param pt_diams Diameter of the points
  * @param pt_colors Array of colors for the points
@@ -48,9 +47,9 @@ module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
  * @param base_ucell_div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell
  * division.
  * @param clearance Gap between cells A and B in mm, measured normal to the division line.
- * @param base_ucell_neg_poly Define points for a polygon to act as a negative to create voids within the cell, each
- * point is defined as [x, y]
- * @param levels Number of levels for tessellation pattern
+ * @param base_ucell_neg_poly Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to
+ * the cell
+ * @param levels Number of rings of A cells, at least 2: B cells sit between the A cells
  * @param substrate_height Height of the substrate
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
@@ -74,7 +73,9 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
     widen = [ 1 / cos(30), 1 / cos(30), 1 ];
 
     // Generate hexagon centers for tessellation
-    tess_points = hexagons_centers_radial(radius = width_x, levels = levels);
+    tess_points =
+        assert(levels >= 2, str("ERROR: levels must be at least 2 for B cells between the A cells, got: ", levels))
+            hexagons_centers_radial(radius = width_x, levels = levels);
 
     // Generate triangulated center points for cell B instances
     tess_points_tri = triangulated_center_points(tess_points);
@@ -106,16 +107,18 @@ module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
 
 /**
  * @brief Renders a linear tessellation of cells A and B
+ *
+ * The rails lock against pull-off and across the rails, and slide freely along them: halves assemble by sliding.
  * @param width_x Width of the unit cell in the x-direction
  * @param height_y Height of the unit cell in the y-direction
  * @param base_ucell_div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell
  * division.
  * @param clearance Gap between cells A and B in mm, measured normal to the division line.
- * @param base_ucell_neg_poly Define points for a polygon to act as a negative to create voids within the cell, each
- * point is defined as [x, y]
- * @param grid_n Number of grid points in the X direction
+ * @param base_ucell_neg_poly Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to
+ * the cell
+ * @param grid_n Number of A rails, along X, at least 2: B rails sit between them
  * @param grid_m Number of grid points in the Y direction
- * @param extension_factor Factor to extend the cells in the x-direction
+ * @param extension_factor Factor to extend the cells in the Y direction, along the rails
  * @param substrate_height Height of the substrate
  * @param cellA_color Color for cell A
  * @param cellB_color Color for cell B
@@ -140,7 +143,9 @@ module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_
     tessellation_width = width_x * 2;
 
     // Generate hexagon centers for tessellation
-    tess_points = squares_centers_rect(side = tessellation_width, n = grid_n, m = grid_m);
+    tess_points =
+        assert(grid_n >= 2, str("ERROR: grid_n must be at least 2 for B rails between the A rails, got: ", grid_n))
+            squares_centers_rect(side = tessellation_width, n = grid_n, m = grid_m);
 
     // Generate triangulated center points for cell B instances
     tess_points_midp = square_midpoints(tess_points);
