@@ -50,14 +50,18 @@ for f in examples/simpleUsage/*.scad; do
     for part in both A B; do
         if run --hardwarnings -D "part=\"$part\"" "$f"; then ok "$f part=$part"; else fail "$f part=$part"; fi
     done
-    if run --hardwarnings -D "base_ucell_neg_poly=[]" "$f"; then ok "$f without voids"; else fail "$f without voids"; fi
+    if run --hardwarnings -D "voids=[]" "$f"; then ok "$f without voids"; else fail "$f without voids"; fi
 done
 
-# A grid one cell wide has no B cells, so the tessellation modules must refuse it
-for check in "examples/simpleUsage/simpleUsageRadial.scad levels=1" \
-    "examples/simpleUsage/simpleUsageRectangular.scad grid_n=1"; do
-    read -r f def <<<"$check"
-    if ! run -D "$def" "$f" && grep -q 'failed: "ERROR: ' "$out/log"; then
+# Arguments the modules must refuse, each with the message that names it; a grid one cell wide has no B cells
+radial=examples/simpleUsage/simpleUsageRadial.scad
+linear=examples/simpleUsage/simpleUsageRectangular.scad
+for check in "$radial|levels=1|levels must be" "$radial|levels=2.5|levels must be" "$radial|part=\"C\"|part must be" \
+    "$radial|width=0|width must be" "$radial|height=-10|height must be" "$linear|grid_n=1|grid_n must be" \
+    "$linear|grid_m=0|grid_m must be" "$linear|extension_factor=1.5|extension_factor must be" \
+    "$linear|substrate_height=0|substrate_height must be"; do
+    IFS='|' read -r f def message <<<"$check"
+    if ! run -D "$def" "$f" && grep -qE "failed: \"ERROR: (ilox_[a-z_]+: )?$message" "$out/log"; then
         ok "$f rejects $def"
     else
         fail "$f rejects $def"

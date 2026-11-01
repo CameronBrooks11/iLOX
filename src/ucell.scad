@@ -6,7 +6,7 @@
  *
  * This library provides functions to calculate the points of unit cells (cells A and B) based on given dimensions and
  * division points. It includes utilities for transforming and manipulating points, separating the cells by a
- * clearance, and handling optional negative polygons. Modules are provided to render these cells and to place spheres
+ * clearance, and handling optional voids. Modules are provided to render these cells and to place spheres
  * at specified points.
  */
 
@@ -201,34 +201,37 @@ function isPolygonList(polys) = is_list(polys) && len([for (q = polys) if (!isPo
  * @brief Calculates the points for unit cells A and B based on dimensions and division points.
  *
  * Generates the points for two unit cells by creating polygons from the division points, separating them by the
- * clearance, and handling optional negative polygons.
+ * clearance, and cutting optional voids.
  *
  * The subdivision is determined by the first division point's y-value: 0 for the minor half (subdiv = 0), 1 for the
  * major half (subdiv = 1); anything else is an error.
  *
- * @param width The width of the unit cell.
- * @param height The height of the unit cell.
- * @param div Array of division points, each point as [x, y].
+ * @param width The width of the unit cell in mm.
+ * @param height The height of the unit cell in mm.
+ * @param div Division line as [x, y] points normalised to the cell, at least 2.
  * @param clearance Gap between cells A and B in mm, measured normal to the division line. The division line is offset
  * with mitered corners, so a feature too small for the clearance, such as a barb narrower than it, is lost and the gap
  * there is wider than the clearance.
- * @param neg_poly (Optional) Voids to cut from cell A: a list of polygons, each a list of at least 3 [x, y] points
+ * @param voids (Optional) Voids to cut from cell A: a list of polygons, each a list of at least 3 [x, y] points
  * normalised to the cell. Cell B gets them turned 180 degrees.
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance.
  * Must be below half the cell height; that alone does not keep the halves overlapping or interlocked.
  * @return An array containing:
  *         - cell_pointsA: Points for cell A.
  *         - cell_pointsB: Points for cell B.
- *         - [ncell_pointsA, ncell_pointsB]: The void polygons of cells A and B, each a list, empty without neg_poly.
+ *         - [ncell_pointsA, ncell_pointsB]: The void polygons of cells A and B, each a list, empty without voids.
  */
-function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance = undef) =
+function calc_ucell(width, height, div, clearance, voids = [], tip_clearance = undef) =
     let(tip = is_undef(tip_clearance) ? clearance : tip_clearance)
+    assert(is_num(width) && width > 0, str("ERROR: width must be a number > 0, got: ", width))
+    assert(is_num(height) && height > 0, str("ERROR: height must be a number > 0, got: ", height))
     assert(is_num(clearance) && clearance >= 0, "ERROR: clearance must be a number >= 0")
     assert(is_num(tip) && tip >= 0 && tip < height / 2,
            "ERROR: tip_clearance (default: the clearance) must be a number >= 0 and below half the cell height")
+    assert(is_list(div) && len(div) >= 2, str("ERROR: div must be a list of at least 2 [x, y] points, got: ", div))
     assert(len([for (p = div) if (len(p) != 2) p]) == 0, "ERROR: Div points must be [x, y]")
-    assert(isPolygonList(neg_poly),
-           "ERROR: neg_poly must be a list of polygons, each at least 3 [x, y] points; wrap a single polygon in [ ]")
+    assert(isPolygonList(voids),
+           "ERROR: voids must be a list of polygons, each at least 3 [x, y] points; wrap a single polygon in [ ]")
     let(y_val = div[0][1],
         subdiv = (y_val == 0)   ? 0                                                                 // minor
                  : (y_val == 1) ? 1                                                                 // major
@@ -239,7 +242,7 @@ function calc_ucell(width, height, div, clearance, neg_poly = [], tip_clearance 
         fullA = cellLeftOf(div_line, clearance / 2, width, height),             // cell A before the tip clip
         cell_pointsA = dropCollinear(clipToAxis(fullA, 1, height - tip, -1)), // cell A points
         cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
-        ncell_points = calc_ucell_voids(width, height, neg_poly), // void polygons of A and B
+        ncell_points = calc_ucell_voids(width, height, voids), // void polygons of A and B
         // Cell B is cell A turned 180 degrees, so checking A covers both
         edgesA = polygonEdges(cell_pointsA),
         edgesB = polygonEdges(cell_pointsB),
@@ -281,9 +284,7 @@ function calc_ucell_voids(width, height, poly) =
 /**
  * @brief Renders unit cells with optional negative border offset.
  *
- * Draws the main cell polygons and, if provided, negative polygons. The negative polygons
- * are modified by applying an offset to produce a border cutout. This turns a simple
- * rectangle into a rectangle with a rectangular hole inside.
+ * Draws the main cell polygons and, if provided, each void as a border inside its cell.
  *
  * @param cells The cells as calc_ucell returns them: [cell_pointsA, cell_pointsB, [ncell_pointsA, ncell_pointsB]].
  * @param colors An array of colors to use for the polygons:
@@ -291,9 +292,9 @@ function calc_ucell_voids(width, height, poly) =
  *               1 -> cell_pointsB,
  *               2 -> ncell_pointsA,
  *               3 -> ncell_pointsB.
- * @param neg_border The width of the border offset to apply to negative polygons. Defaults to 0.05.
+ * @param void_border Width of the border drawn for each void. Defaults to 0.05.
  */
-module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Navy" ], neg_border = 0.05)
+module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Navy" ], void_border = 0.05)
 {
     // Draw the main cell polygons
     color(colors[0]) polygon(points = cells[0]);
@@ -309,7 +310,7 @@ module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Na
                 polygon(points = cells[k]);
             }
 
-            offset(r = -neg_border) intersection()
+            offset(r = -void_border) intersection()
             {
                 polygon(points = v);
                 polygon(points = cells[k]);

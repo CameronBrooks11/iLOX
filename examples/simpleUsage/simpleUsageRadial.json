@@ -1,14 +1,12 @@
 {
     "parameterSets": {
         "design default values": {
-            "base_ucell_div": "[[0.5, 0], [0.3, 0.1], [0.3, 0.4]]",
-            "base_ucell_neg_poly": "[[0.7, 0.8], [0.7, 1], [0.3, 1]]",
             "clearance": "0.2",
-            "height_y": "10",
+            "height": "10",
             "levels": "4",
             "part": "both",
             "show_ucell": "false",
-            "width_x": "5"
+            "width": "5"
         }
     },
     "fileFormatVersion": "1"
