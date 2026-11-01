@@ -109,14 +109,14 @@ for (cs = cases, c = is_undef(cs[4]) ? clearances : cs[4], t = is_undef(cs[5]) ?
     assert(len(crossings(cells[0], cells[1])) == 0, str(tag, "the cells cross"));
 }
 
-// The voids come back as [voids of A, voids of B], each a list of polygons, empty without neg_poly
+// The voids come back as [voids of A, voids of B], each a list of polygons, empty without voids
 no_voids = calc_ucell(width = 5, height = 10, div = cases[2][3], clearance = 0.2)[2];
-assert(no_voids == [ [], [] ], str("FAIL voids without neg_poly: ", no_voids));
+assert(no_voids == [ [], [] ], str("FAIL no voids: ", no_voids));
 one_void = calc_ucell(width = 5, height = 10, div = cases[2][3], clearance = 0.2,
-                      neg_poly = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]])[2];
+                      voids = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]])[2];
 assert(len(one_void) == 2 && len(one_void[0]) == 1 && len(one_void[1]) == 1 &&
            norm(one_void[1][0][0] - [ 1.5, 2 ]) < eps,
-       str("FAIL voids with one neg_poly polygon: ", one_void));
+       str("FAIL one void: ", one_void));
 
 echo("PASS");
 cube(1);

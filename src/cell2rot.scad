@@ -6,7 +6,7 @@
  *
  * This file contains modules for placing 'A' or 'B' type rotated cells at specified positions. The cells are rendered
  * using rotational extrusion, with optional rotation and color parameters. The cells are defined by an array of points,
- * with optional negative polygons for subtraction as defined in 'ucell.scad'.
+ * with optional voids cut out as defined in 'ucell.scad'.
  *
  */
 

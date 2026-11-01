@@ -1,3 +1,6 @@
+// iLOX: interlocking orthogonal extrusions. The public modules are ilox_radial(), ilox_linear() and
+// ilox_cell_designer(); calc_ucell() in src/ucell.scad computes the unit cell they share. Pass arguments by name.
+
 // External libraries
 include <tessella/tess.scad>;
 
@@ -10,170 +13,160 @@ include <src/utils/regpoly_utils.scad>;
 include <src/utils/viz_utils.scad>;
 
 /**
- * @brief Renders a unit cell with division points and negative polygons
- * @param width_x Width of the unit cell in the x-direction
- * @param height_y Height of the unit cell in the y-direction
- * @param div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell division.
- * @param clearance Gap between cells A and B in mm, measured normal to the division line.
- * @param neg_poly Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to the cell
- * @param colors Array of colors for the cell and negative polygon
- * @param pt_diams Diameter of the points
- * @param pt_colors Array of colors for the points
- * @param pt_zGap Height offset for the points along the z-axis
- * @param pt_fn Number of facets used to render the points
+ * @brief Renders the 2D unit cell, its two halves, their voids and their points, to design a division line.
+ * @param width Width of the unit cell in mm
+ * @param height Height of the unit cell in mm
+ * @param div Division line as [x, y] points normalised to the cell, starting at y = 0 (minor half) or y = 1 (major
+ * half)
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line
+ * @param voids (Optional) Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to the
+ * cell
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance,
  * below half the cell height; that alone does not keep the halves overlapping or interlocked
+ * @param colors [ cell A, cell B, voids of A, voids of B ]
+ * @param point_d Diameter of the spheres marking the cells' points
+ * @param point_colors [ points of A, points of B ]
+ * @param point_z Height of the point spheres above the cell
+ * @param point_fn Facets of the point spheres
  */
-module ucell_designer(width_x, height_y, div, clearance, neg_poly = [],
-                      colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ], pt_diams = 0.1,
-                      pt_colors = [ "Indigo", "Violet" ], pt_zGap = 0.5, pt_fn = 12, tip_clearance = undef)
+module ilox_cell_designer(width, height, div, clearance, voids = [], tip_clearance = undef,
+                          colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ], point_d = 0.1,
+                          point_colors = [ "Indigo", "Violet" ], point_z = 0.5, point_fn = 12)
 {
-    base_ucell_cells = calc_ucell(width = width_x, height = height_y, div = div, clearance = clearance,
-                                  neg_poly = neg_poly, tip_clearance = tip_clearance);
-    // Render the entire unit cell with both the division and negative polygons
-    render_ucells(cells = base_ucell_cells, colors = colors);
+    checked = assert(is_list(colors) && len(colors) == 4,
+                     str("ERROR: ilox_cell_designer: colors must be 4 colors, got: ", colors))
+        assert(is_list(point_colors) && len(point_colors) == 2,
+               str("ERROR: ilox_cell_designer: point_colors must be 2 colors, got: ", point_colors))
+            assert(is_num(point_d) && point_d > 0,
+                   str("ERROR: ilox_cell_designer: point_d must be a number > 0, got: ", point_d)) true;
 
-    // Place spheres at the points of cell A (division points)
-    place_spheres(points = base_ucell_cells[0], d = pt_diams, color = pt_colors[0], zGap = pt_zGap, fn = pt_fn);
+    cells = calc_ucell(width = width, height = height, div = div, clearance = clearance, voids = voids,
+                       tip_clearance = tip_clearance);
 
-    // Place spheres at the points of cell B (division points)
-    place_spheres(points = base_ucell_cells[1], d = pt_diams, color = pt_colors[1], zGap = pt_zGap, fn = pt_fn);
+    render_ucells(cells = cells, colors = colors);
+    for (k = [0:1])
+        place_spheres(points = cells[k], d = point_d, color = point_colors[k], zGap = point_z, fn = point_fn);
 }
 
 /**
- * @brief Renders a radial tessellation of cells A and B
- * @param width_x Width of the unit cell in the x-direction
- * @param height_y Height of the unit cell in the y-direction
- * @param base_ucell_div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell
- * division.
- * @param clearance Gap between cells A and B in mm, measured normal to the division line.
- * @param base_ucell_neg_poly Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to
- * the cell
- * @param levels Number of rings of A cells, at least 2: B cells sit between the A cells
- * @param substrate_height Height of the substrate
- * @param cellA_color Color for cell A
- * @param cellB_color Color for cell B
+ * @brief Renders a radial tessellation of cells A and B: pins on a hexagonal lattice.
+ * @param width Width of the unit cell in mm
+ * @param height Height of the unit cell in mm
+ * @param div Division line as [x, y] points normalised to the cell, starting at y = 0 (minor half) or y = 1 (major
+ * half)
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line
+ * @param voids (Optional) Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to the
+ * cell
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance,
  * below half the cell height; that alone does not keep the halves overlapping or interlocked
- * @param part (Optional) "A", "B" or "both": which half to render, in its assembled position (flip B to print it)
+ * @param levels Number of rings of A cells, a whole number of at least 2: B cells sit between the A cells
+ * @param substrate_height Thickness of each half's substrate in mm
+ * @param colors [ half A, half B ]
+ * @param part "A", "B" or "both": which half to render, in its assembled position (turn B over to print it)
  */
-module radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, levels, substrate_height = 1,
-                   cellA_color = "ForestGreen", cellB_color = "MidnightBlue", tip_clearance = undef, part = "both")
+module ilox_radial(width, height, div, clearance, voids = [], tip_clearance = undef, levels = 2, substrate_height = 1,
+                   colors = [ "ForestGreen", "MidnightBlue" ], part = "both")
 {
-    assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\", \"B\" or \"both\"");
+    halves_checked = _ilox_check_halves("ilox_radial", substrate_height, colors, part);
+    levels_checked =
+        assert(_ilox_is_count(levels, 2),
+               str("ERROR: ilox_radial: levels must be a whole number of at least 2, so B cells sit between the ",
+                   "A cells, got: ", levels)) true;
 
-    // Calculate cells (A and B) using the defined dimensions and division points
-    base_ucell_cells =
-        calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
-                   neg_poly = base_ucell_neg_poly, tip_clearance = tip_clearance);
+    cells = calc_ucell(width = width, height = height, div = div, clearance = clearance, voids = voids,
+                       tip_clearance = tip_clearance);
 
     // Each B cell faces three A cells, one cell width away, across a flat side of their hexagonal extrusions. Widening
     // the extrusions by 1 / cos(30) puts each flat side at the profile's x, so a section between neighbours is the
     // unit cell and the gap is the clearance. Positions are scaled down to cancel the widening.
     widen = [ 1 / cos(30), 1 / cos(30), 1 ];
 
-    // Generate hexagon centers for tessellation
-    tess_points =
-        assert(levels >= 2, str("ERROR: levels must be at least 2 for B cells between the A cells, got: ", levels))
-            hexagons_centers_radial(radius = width_x, levels = levels);
-
-    // Generate triangulated center points for cell B instances
+    // A cells at the hexagon centres, B cells at the centres of the triangles between them
+    tess_points = hexagons_centers_radial(radius = width, levels = levels);
     tess_points_tri = triangulated_center_points(tess_points);
+    tess_hex_vertices = hexagons_vertices(radius = width, centers = tess_points, angular_offset = 30);
 
-    // Generate hexagon vertices for tessellation
-    tess_hex_vertices = hexagons_vertices(radius = width_x, centers = tess_points, angular_offset = 30);
-    if (part != "B") color(cellA_color) union()
-    { // Place cell A instances at tessellation points with rotation
-        scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points * cos(30), n = 6,
-                                         width = width_x, rotate = true, cell_type = "A");
+    for (k = [0:1])
+        if (part == "both" || part == (k == 0 ? "A" : "B"))
+            color(colors[k])
+            {
+                scale(widen)
+                    place_rotated_cells(cells = cells, positions = (k == 0 ? tess_points : tess_points_tri) * cos(30),
+                                        n = 6, width = width, rotate = true, cell_type = k == 0 ? "A" : "B",
+                                        color = colors[k]);
 
-        // Render substrate as solid hexagons beneath cells
-        translate([ 0, 0, -substrate_height ])
-            generic_poly(vertices = tess_hex_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]], centers = tess_points,
-                         alpha = 0.5, extrude = substrate_height);
-    }
-    // Place cell B instances at triangulated tessellation points with rotation
-    if (part != "A") color(cellB_color) union()
-    {
-        // Place cell B instances at triangulated tessellation points with rotation
-        scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri * cos(30), n = 6,
-                                         width = width_x, rotate = true, cell_type = "B");
-
-        // Render substrate as solid hexagons beneath cells
-        translate([ 0, 0, height_y ]) generic_poly(vertices = tess_hex_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]],
-                                                   centers = tess_points_tri, alpha = 0.5, extrude = substrate_height);
-    }
+                // Substrate: solid hexagons beneath the A cells, above the B cells
+                translate([ 0, 0, k == 0 ? -substrate_height : height ])
+                    generic_poly(vertices = tess_hex_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]],
+                                 centers = k == 0 ? tess_points : tess_points_tri, alpha = 0.5,
+                                 extrude = substrate_height);
+            }
 }
 
 /**
- * @brief Renders a linear tessellation of cells A and B
+ * @brief Renders a linear tessellation of cells A and B: rails on a rectangular grid.
  *
  * The rails lock against pull-off and across the rails, and slide freely along them: halves assemble by sliding.
- * @param width_x Width of the unit cell in the x-direction
- * @param height_y Height of the unit cell in the y-direction
- * @param base_ucell_div Points are [x, y], with the first y as 0 for the minor (bottom) or 1 for the major (top) ucell
- * division.
- * @param clearance Gap between cells A and B in mm, measured normal to the division line.
- * @param base_ucell_neg_poly Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to
- * the cell
- * @param grid_n Number of A rails, along X, at least 2: B rails sit between them
- * @param grid_m Number of grid points in the Y direction
- * @param extension_factor Factor to extend the cells in the Y direction, along the rails
- * @param substrate_height Height of the substrate
- * @param cellA_color Color for cell A
- * @param cellB_color Color for cell B
+ * @param width Width of the unit cell in mm
+ * @param height Height of the unit cell in mm
+ * @param div Division line as [x, y] points normalised to the cell, starting at y = 0 (minor half) or y = 1 (major
+ * half)
+ * @param clearance Gap between cells A and B in mm, measured normal to the division line
+ * @param voids (Optional) Voids cut from the cell: a list of polygons, each a list of [x, y] points normalised to the
+ * cell
  * @param tip_clearance (Optional) Gap in mm between each cell's tip and the opposite substrate; defaults to clearance,
  * below half the cell height; that alone does not keep the halves overlapping or interlocked
- * @param part (Optional) "A", "B" or "both": which half to render, in its assembled position (flip B to print it)
+ * @param grid_n Number of A rails, along X, a whole number of at least 2: B rails sit between them
+ * @param grid_m Number of cells along each rail, along Y, a whole number of at least 1
+ * @param extension_factor How far each cell extends along its rail, from 0 to 1 cell width; 1 joins a rail's cells
+ * @param substrate_height Thickness of each half's substrate in mm
+ * @param colors [ half A, half B ]
+ * @param part "A", "B" or "both": which half to render, in its assembled position (turn B over to print it)
  */
-module linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
-                   substrate_height = 1, cellA_color = "ForestGreen", cellB_color = "MidnightBlue",
-                   tip_clearance = undef, part = "both")
+module ilox_linear(width, height, div, clearance, voids = [], tip_clearance = undef, grid_n = 3, grid_m = 2,
+                   extension_factor = 1, substrate_height = 1, colors = [ "ForestGreen", "MidnightBlue" ],
+                   part = "both")
 {
-    assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\", \"B\" or \"both\"");
+    halves_checked = _ilox_check_halves("ilox_linear", substrate_height, colors, part);
+    grid_checked = assert(_ilox_is_count(grid_n, 2), str("ERROR: ilox_linear: grid_n must be a whole number of at ",
+                                                         "least 2, so B rails sit between the A rails, got: ", grid_n))
+        assert(_ilox_is_count(grid_m, 1),
+               str("ERROR: ilox_linear: grid_m must be a whole number of at least 1, got: ", grid_m))
+            assert(is_num(extension_factor) && extension_factor >= 0 && extension_factor <= 1,
+                   str("ERROR: ilox_linear: extension_factor must be from 0 to 1, got: ", extension_factor)) true;
 
-    // Calculate cells (A and B) using the defined dimensions and division points
-    base_ucell_cells =
-        calc_ucell(width = width_x, height = height_y, div = base_ucell_div, clearance = clearance,
-                   neg_poly = base_ucell_neg_poly, tip_clearance = tip_clearance);
+    cells = calc_ucell(width = width, height = height, div = div, clearance = clearance, voids = voids,
+                       tip_clearance = tip_clearance);
 
-    extension = extension_factor * width_x;
-
-    // Grid spacing: A rails two cell widths apart, with a B rail midway
-    tessellation_width = width_x * 2;
-
-    // Generate hexagon centers for tessellation
-    tess_points =
-        assert(grid_n >= 2, str("ERROR: grid_n must be at least 2 for B rails between the A rails, got: ", grid_n))
-            squares_centers_rect(side = tessellation_width, n = grid_n, m = grid_m);
-
-    // Generate triangulated center points for cell B instances
+    // A rails two cell widths apart on a square grid, with a B rail midway between each pair
+    tessellation_width = width * 2;
+    tess_points = squares_centers_rect(side = tessellation_width, n = grid_n, m = grid_m);
     tess_points_midp = square_midpoints(tess_points);
-
-    // Generate hexagon vertices for tessellation
     tess_sq_vertices = squares_vertices(side = tessellation_width, centers = tess_points);
 
-    if (part != "B")
-    {
-        // Place cell A instances at tessellation points with rotation
-        place_linear_cells(cells = base_ucell_cells, positions = tess_points, width = width_x, cell_type = "A",
-                           color = cellA_color, extension = extension);
+    for (k = [0:1])
+        if (part == "both" || part == (k == 0 ? "A" : "B"))
+        {
+            place_linear_cells(cells = cells, positions = k == 0 ? tess_points : tess_points_midp, width = width,
+                               cell_type = k == 0 ? "A" : "B", color = colors[k],
+                               extension = extension_factor * width);
 
-        // Render substrate as solid hexagons beneath cells
-        color(cellA_color) translate([ 0, 0, -substrate_height ])
-            generic_poly(vertices = tess_sq_vertices, paths = [[ 0, 1, 2, 3, 0 ]], centers = tess_points, alpha = 0.5,
-                         extrude = substrate_height);
-    }
-
-    if (part != "A")
-    {
-        // Place cell B instances at triangulated tessellation points with rotation
-        place_linear_cells(cells = base_ucell_cells, positions = tess_points_midp, width = width_x, cell_type = "B",
-                           color = cellB_color, extension = extension);
-
-        // Render substrate as solid hexagons beneath cells
-        color(cellB_color) translate([ 0, 0, height_y ])
-            generic_poly(vertices = tess_sq_vertices, paths = [[ 0, 1, 2, 3, 0 ]], centers = tess_points_midp,
-                         alpha = 0.5, extrude = substrate_height);
-    }
+            // Substrate: solid squares beneath the A cells, above the B cells
+            color(colors[k]) translate([ 0, 0, k == 0 ? -substrate_height : height ])
+                generic_poly(vertices = tess_sq_vertices, paths = [[ 0, 1, 2, 3, 0 ]],
+                             centers = k == 0 ? tess_points : tess_points_midp, alpha = 0.5,
+                             extrude = substrate_height);
+        }
 }
+
+// True for a whole number of at least least
+function _ilox_is_count(n, least) = is_num(n) && n == round(n) && n >= least;
+
+// Checks the arguments ilox_radial() and ilox_linear() share. Called as an assignment, ahead of the cells, so it stops
+// a bad call before any geometry is computed.
+function _ilox_check_halves(name, substrate_height, colors, part) =
+    assert(is_num(substrate_height) && substrate_height > 0,
+           str("ERROR: ", name, ": substrate_height must be a number > 0, got: ", substrate_height))
+        assert(is_list(colors) && len(colors) == 2, str("ERROR: ", name, ": colors must be [ A, B ], got: ", colors))
+            assert(part == "A" || part == "B" || part == "both",
+                   str("ERROR: ", name, ": part must be \"A\", \"B\" or \"both\", got: ", part)) true;

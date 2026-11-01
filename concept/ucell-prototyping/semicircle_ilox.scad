@@ -71,7 +71,7 @@ example_colors = [ "GreenYellow", "Aqua", "Red", "DarkRed" ];
 
 // Calculate cells (A and B) using the defined dimensions and division points
 example_cells = calc_ucell(width = width_x, height = height_y, div = example_div, clearance = clearance,
-                           neg_poly = example_neg_poly);
+                           voids = example_neg_poly);
 
 echo("example_cells: ", example_cells);
 

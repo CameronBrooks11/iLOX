@@ -9,7 +9,7 @@ include <../../iLOX.scad>;
 case = -1;
 
 cases = [
-    // [name, width, height, div, clearance, tip_clearance (optional), neg_poly (optional)]
+    // [name, width, height, div, clearance, tip_clearance (optional), voids (optional)]
     [ "barb narrower than the clearance", 5, 10, [ [ 0.5, 0 ], [ 0.5, 0.4 ], [ 0.46, 0.1 ], [ 0.46, 0.45 ] ], 0.2 ],
     [ "self-crossing line", 5, 10, [ [ 0.5, 0 ], [ 0.2, 0.8 ], [ 0.8, 0.8 ] ], 0.2 ],
     [ "neck on x = 0", 5, 10, [ [ 0.5, 0 ], [ 0, 0.1 ], [ 0, 0.4 ] ], 0.2 ],
@@ -30,13 +30,14 @@ cases = [
     [ "default tip_clearance above half the cell height", 20, 2, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], 1.2 ],
     [ "tip clip cutting a cell in two", 10, 10,
       [ [ 0.4, 0 ], [ 0.4, 0.3 ], [ 0.475, 0.17009618943233417 ], [ 0.475, 0.45 ], [ 0.5, 0.5 ] ], 0.5, 1 ],
-    [ "neg_poly as one polygon, not a list of them", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], 0.2, undef,
+    [ "voids as one polygon, not a list of them", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], 0.2, undef,
       [ [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] ] ],
+    [ "div of one point", 5, 10, [[ 0.5, 0 ]], 0.2 ],
 ];
 
 // Top-level assignments run before module statements, so the case is checked and named here, ahead of calc_ucell
 cs = assert(case >= 0 && case < len(cases), str("case must be 0 to ", len(cases) - 1))
     echo(str("case ", case, ": ", cases[case][0])) cases[case];
 cells = calc_ucell(width = cs[1], height = cs[2], div = cs[3], clearance = cs[4], tip_clearance = cs[5],
-                   neg_poly = is_undef(cs[6]) ? [] : cs[6]);
+                   voids = is_undef(cs[6]) ? [] : cs[6]);
 cube(1);

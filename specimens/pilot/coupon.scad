@@ -22,14 +22,14 @@ tip_clearance = 0.2;
 // Thickness of each half's substrate in mm
 substrate_height = 1;
 
-// Width of the unit cell in the x-direction
-width_x = 5;
-// Height of the unit cell in the y-direction
-height_y = 10;
+// Width of the unit cell in mm
+width = 5;
+// Height of the unit cell in mm
+height = 10;
 
 // The cell of examples/simpleUsage: a neck and a head, with the corner cut
-base_ucell_div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
-base_ucell_neg_poly = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]];
+div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
+voids = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]];
 
 // Linear: rails along Y, grid_m cells long; grid_n = 3 gives three A rails and two B rails
 grid_n = 3;
@@ -54,8 +54,8 @@ label_depth = 0.4;
 
 // Footprint of the substrate in the assembled frame: [x centre, y min, y max]
 footprint = set == "linear"
-                ? [ width_x * (grid_n - 1), -width_x, width_x * (2 * grid_m - 1) ]
-                : [ 0, -width_x * (1.5 * levels - 0.5), width_x * (1.5 * levels - 0.5) ];
+                ? [ width * (grid_n - 1), -width, width * (2 * grid_m - 1) ]
+                : [ 0, -width * (1.5 * levels - 0.5), width * (1.5 * levels - 0.5) ];
 
 assert(set == "linear" || set == "radial", "ERROR: set must be \"linear\" or \"radial\"");
 assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\", \"B\" or \"both\"");
@@ -63,11 +63,12 @@ assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\",
 module half(which)
 {
     if (set == "linear")
-        linear_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, grid_n, grid_m, extension_factor,
-                    substrate_height, tip_clearance = tip_clearance, part = which);
+        ilox_linear(width = width, height = height, div = div, clearance = clearance, voids = voids,
+                    tip_clearance = tip_clearance, grid_n = grid_n, grid_m = grid_m,
+                    extension_factor = extension_factor, substrate_height = substrate_height, part = which);
     else
-        radial_iLOX(width_x, height_y, base_ucell_div, clearance, base_ucell_neg_poly, levels, substrate_height,
-                    tip_clearance = tip_clearance, part = which);
+        ilox_radial(width = width, height = height, div = div, clearance = clearance, voids = voids,
+                    tip_clearance = tip_clearance, levels = levels, substrate_height = substrate_height, part = which);
 }
 
 // A tab on the bed, reaching out in -y from the substrate edge at y_edge, engraved on its top face. It overlaps one
@@ -77,7 +78,7 @@ module tab(y_edge, txt)
     difference()
     {
         translate([ footprint[0] - tab_size[0] / 2, y_edge - tab_size[1], 0 ])
-            cube([ tab_size[0], tab_size[1] + width_x, substrate_height ]);
+            cube([ tab_size[0], tab_size[1] + width, substrate_height ]);
         translate([ footprint[0], y_edge - tab_size[1] / 2, substrate_height - label_depth ])
             linear_extrude(label_depth + 0.01) text(txt, size = label_size, font = "Liberation Sans:style=Bold",
                                                    halign = "center", valign = "center");
@@ -95,7 +96,7 @@ if (part == "A" || part == "both")
 else
 {
     // Turned over about X, so the assembled +y edge lies at -footprint[2]
-    translate([ 0, 0, height_y + substrate_height ]) rotate([ 180, 0, 0 ]) half("B");
+    translate([ 0, 0, height + substrate_height ]) rotate([ 180, 0, 0 ]) half("B");
     if (label)
         tab(-footprint[2], name);
 }
