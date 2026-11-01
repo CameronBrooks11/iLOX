@@ -1,20 +1,45 @@
 ---
-title: Getting Started
+title: Getting started
 nav_order: 2
 ---
 
-# Getting Started
+# Getting started
 
-Explain how to:
+## Install
 
-- Install OpenSCAD (link to download page or repository).
-- Clone your repo.
-- Verify everything works by running the example.
+iLOX is tested with OpenSCAD 2021.01 and a 2026 development snapshot. It needs
+[tessella](https://github.com/CameronBrooks11/tessella). Clone both into your
+OpenSCAD libraries folder (**File > Show Library Folder** in OpenSCAD), keeping
+the folder names as they clone:
 
-```bash
-git clone https://github.com/.../your-project.git
-cd your-project
-# open the example in OpenSCAD:
-openscad examples/example-one.scad
+```
+git clone https://github.com/CameronBrooks11/iLOX.git
+git clone https://github.com/CameronBrooks11/tessella.git
 ```
 
+## First render
+
+```openscad
+use <iLOX/iLOX.scad>;
+
+ilox_radial(width = 5, height = 10, div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ], clearance = 0.2);
+```
+
+This renders both halves of a 26 x 25 mm radial joint in their assembled
+position. [`examples/simpleUsage`](https://github.com/CameronBrooks11/iLOX/tree/main/examples/simpleUsage)
+has a radial and a linear example with every argument set; the
+[Reference]({% link reference/index.md %}) lists them all.
+
+## Print
+
+Export each half on its own with `part = "A"` or `part = "B"`. Half A prints as
+rendered, substrate down. Half B is rendered in its assembled position, above A,
+so turn it over to print it substrate down.
+
+Linear halves slide together along the rails. Radial halves press together while
+the substrates flex.
+
+`clearance` is the gap your printer has to hold open between the halves. How
+small it can go depends on the printer and material; the coupons in
+[`specimens/pilot`](https://github.com/CameronBrooks11/iLOX/tree/main/specimens/pilot)
+print a ladder of clearances and substrate thicknesses to find it.

@@ -1,6 +1,6 @@
 ---
 title: Examples
-nav_order: 6
+nav_order: 4
 ---
 
 # Examples
@@ -15,4 +15,6 @@ in the repository, each shown as an embedded 3D model:
 
 Each page embeds a pre-rendered model — click **View 3D** for a rotatable view,
 or **Customize (live)** to load the in-browser OpenSCAD customizer and edit the
-parameters yourself.
+parameters yourself. The customizer offers the numbers and choices; the division
+line `div` and the `voids` are lists of points, which it does not offer, so
+change those in the `.scad` file.

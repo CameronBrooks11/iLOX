@@ -116,7 +116,7 @@ This file has visualization utilities for rendering points and geometric element
 
 ## Documentation
 
-For details on the conceptual background and explanations related logic of the program, refer to the documentation in the [`docs`](docs/README.md).
+The documentation site, built from `docs/`, is at <https://cameronbrooks11.github.io/iLOX/>: install, a first render, a reference for the modules, and the examples with live 3D views.
 
 ## License
 
