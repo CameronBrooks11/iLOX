@@ -12,6 +12,7 @@ authors:
     family-names: Brooks
 version: 0.1.0
 date-released: "2026-11-01"
+doi: 10.5281/zenodo.23860933
 license: MPL-2.0
 repository-code: "https://github.com/CameronBrooks11/iLOX"
 url: "https://cameronbrooks11.github.io/iLOX/"
