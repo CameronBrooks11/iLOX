@@ -1,5 +1,7 @@
 # iLOX
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23860933.svg)](https://doi.org/10.5281/zenodo.23860933)
+
 _**I**nter**L**ocking **O**rthogonal e**X**trusions_
 
 _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing_
