@@ -18,5 +18,6 @@ substrates: as rails with `ilox_linear`, which slide together, or as pins with
 - [Getting started]({% link getting-started.md %}): install, a first render, printing the halves.
 - [Reference]({% link reference/index.md %}): the modules and their arguments.
 - [Examples]({% link examples/index.md %}): the two examples, with live 3D views.
+- [Changelog](https://github.com/CameronBrooks11/iLOX/blob/main/CHANGELOG.md): what changed, and what a caller must change.
 
 Source and issues are on [GitHub](https://github.com/CameronBrooks11/iLOX).
