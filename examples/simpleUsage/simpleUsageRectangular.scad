@@ -1,3 +1,6 @@
+// Rectangular tessellation
+// Interlocking cells on a rectangular grid, with substrates.
+
 use <../../iLOX.scad>;
 
 // -----------------------------------

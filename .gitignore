@@ -1,7 +1,3 @@
-# CI/local build inputs for the docs model embeds (see .github/workflows/pages.yml)
 # tessella is the external OpenSCAD library dependency, cloned beside iLOX.scad
-# so `include <tessella/tess.scad>` resolves; rendered/ holds the render step's
-# OFF geometry and PNG posters; publish-staging/ is the staged customizer tree.
+# so `include <tessella/tess.scad>` resolves (see .github/workflows/test.yml).
 tessella/
-rendered/
-publish-staging/

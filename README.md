@@ -124,7 +124,6 @@ This project is licensed under the [Mozilla Public License 2.0](LICENSE).
 Third-party code:
 
 - `src/utils/sorted.scad` is from Justin Lin's [dotSCAD](https://github.com/JustinSDK/dotSCAD), under the [GNU Lesser General Public License v3.0](src/utils/LICENSE.LGPL-3.0).
-- The docs site under `docs/` started from the [just-the-docs template](https://github.com/just-the-docs/just-the-docs-template), under the [MIT License](docs/LICENSE).
 
 ## Acknowledgements
 

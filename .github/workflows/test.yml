@@ -16,14 +16,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The snapshot pages.yml pins, and the Debian/Ubuntu package (2021.01).
+        # A pinned snapshot, and the Debian/Ubuntu package (2021.01).
         openscad: [snapshot, apt]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
       - name: Checkout tessella (OpenSCAD library dependency)
-        # Same ref as pages.yml; a tessella/ directory beside iLOX.scad
+        # Same ref as the libraries line in docs-site.yml; a tessella/ directory beside iLOX.scad
         # satisfies `include <tessella/tess.scad>`.
         uses: actions/checkout@v7
         with:
@@ -33,7 +33,7 @@ jobs:
 
       - name: Install OpenSCAD snapshot
         if: matrix.openscad == 'snapshot'
-        # Same AppImage and checksum as pages.yml; update both together.
+        # The AppImage and its checksum; update both together.
         env:
           OPENSCAD_SNAPSHOT: OpenSCAD-2026.08.19-x86_64.AppImage
           OPENSCAD_SHA256: fdd818025e890f465ffacffbe7d0c6fa3ebeb3f7c18ee860a909ab41396be643

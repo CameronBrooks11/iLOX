@@ -8,7 +8,7 @@ nav_order: 1
 
 Welcome to the **{{ site.title }}** documentation!
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/CameronBrooks11/iLOX/pages.yml?branch=main)](https://github.com/CameronBrooks11/iLOX/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/CameronBrooks11/iLOX/docs.yml?branch=main)](https://github.com/CameronBrooks11/iLOX/actions)
 [![License](https://img.shields.io/github/license/CameronBrooks11/iLOX?branch=main)](https://github.com/CameronBrooks11/iLOX/blob/main/LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/CameronBrooks11/iLOX)](https://github.com/CameronBrooks11/iLOX/commits/main)
 
