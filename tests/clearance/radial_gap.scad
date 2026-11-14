@@ -1,4 +1,4 @@
-// Gap between the halves of radial_iLOX. Half B is moved by `shift` mm towards one of its A neighbours, along the
+// Gap between the halves of ilox_radial. Half B is moved by `shift` mm towards one of its A neighbours, along the
 // normal of their facing flat sides, and only the overlap of the two halves is kept. This division line has a vertical
 // segment, where the shift to contact equals the clearance, so nothing overlaps below it and something does above it:
 //
@@ -14,6 +14,7 @@ void = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]];
 
 intersection()
 {
-    radial_iLOX(5, 10, div, clearance, void, 2, part = "A");
-    translate(shift * [ -cos(30), -sin(30), 0 ]) radial_iLOX(5, 10, div, clearance, void, 2, part = "B");
+    ilox_radial(width = 5, height = 10, div = div, clearance = clearance, voids = void, levels = 2, part = "A");
+    translate(shift * [ -cos(30), -sin(30), 0 ])
+        ilox_radial(width = 5, height = 10, div = div, clearance = clearance, voids = void, levels = 2, part = "B");
 }

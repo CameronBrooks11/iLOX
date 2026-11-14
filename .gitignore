@@ -1,3 +1,12 @@
 # tessella is the external OpenSCAD library dependency, cloned beside iLOX.scad
 # so `include <tessella/tess.scad>` resolves (see .github/workflows/test.yml).
 tessella/
+
+# Local working files, such as working.tmp/
+*.tmp
+
+# Exports from openscad -o or scadbatch; none are committed
+*.stl
+*.off
+*.3mf
+*.csg

@@ -5,8 +5,7 @@
  * @copyright 2025
  *
  * This file contains helper functions for specific point operations,
- * such as sorting centers, calculating distances, checking point equality within
- * a tolerance, and filtering points based on certain criteria.
+ * such as sorting centers, placing points between them, and generating and shifting arcs of points.
  *
  */
 
@@ -21,16 +20,6 @@ EPSILON = 1e-3; // Tolerance value used for floating-point comparisons.
  * @return A sorted array of centers.
  */
 function sort_centers(centers) = sorted(centers, key=function(p) [p[1], p[0]]); // Sort by y, then x
-
-/**
- * @brief Flattens a nested array of arrays into a single array.
- *
- * This function takes an array of arrays and returns a single array containing all elements.
- *
- * @param nested_arrays A nested array to be flattened.
- * @return A single-level array containing all elements from the nested arrays.
- */
-function flatten(nested_arrays) = [for (subarray = nested_arrays) for (element = subarray) element];
 
 /**
  * @brief Calculates the height between rows of points in a sorted array.
@@ -110,42 +99,6 @@ function triangulated_center_points(centers) =
       ),
     ]
   );
-
-/**
- * @brief Filters out points from centers that are within a radius of points in the filter list.
- *
- * Useful for removing points that are too close to certain areas or features.
- *
- * @param r The radius within which to filter out points.
- * @param centers An array of centers to be filtered.
- * @param filter_list An array of points to filter against.
- * @param tolerance (Optional) Tolerance value for comparison; default is EPSILON.
- * @return A filtered array of centers.
- */
-function filter_triangulated_center_points(r, centers, filter_list, tolerance = EPSILON) =
-  let (
-    n = len(centers)
-  ) [for (i = [0:n - 1]) if (!is_within_radius(centers[i], r + tolerance, filter_list)) centers[i]];
-
-/**
- * @brief Calculates the Euclidean distance between two points.
- *
- * @param p1 First point as [x, y].
- * @param p2 Second point as [x, y].
- * @return The distance between p1 and p2.
- */
-function distance(p1, p2) = sqrt(pow(p2[0] - p1[0], 2) + pow(p2[1] - p1[1], 2));
-
-/**
- * @brief Checks if a point is within a certain radius of any point in a given array.
- *
- * @param point The point to check, as [x, y].
- * @param radius The radius within which to check for proximity.
- * @param removal_points Array of points to compare against.
- * @return True if the point is within radius of any point in removal_points, false otherwise.
- */
-function is_within_radius(point, radius, removal_points) =
-  let (n = len(removal_points)) [for (i = [0:n - 1]) if (distance(point, removal_points[i]) < radius) true][0];
 
 // ----------------------------------------------------------------------
 // REPLACE WITH FUNCTIONALOPENSCAD LIBRARY

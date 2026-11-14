@@ -11,7 +11,7 @@ z_fight = $preview ? 0.1 : 0; // Set the z-fighting offset for preview mode
 // Should be kept true. Flag to clear the render, can be set to any value to reset the render state.
 radial_tess_derender = true;
 
-include <../direct-workflow/tessellation_radial.scad> // Include the final stage in the direct workflow
+include <../../concept/direct-workflow/tessellation_radial.scad> // Include the final stage in the direct workflow
 
 // Dimensions based on ASTM D638 Type I tensile test specimen. Source:
 // https://www.researchgate.net/publication/346730095/figure/fig1/AS:1083887929303061@1635430428214/Dimensions-of-the-tensile-test-specimen-ASTM-D638-type-I.jpg
@@ -68,8 +68,8 @@ module tensile_ilox_specimen()
             // Translate upwards by the substrate height to position the cells correctly
             translate([ 0, 0, substrate_height ])
                 // Place cell A instances at the filtered tessellation points with rotation
-                place_rotated_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x,
-                                    rotate = true, cell_type = "A", color = "Teal");
+                scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points * cos(30), n = 6,
+                                                 width = width_x, rotate = true, cell_type = "A", color = "Teal");
 
             // Extrude the tensile test specimen shape to the substrate height
             for (i = [0:1])

@@ -14,14 +14,9 @@ levels = 3;
 // Height of substrate
 substrate_height = 2;
 
-// Packing factor
-packing_factor = 0.5; // [0:0.1:1]
-
-scaled_packing = 1.0 + packing_factor * 0.5; // Scaled packing factor for grid spacing (1.0 to 1.5)
-echo("Scaled packing factor: ", scaled_packing);
-
-// Grid radius based on apothem diameter and scaled packing factor
-tessellation_radius = apothem_diameter * scaled_packing;
+// Each B cell faces three A cells one cell width away; widen, from extrusion_rotational.scad, makes the gap the
+// clearance
+tessellation_radius = width_x;
 
 // Generate hexagon centers for tessellation
 tess_points = hexagons_centers_radial(radius = tessellation_radius, levels = levels);
@@ -35,8 +30,8 @@ tess_hex_vertices = hexagons_vertices(radius = tessellation_radius, centers = te
 if (radial_tess_render)
 {
     // Place cell A instances at tessellation points with rotation
-    place_rotated_cells(cells = base_ucell_cells, positions = tess_points, n = degree_n, width = width_x, rotate = true,
-                        cell_type = "A", color = "ForestGreen");
+    scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points * cos(30), n = 6,
+                                     width = width_x, rotate = true, cell_type = "A", color = "ForestGreen");
 
     // Render substrate as solid hexagons beneath cells
     color("ForestGreen") translate([ 0, 0, -substrate_height ])
@@ -44,8 +39,8 @@ if (radial_tess_render)
                      alpha = 0.5, extrude = substrate_height);
 
     // Place cell B instances at triangulated tessellation points with rotation
-    place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri, n = degree_n, width = width_x,
-                        rotate = true, cell_type = "B", color = "MidnightBlue");
+    scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri * cos(30), n = 6,
+                                     width = width_x, rotate = true, cell_type = "B", color = "MidnightBlue");
 
     // Render substrate as solid hexagons beneath cells
     color("MidnightBlue") translate([ 0, 0, height_y ])

@@ -1,6 +1,6 @@
 # Pilot coupons
 
-Small iLOX joints for finding the clearance window: the gaps at which a printed pair fuses, latches or falls apart, and how far the printed gap departs from nominal. The coupons for a test machine follow once the pilot has picked the clearance levels and the loading direction.
+Small iLOX joints for finding the clearance window: the gaps at which a printed pair fuses, latches or falls apart, and how far the printed gap departs from nominal. The window they find sets the clearances for the specimens in [`../tensile`](../tensile/README.md), which go on the test machine.
 
 `coupon.scad` builds one coupon, laid out to print:
 
@@ -15,7 +15,7 @@ Both sets use the cell of `examples/simpleUsage`, 5 mm wide and 10 mm tall, with
 `ladder.csv` lists 96 coupons: both sets, at substrate thicknesses of 1 and 2 mm, at clearances of 0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4 and 0.5 mm, each as A, B and both. Substrate thickness is a variable because the halves engage by flexing the substrate. Export them with [scadbatch](https://github.com/CameronBrooks11/scadbatch):
 
 ```
-scadbatch export specimens/coupon.scad specimens/ladder.csv out/
+scadbatch export specimens/pilot/coupon.scad specimens/pilot/ladder.csv out/
 ```
 
 Print each coupon as many times as the pilot needs. `tests/run.sh` exports every row.

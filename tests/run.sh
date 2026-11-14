@@ -50,15 +50,35 @@ for f in examples/simpleUsage/*.scad; do
     for part in both A B; do
         if run --hardwarnings -D "part=\"$part\"" "$f"; then ok "$f part=$part"; else fail "$f part=$part"; fi
     done
+    if run --hardwarnings -D "voids=[]" "$f"; then ok "$f without voids"; else fail "$f without voids"; fi
+done
+
+# Arguments the modules must refuse, each with the message that names it; a grid one cell wide has no B cells
+radial=examples/simpleUsage/simpleUsageRadial.scad
+linear=examples/simpleUsage/simpleUsageRectangular.scad
+for check in "$radial|levels=1|levels must be" "$radial|levels=2.5|levels must be" "$radial|part=\"C\"|part must be" \
+    "$radial|width=0|width must be" "$radial|height=-10|height must be" "$linear|grid_n=1|grid_n must be" \
+    "$linear|grid_m=0|grid_m must be" "$linear|extension_factor=1.5|extension_factor must be" \
+    "$linear|substrate_height=0|substrate_height must be"; do
+    IFS='|' read -r f def message <<<"$check"
+    if ! run -D "$def" "$f" && grep -qE "failed: \"ERROR: (ilox_[a-z_]+: )?$message" "$out/log"; then
+        ok "$f rejects $def"
+    else
+        fail "$f rejects $def"
+    fi
+done
+
+for f in specimens/tensile/*.scad; do
+    if run --hardwarnings "$f"; then ok "$f"; else fail "$f"; fi
 done
 
 # Every row of the coupon ladder, passed as scadbatch passes a CSV row: one -D per column, text quoted. OpenSCAD ignores
 # a -D that names no variable, so each column must be one of the model's top-level parameters.
-IFS=, read -r -a cols <specimens/ladder.csv
+IFS=, read -r -a cols <specimens/pilot/ladder.csv
 for col in "${cols[@]:1}"; do
-    if grep -q "^$col = " specimens/coupon.scad; then ok "ladder column $col"; else
+    if grep -q "^$col = " specimens/pilot/coupon.scad; then ok "ladder column $col"; else
         : >"$out/log"
-        fail "ladder column $col is not a parameter of specimens/coupon.scad"
+        fail "ladder column $col is not a parameter of specimens/pilot/coupon.scad"
     fi
 done
 while IFS=, read -r -a row; do
@@ -71,11 +91,11 @@ while IFS=, read -r -a row; do
             defs+=(-D "${cols[i]}=\"${row[i]}\"")
         fi
     done
-    if run --hardwarnings "${defs[@]}" specimens/coupon.scad; then
+    if run --hardwarnings "${defs[@]}" specimens/pilot/coupon.scad; then
         ok "ladder ${row[0]}"
     else
         fail "ladder ${row[0]}"
     fi
-done < <(tail -n +2 specimens/ladder.csv)
+done < <(tail -n +2 specimens/pilot/ladder.csv)
 
 exit $failed

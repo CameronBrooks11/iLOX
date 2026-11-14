@@ -1,5 +1,7 @@
 # iLOX
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23860933.svg)](https://doi.org/10.5281/zenodo.23860933)
+
 _**I**nter**L**ocking **O**rthogonal e**X**trusions_
 
 _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for 3D Printing_
@@ -12,9 +14,8 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
   - [Usage](#usage)
     - [Basic Usage](#basic-usage)
     - [Tests](#tests)
-    - [Direct Workflow](#direct-workflow)
+    - [Concept](#concept)
     - [Specimens](#specimens)
-    - [Mechanical Testing](#mechanical-testing)
   - [Library Structure](#library-structure)
     - [iLOX.scad](#iloxscad)
     - [ucell.scad](#ucellscad)
@@ -30,10 +31,10 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
 
 ## Dependencies
 
-iLOX needs [tessella](https://github.com/CameronBrooks11/tessella), as `include <tessella/tess.scad>`. Clone it into your OpenSCAD libraries folder, keeping the folder name lowercase:
+iLOX needs [tessella](https://github.com/CameronBrooks11/tessella) 0.1.0, as `include <tessella/tess.scad>`. Clone it into your OpenSCAD libraries folder, keeping the folder name lowercase:
 
 ```
-git clone https://github.com/CameronBrooks11/tessella.git
+git clone --branch v0.1.0 https://github.com/CameronBrooks11/tessella.git
 ```
 
 CI tests against the tessella ref in `.github/workflows/test.yml`.
@@ -48,19 +49,18 @@ The `examples/simpleUsage/` folder contains `simpleUsageRadial.scad` and `simple
 
 ### Tests
 
-`tests/run.sh` runs the checks in `tests/clearance`, exports each example and each coupon in `specimens/ladder.csv`, exiting non-zero on any failure; `OPENSCAD` picks the binary. CI runs it on every pull request with OpenSCAD 2021.01 and a 2026 snapshot.
+`tests/run.sh` runs the checks in `tests/clearance`, exports each example, each tensile specimen and each coupon in `specimens/pilot/ladder.csv`, exiting non-zero on any failure; `OPENSCAD` picks the binary. CI runs it on every pull request with OpenSCAD 2021.01 and a 2026 snapshot.
 
-### Direct Workflow
+### Concept
 
-This can be found under `tests/direct-workflow` and is a sequential set of scripts that utilize the full source of this library to demonstrate the full functionality of the library for both the rotational-radial and rectilinear-rectangular cases.
+`concept/` shows how the library's pieces build up to a joint. `concept/direct-workflow` is a sequence of scripts, from the unit cell through single extrusions to full tessellations, for both the rotational-radial and rectilinear-rectangular cases; later scripts include earlier ones. `concept/ucell-prototyping` holds experiments with other unit cell shapes.
 
 ### Specimens
 
-`specimens/` holds the pilot coupons: small linear and radial joints, one half or both in place, with a ladder of clearances and substrate thicknesses to export with scadbatch. See [specimens/README.md](specimens/README.md).
+`specimens/` holds the parts for physical testing:
 
-### Mechanical Testing
-
-The `tests/mechanical-testing` directory includes scripts that serve as a direct continuation of `tests/direct-workflow` to apply the final iLOX geometry to a tensile testing specimen to enable mechanical testing.
+- `specimens/tensile`: strips for the test machine with a joint in the middle, built on `concept/direct-workflow`, and the clamp that holds them. See [specimens/tensile/README.md](specimens/tensile/README.md).
+- `specimens/pilot`: small linear and radial coupons, one half or both in place, with a ladder of clearances and substrate thicknesses to export with scadbatch. See [specimens/pilot/README.md](specimens/pilot/README.md).
 
 ## Library Structure
 
@@ -76,7 +76,10 @@ src/
         sorted.scad
         viz_utils.scad
 examples/
+concept/
 specimens/
+    pilot/
+    tensile/
 tests/
 docs/
 ```
@@ -99,7 +102,7 @@ This module extends `ucell.scad` by enabling linear extrusion of unit cells. It 
 
 ### point_utils.scad
 
-This file provides utility functions for point operations such as sorting, calculating distances, and filtering points. It includes tools for generating midpoints, triangulating grids, and determining point proximity.
+This file provides utility functions for point operations: sorting grid centers, placing points midway between them or at the centres of their triangles, and generating and shifting arcs of points.
 
 ### sorted.scad
 
@@ -107,7 +110,7 @@ A helper file for implementing sorting utilities used by `point_utils.scad` for 
 
 ### regpoly_utils.scad
 
-This file contains functions for working with regular polygons, such as calculating the central angle, apothem, and radius. These utilities assist in positioning and rotating regular polygons.
+This file contains functions for working with regular polygons: the central angle, half of it, and the apothem. These utilities assist in positioning and rotating regular polygons.
 
 ### viz_utils.scad
 
@@ -115,7 +118,7 @@ This file has visualization utilities for rendering points and geometric element
 
 ## Documentation
 
-For details on the conceptual background and explanations related logic of the program, refer to the documentation in the [`docs`](docs/README.md).
+The documentation site, built from `docs/`, is at <https://cameronbrooks11.github.io/iLOX/>: install, a first render, a reference for the modules, and the examples with live 3D views.
 
 ## License
 
