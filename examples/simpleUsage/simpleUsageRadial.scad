@@ -1,3 +1,6 @@
+// Radial tessellation
+// Interlocking cells on a hexagonal, rotationally symmetric lattice.
+
 use <../../iLOX.scad>;
 
 // -----------------------------------

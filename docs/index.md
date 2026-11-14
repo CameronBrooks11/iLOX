@@ -6,7 +6,7 @@ nav_order: 1
 
 # {{ site.title }}
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/CameronBrooks11/iLOX/pages.yml?branch=main)](https://github.com/CameronBrooks11/iLOX/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/CameronBrooks11/iLOX/docs.yml?branch=main)](https://github.com/CameronBrooks11/iLOX/actions)
 [![License](https://img.shields.io/github/license/CameronBrooks11/iLOX?branch=main)](https://github.com/CameronBrooks11/iLOX/blob/main/LICENSE)
 
 iLOX is an OpenSCAD library for joints that print as two separate parts and
@@ -17,7 +17,7 @@ substrates: as rails with `ilox_linear`, which slide together, or as pins with
 
 - [Getting started]({% link getting-started.md %}): install, a first render, printing the halves.
 - [Reference]({% link reference/index.md %}): the modules and their arguments.
-- [Examples]({% link examples/index.md %}): the two examples, with live 3D views.
+- [Examples](../examples/): the two examples, with live 3D views.
 - [Changelog](https://github.com/CameronBrooks11/iLOX/blob/main/CHANGELOG.md): what changed, and what a caller must change.
 
 Source and issues are on [GitHub](https://github.com/CameronBrooks11/iLOX).

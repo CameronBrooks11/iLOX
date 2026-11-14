@@ -14,7 +14,7 @@ cells along Y to close the gaps a square lattice would otherwise leave.
 The rails lock the halves against pull-off and across the rails, and slide
 freely along them: the halves assemble by sliding one onto the other.
 
-{% include openscad.html model="rectangular" live="rectangular-live" title="Rectangular iLOX Tessellation" %}
+{% include openscad.html model="simpleusage-simpleusagerectangular" live="simpleusage-simpleusagerectangular-live" title="Rectangular iLOX Tessellation" %}
 
 Source: [`examples/simpleUsage/simpleUsageRectangular.scad`](https://github.com/CameronBrooks11/iLOX/blob/main/examples/simpleUsage/simpleUsageRectangular.scad)
 

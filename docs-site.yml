@@ -1,0 +1,5 @@
+title: iLOX
+description: InterLocking Orthogonal eXtrusions OpenSCAD library.
+color_scheme: openscad-dark
+pages: docs
+libraries: tessella=CameronBrooks11/tessella@6a9cc241326e7d598ab497bcd262fd7a99e49fca
