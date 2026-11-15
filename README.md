@@ -31,13 +31,19 @@ _An OpenSCAD Library for Designing Tessellated Interlocking Surface Geometry for
 
 ## Dependencies
 
-iLOX needs [tessella](https://github.com/CameronBrooks11/tessella) 0.1.0, as `include <tessella/tess.scad>`. Clone it into your OpenSCAD libraries folder, keeping the folder name lowercase:
+iLOX needs [tessella](https://github.com/CameronBrooks11/tessella) 0.1.0, as `include <tessella/tess.scad>`. `scadman.toml` declares it and `scadman.lock` pins the commit. With [scadman](https://github.com/CameronBrooks11/scadman) installed, run in the repo:
+
+```
+scadman sync
+```
+
+and put the folder `scadman env` prints on `OPENSCADPATH`, or use `scadman run` to start OpenSCAD with it there. CI and the docs site get tessella the same way.
+
+Without scadman, clone tessella into your OpenSCAD libraries folder at the same tag, keeping the folder name lowercase:
 
 ```
 git clone --branch v0.1.0 https://github.com/CameronBrooks11/tessella.git
 ```
-
-CI tests against the tessella ref in `.github/workflows/test.yml`.
 
 For batch exports of parameter sets, [scadbatch](https://github.com/CameronBrooks11/scadbatch) is optional.
 
