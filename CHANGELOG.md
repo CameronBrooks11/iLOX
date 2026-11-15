@@ -9,6 +9,13 @@ candidate tag ends at a commit that [#30] could have tagged retroactively.
 
 ## [Unreleased]
 
+### Changed
+
+- tessella is declared in `scadman.toml` and pinned in `scadman.lock`, and
+  CI and the docs site get it through
+  [scadman](https://github.com/CameronBrooks11/scadman) ([#58]). Installing
+  it by hand still works; the README has both.
+
 ## [0.1.0] - 2026-11-01
 
 The changes of 2026-10-16 to 2026-11-01. Needs tessella 0.1.0. Each breaking
@@ -295,3 +302,4 @@ syntax error.
 [#48]: https://github.com/CameronBrooks11/iLOX/pull/48
 [#49]: https://github.com/CameronBrooks11/iLOX/pull/49
 [#50]: https://github.com/CameronBrooks11/iLOX/pull/50
+[#58]: https://github.com/CameronBrooks11/iLOX/issues/58
