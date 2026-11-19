@@ -25,7 +25,7 @@ jobs:
       # scadman.lock pins tessella. The setup action installs scadman, syncs the lock and
       # exports OPENSCADPATH, so `include <tessella/tess.scad>` resolves.
       - name: Install scadman and sync tessella
-        uses: CameronBrooks11/scadman/setup@v0.1.0-alpha.7
+        uses: CameronBrooks11/scadman/setup@v0.1.0-alpha.8
         with:
           sync: "true"
 
