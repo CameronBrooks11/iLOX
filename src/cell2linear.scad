@@ -23,22 +23,17 @@
  * @param color (Optional) The color of the cells, default is "CadetBlue".
  * @param extension (Optional) The extension of the extrusion, default is 0.
  */
-module place_linear_cells(cells, positions, width, cell_type = "A", color = undef, extension = 0)
-{
+module place_linear_cells(cells, positions, width, cell_type = "A", color = undef, extension = 0) {
     ccolor = is_undef(color) ? (cell_type == "A" ? "OliveDrab" : "CadetBlue") : color;
 
     // Iterate over positions
     for (pos = positions)
     {
-        translate([ pos[0], pos[1], 0 ])
-        {
-            if (cell_type == "A")
-            {
-                ucell_linX_A(cells = cells, width = width, color = ccolor, extension = extension);
-            }
-            else if (cell_type == "B")
-            {
-                ucell_linX_B(cells = cells, width = width, color = ccolor, extension = extension);
+        translate([pos[0], pos[1], 0]) {
+            if (cell_type == "A") {
+                ucell_linX_A(cells=cells, width=width, color=ccolor, extension=extension);
+            } else if (cell_type == "B") {
+                ucell_linX_B(cells=cells, width=width, color=ccolor, extension=extension);
             }
         }
     }
@@ -54,19 +49,18 @@ module place_linear_cells(cells, positions, width, cell_type = "A", color = unde
  * @param extension (Optional) The extension of the extrusion, default is 0.
  * @param color The color of the cell.
  */
-module ucell_linX_A(cells, width, extension = 0, color = "OliveDrab")
-{
+module ucell_linX_A(cells, width, extension = 0, color = "OliveDrab") {
     extrusion_depth = width + extension;
 
     for (i = [0:1])
     {
-        mirror([ i, 0, 0 ]) color(color) translate([ 0, extrusion_depth / 2, 0 ]) rotate([ 90, 0, 0 ])
-            linear_extrude(extrusion_depth) difference()
-        {
-            polygon(points = cells[0]); // Main cell polygon
-            for (v = cells[2][0])
-                polygon(points = v); // Voids
-        }
+        mirror([i, 0, 0]) color(color) translate([0, extrusion_depth / 2, 0]) rotate([90, 0, 0])
+                        linear_extrude(extrusion_depth) difference() {
+                                polygon(points=cells[0]); // Main cell polygon
+                                for (v = cells[2][0])
+                                    polygon(points=v);
+                                // Voids
+                            }
     }
 }
 
@@ -81,17 +75,16 @@ module ucell_linX_A(cells, width, extension = 0, color = "OliveDrab")
  * @param cc (Optional) Boolean to prevent translation to origin, default is false.
  * @param color The color of the cell.
  */
-module ucell_linX_B(cells, width, extension = 0, cc = false, color = "CadetBlue")
-{
+module ucell_linX_B(cells, width, extension = 0, cc = false, color = "CadetBlue") {
     extrusion_depth = width + extension;
     for (i = [0:1])
     {
-        mirror([ i, 0, 0 ]) color(color) translate([ -(cc ? 0 : width), extrusion_depth / 2, 0 ]) rotate([ 90, 0, 0 ])
-            linear_extrude(extrusion_depth) difference()
-        {
-            polygon(points = cells[1]); // Main cell polygon
-            for (v = cells[2][1])
-                polygon(points = v); // Voids
-        }
+        mirror([i, 0, 0]) color(color) translate([-(cc ? 0 : width), extrusion_depth / 2, 0]) rotate([90, 0, 0])
+                        linear_extrude(extrusion_depth) difference() {
+                                polygon(points=cells[1]); // Main cell polygon
+                                for (v = cells[2][1])
+                                    polygon(points=v);
+                                // Voids
+                            }
     }
 }

@@ -17,7 +17,7 @@ width = 5;
 height = 10;
 
 // Each point is defined as [x, y] and must form a division line
-div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
+div = [[0.5, 0], [0.3, 0.1], [0.3, 0.4]];
 
 // Gap between cells A and B in mm
 clearance = 0.2;
@@ -28,7 +28,9 @@ part = "both"; // [both, A, B]
 // Voids cut from the cell: a list of polygons, each point defined as [x, y]
 voids = [
     [
-        [ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ] // cut corner of the cell
+        [0.7, 0.8],
+        [0.7, 1],
+        [0.3, 1], // cut corner of the cell
     ],
     //...more polygons can be added here:
     // [
@@ -49,8 +51,10 @@ extension_factor = 0.5; // [0:0.1:1]
 
 // Select whether to render the 2D unit cell to design or the final 3D linear tessellation
 if (show_ucell)
-    ilox_cell_designer(width = width, height = height, div = div, clearance = clearance, voids = voids);
+    ilox_cell_designer(width=width, height=height, div=div, clearance=clearance, voids=voids);
 else
-    ilox_linear(width = width, height = height, div = div, clearance = clearance, voids = voids, grid_n = grid_n,
-                grid_m = grid_m, extension_factor = extension_factor, substrate_height = substrate_height,
-                part = part);
+    ilox_linear(
+        width=width, height=height, div=div, clearance=clearance, voids=voids, grid_n=grid_n,
+        grid_m=grid_m, extension_factor=extension_factor, substrate_height=substrate_height,
+        part=part
+    );
