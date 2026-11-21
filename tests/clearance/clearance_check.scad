@@ -13,47 +13,83 @@ eps = 1e-6;
 
 cases = [
     // [name, width, height, div, clearances (optional), tip_clearances (optional); defaults below]
-    [ "vertical", 5, 10, [ [ 0.3, 0 ], [ 0.3, 0.4 ] ] ],
-    [ "t-slot", 10, 10, [ [ 0.3, 0 ], [ 0.3, 0.4 ], [ 0.5, 0.4 ], [ 0.5, 0.5 ] ] ],
-    [ "slanted", 5, 10, [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ] ],
-    [ "leaning-right", 5, 10, [ [ 0.3, 0 ], [ 0.5, 0.1 ], [ 0.5, 0.4 ] ] ],
-    [ "zig-zag", 10, 10, [ [ 0.4, 0 ], [ 0.4, 0.3 ], [ 0.475, 0.17009618943233417 ], [ 0.475, 0.45 ], [ 0.5, 0.5 ] ],
-      [ 0, 0.2 ] ],
+    ["vertical", 5, 10, [[0.3, 0], [0.3, 0.4]]],
+    ["t-slot", 10, 10, [[0.3, 0], [0.3, 0.4], [0.5, 0.4], [0.5, 0.5]]],
+    ["slanted", 5, 10, [[0.5, 0], [0.3, 0.1], [0.3, 0.4]]],
+    ["leaning-right", 5, 10, [[0.3, 0], [0.5, 0.1], [0.5, 0.4]]],
+    [
+        "zig-zag",
+        10,
+        10,
+        [[0.4, 0], [0.4, 0.3], [0.475, 0.17009618943233417], [0.475, 0.45], [0.5, 0.5]],
+        [0, 0.2],
+    ],
     // At clearance 0.5 a 1 mm tip clip cuts off the part of cell A between the strands (rejected_inputs has it)
-    [ "zig-zag", 10, 10, [ [ 0.4, 0 ], [ 0.4, 0.3 ], [ 0.475, 0.17009618943233417 ], [ 0.475, 0.45 ], [ 0.5, 0.5 ] ],
-      [0.5], [ undef, 0 ] ],
+    [
+        "zig-zag",
+        10,
+        10,
+        [[0.4, 0], [0.4, 0.3], [0.475, 0.17009618943233417], [0.475, 0.45], [0.5, 0.5]],
+        [0.5],
+        [undef, 0],
+    ],
     // A tip lead-in: the tip clip cuts the side next to the tip face short
-    [ "tip-lead-in", 5, 10, [ [ 0.4, 0 ], [ 0.5, 0.05 ], [ 0.5, 0.4 ] ], [ 0, 0.2, 0.4 ] ],
+    ["tip-lead-in", 5, 10, [[0.4, 0], [0.5, 0.05], [0.5, 0.4]], [0, 0.2, 0.4]],
     // A 0.18 mm step: its outer miter corner lies past the step's end; at clearance 0.5 a whole side of the cell does,
     // which this check's overlap rule does not model
-    [ "t-slot-step", 10, 10, [ [ 0.482, 0 ], [ 0.482, 0.3 ], [ 0.5, 0.3 ], [ 0.5, 0.5 ] ], [ 0, 0.2 ] ],
-    [ "arc", 10, 10, shift_points(arc_points(diameter = 0.5, start_angle = 90, end_angle = -90, num_points = 15), 0.5,
-                                  0.75) ],
-    [ "arc-fine", 10, 10, shift_points(arc_points(diameter = 0.5, start_angle = 90, end_angle = -90, num_points = 60),
-                                       0.5, 0.75) ],
+    ["t-slot-step", 10, 10, [[0.482, 0], [0.482, 0.3], [0.5, 0.3], [0.5, 0.5]], [0, 0.2]],
+    [
+        "arc",
+        10,
+        10,
+        shift_points(
+            arc_points(diameter=0.5, start_angle=90, end_angle=-90, num_points=15), 0.5,
+            0.75
+        ),
+    ],
+    [
+        "arc-fine",
+        10,
+        10,
+        shift_points(
+            arc_points(diameter=0.5, start_angle=90, end_angle=-90, num_points=60),
+            0.5, 0.75
+        ),
+    ],
 ];
 
-clearances = [ 0, 0.2, 0.5 ];
+clearances = [0, 0.2, 0.5];
 
-tips = [ undef, 0, 1 ]; // undef: the default, which is the clearance
+tips = [undef, 0, 1]; // undef: the default, which is the clearance
 
-function seg_dist(p, a, b) = let(ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - (a + ab * t));
+function seg_dist(p, a, b) = let (ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - (a + ab * t));
 
 // Segments of a cell that are not on the unit cell's edges or a tip face (y = tip, y = h - tip): the sides facing the
 // other cell
-function cut_segments(poly, w, h, tip) = [for (i = [0:len(poly) - 1]) let(a = poly[i], b = poly[(i + 1) % len(poly)])
-        if (!(abs(a[0]) < eps && abs(b[0]) < eps || abs(a[0] - w) < eps && abs(b[0] - w) < eps ||
-              [for (y = [ 0, h, tip, h - tip ]) if (abs(a[1] - y) < eps && abs(b[1] - y) < eps) 1] != []))[a, b]];
+function cut_segments(poly, w, h, tip) =
+    [
+        for (i = [0:len(poly) - 1]) let (a = poly[i], b = poly[ (i + 1) % len(poly)]) if (
+            !(
+                abs(a[0]) < eps && abs(b[0]) < eps || abs(a[0] - w) < eps && abs(b[0] - w) < eps || [for (y = [0, h, tip, h - tip]) if (abs(a[1] - y) < eps && abs(b[1] - y) < eps) 1] != []
+            )
+        ) [a, b],
+    ];
 
 function dist(p, segs) = min([for (s = segs) seg_dist(p, s[0], s[1])]);
 
 // The division line built from div itself (div plus its copy turned 180 degrees about the cell centre), as segments
 function division_line(div, w, h) =
-    let(turned = [for (i = [len(div) - 1:-1:0])[1 - div[i][0], 1 - div[i][1]]],
-        pts = div[0][1] == 0 ? concat(div, turned) : concat([for (i = [len(turned) - 1:-1:0]) turned[i]],
-                                                            [for (i = [len(div) - 1:-1:0]) div[i]]))
-        [for (i = [0:len(pts) - 2]) if (norm(pts[i + 1] - pts[i]) > eps)
-                [[ w * pts[i][0], h * pts[i][1] ], [ w * pts[i + 1][0], h * pts[i + 1][1] ]]];
+    let (
+        turned = [for (i = [len(div) - 1:-1:0]) [1 - div[i][0], 1 - div[i][1]]],
+        pts = div[0][1] == 0 ? concat(div, turned)
+        : concat(
+            [for (i = [len(turned) - 1:-1:0]) turned[i]],
+            [for (i = [len(div) - 1:-1:0]) div[i]]
+        )
+    )
+    [
+            for (i = [0:len(pts) - 2]) if (norm(pts[i + 1] - pts[i]) > eps) [[w * pts[i][0], h * pts[i][1]], [w * pts[i + 1][0], h * pts[i + 1][1]]],
+    ];
 
 function unit(v) = v / norm(v);
 
@@ -61,36 +97,44 @@ function unit(v) = v / norm(v);
 // extended, leaves the cell through its left edge first. Assumes that last segment sets A's top, which holds for every
 // case here but not, for example, for a vertical last segment within clearance / 2 of the left edge.
 function full_top(line, c, w, h) =
-    let(s = line[len(line) - 1], u = unit(s[1] - s[0]), q = s[1] + [ -u[1], u[0] ] * c / 2,
-        x_top = q[0] + (h - q[1]) / u[1] * u[0])
-        x_top >= 0 || abs(u[0]) < eps ? h : q[1] + (0 - q[0]) / u[0] * u[1];
+    let (
+        s = line[len(line) - 1],
+        u = unit(s[1] - s[0]),
+        q = s[1] + [-u[1], u[0]] * c / 2,
+        x_top = q[0] + (h - q[1]) / u[1] * u[0]
+    )
+    x_top >= 0 || abs(u[0]) < eps ? h : q[1] + (0 - q[0]) / u[0] * u[1];
 
 // Segment a-b is segment c-d moved sideways by dist: parallel, at that distance, and overlapping it along its length
 function offset_of(a, b, c, d, dist) =
-    let(u = unit(d - c), s = [ (a - c) * u, (b - c) * u ])
-        abs(u[0] * unit(b - a)[1] - u[1] * unit(b - a)[0]) < eps &&
-        abs(abs(u[0] * (a - c)[1] - u[1] * (a - c)[0]) - dist) < eps && min(max(s), norm(d - c)) - max(min(s), 0) > eps;
+    let (u = unit(d - c), s = [(a - c) * u, (b - c) * u])
+    abs(u[0] * unit(b - a)[1] - u[1] * unit(b - a)[0]) < eps && abs(abs(u[0] * (a - c) [1] - u[1] * (a - c) [0]) - dist) < eps && min(max(s), norm(d - c)) - max(min(s), 0) > eps;
 
-function side(a, b, p) = let(v = (b - a)[0] * (p - a)[1] - (b - a)[1] * (p - a)[0]) abs(v) < eps ? 0 : sign(v);
+function side(a, b, p) = let (v = (b - a) [0] * (p - a) [1] - (b - a) [1] * (p - a) [0]) abs(v) < eps ? 0 : sign(v);
 
 // Segments a-b and c-d cross at a point inside both
 function crosses(a, b, c, d) = side(a, b, c) * side(a, b, d) < 0 && side(c, d, a) * side(c, d, b) < 0;
 
-function crossings(p, q) = [for (i = [0:len(p) - 1], j = [0:len(q) - 1])
-        let(a = p[i], b = p[(i + 1) % len(p)], c = q[j], d = q[(j + 1) % len(q)]) if (crosses(a, b, c, d))[i, j]];
+function crossings(p, q) =
+    [
+        for (i = [0:len(p) - 1], j = [0:len(q) - 1])
+        let (a = p[i], b = p[ (i + 1) % len(p)], c = q[j], d = q[ (j + 1) % len(q)]) if (crosses(a, b, c, d)) [i, j],
+    ];
 
 for (cs = cases, c = is_undef(cs[4]) ? clearances : cs[4], t = is_undef(cs[5]) ? tips : cs[5])
 {
     w = cs[1];
     h = cs[2];
     tip = is_undef(t) ? c : t;
-    cells = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = t);
-    full = calc_ucell(width = w, height = h, div = cs[3], clearance = c, tip_clearance = 0);
+    cells = calc_ucell(width=w, height=h, div=cs[3], clearance=c, tip_clearance=t);
+    full = calc_ucell(width=w, height=h, div=cs[3], clearance=c, tip_clearance=0);
     line = division_line(cs[3], w, h);
     tag = str("FAIL ", cs[0], " clearance=", c, " tip_clearance=", t, ": ");
     top = min(full_top(line, c, w, h), h - tip);
-    assert(abs(max([for (p = cells[0]) p[1]]) - top) < eps && abs(min([for (p = cells[1]) p[1]]) - (h - top)) < eps,
-           str(tag, "a tip does not stop tip_clearance short of the opposite substrate"));
+    assert(
+        abs(max([for (p = cells[0]) p[1]]) - top) < eps && abs(min([for (p = cells[1]) p[1]]) - (h - top)) < eps,
+        str(tag, "a tip does not stop tip_clearance short of the opposite substrate")
+    );
     for (k = [0:1])
     {
         poly = cells[k];
@@ -102,21 +146,26 @@ for (cs = cases, c = is_undef(cs[4]) ? clearances : cs[4], t = is_undef(cs[5]) ?
             assert(dist(p, other) > c - eps, str(tag, p, " is ", dist(p, other), " from the other cell"));
         }
         for (s = cut_segments(full[k], w, h, 0))
-            assert([for (t = line) if (offset_of(s[0], s[1], t[0], t[1], c / 2)) 1] != [],
-                   str(tag, "side ", s, " is not a division segment moved clearance / 2 sideways"));
+            assert(
+                [for (t = line) if (offset_of(s[0], s[1], t[0], t[1], c / 2)) 1] != [],
+                str(tag, "side ", s, " is not a division segment moved clearance / 2 sideways")
+            );
         assert(len(crossings(poly, poly)) == 0, str(tag, "a cell crosses itself"));
     }
     assert(len(crossings(cells[0], cells[1])) == 0, str(tag, "the cells cross"));
 }
 
 // The voids come back as [voids of A, voids of B], each a list of polygons, empty without voids
-no_voids = calc_ucell(width = 5, height = 10, div = cases[2][3], clearance = 0.2)[2];
-assert(no_voids == [ [], [] ], str("FAIL no voids: ", no_voids));
-one_void = calc_ucell(width = 5, height = 10, div = cases[2][3], clearance = 0.2,
-                      voids = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]])[2];
-assert(len(one_void) == 2 && len(one_void[0]) == 1 && len(one_void[1]) == 1 &&
-           norm(one_void[1][0][0] - [ 1.5, 2 ]) < eps,
-       str("FAIL one void: ", one_void));
+no_voids = calc_ucell(width=5, height=10, div=cases[2][3], clearance=0.2)[2];
+assert(no_voids == [[], []], str("FAIL no voids: ", no_voids));
+one_void = calc_ucell(
+    width=5, height=10, div=cases[2][3], clearance=0.2,
+    voids=[[[0.7, 0.8], [0.7, 1], [0.3, 1]]]
+)[2];
+assert(
+    len(one_void) == 2 && len(one_void[0]) == 1 && len(one_void[1]) == 1 && norm(one_void[1][0][0] - [1.5, 2]) < eps,
+    str("FAIL one void: ", one_void)
+);
 
 echo("PASS");
 cube(1);

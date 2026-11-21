@@ -28,8 +28,8 @@ width = 5;
 height = 10;
 
 // The cell of examples/simpleUsage: a neck and a head, with the corner cut
-div = [ [ 0.5, 0 ], [ 0.3, 0.1 ], [ 0.3, 0.4 ] ];
-voids = [[[ 0.7, 0.8 ], [ 0.7, 1 ], [ 0.3, 1 ]]];
+div = [[0.5, 0], [0.3, 0.1], [0.3, 0.4]];
+voids = [[[0.7, 0.8], [0.7, 1], [0.3, 1]]];
 
 // Linear: rails along Y, grid_m cells long; grid_n = 3 gives three A rails and two B rails
 grid_n = 3;
@@ -43,7 +43,7 @@ levels = 2;
 // Engrave set, part, clearance and substrate on a tab beside each half
 label = true;
 // Tab size in mm, outside the substrate
-tab_size = [ 24, 6 ];
+tab_size = [24, 6];
 // Text height and engraving depth in mm
 label_size = 3;
 label_depth = 0.4;
@@ -53,50 +53,50 @@ label_depth = 0.4;
 // -----------------------------------
 
 // Footprint of the substrate in the assembled frame: [x centre, y min, y max]
-footprint = set == "linear"
-                ? [ width * (grid_n - 1), -width, width * (2 * grid_m - 1) ]
-                : [ 0, -width * (1.5 * levels - 0.5), width * (1.5 * levels - 0.5) ];
+footprint =
+    set == "linear" ? [width * (grid_n - 1), -width, width * (2 * grid_m - 1)]
+    : [0, -width * (1.5 * levels - 0.5), width * (1.5 * levels - 0.5)];
 
 assert(set == "linear" || set == "radial", "ERROR: set must be \"linear\" or \"radial\"");
 assert(part == "A" || part == "B" || part == "both", "ERROR: part must be \"A\", \"B\" or \"both\"");
 
-module half(which)
-{
+module half(which) {
     if (set == "linear")
-        ilox_linear(width = width, height = height, div = div, clearance = clearance, voids = voids,
-                    tip_clearance = tip_clearance, grid_n = grid_n, grid_m = grid_m,
-                    extension_factor = extension_factor, substrate_height = substrate_height, part = which);
+        ilox_linear(
+            width=width, height=height, div=div, clearance=clearance, voids=voids,
+            tip_clearance=tip_clearance, grid_n=grid_n, grid_m=grid_m,
+            extension_factor=extension_factor, substrate_height=substrate_height, part=which
+        );
     else
-        ilox_radial(width = width, height = height, div = div, clearance = clearance, voids = voids,
-                    tip_clearance = tip_clearance, levels = levels, substrate_height = substrate_height, part = which);
+        ilox_radial(
+            width=width, height=height, div=div, clearance=clearance, voids=voids,
+            tip_clearance=tip_clearance, levels=levels, substrate_height=substrate_height, part=which
+        );
 }
 
 // A tab on the bed, reaching out in -y from the substrate edge at y_edge, engraved on its top face. It overlaps one
 // cell width into the substrate, under the cells, to join it.
-module tab(y_edge, txt)
-{
-    difference()
-    {
-        translate([ footprint[0] - tab_size[0] / 2, y_edge - tab_size[1], 0 ])
-            cube([ tab_size[0], tab_size[1] + width, substrate_height ]);
-        translate([ footprint[0], y_edge - tab_size[1] / 2, substrate_height - label_depth ])
-            linear_extrude(label_depth + 0.01) text(txt, size = label_size, font = "Liberation Sans:style=Bold",
-                                                   halign = "center", valign = "center");
+module tab(y_edge, txt) {
+    difference() {
+        translate([footprint[0] - tab_size[0] / 2, y_edge - tab_size[1], 0])
+            cube([tab_size[0], tab_size[1] + width, substrate_height]);
+        translate([footprint[0], y_edge - tab_size[1] / 2, substrate_height - label_depth])
+            linear_extrude(label_depth + 0.01) text(
+                    txt, size=label_size, font="Liberation Sans:style=Bold",
+                    halign="center", valign="center"
+                );
     }
 }
 
 name = str(set == "linear" ? "L" : "R", part == "both" ? "" : str("-", part), " ", clearance, "/", substrate_height);
 
-if (part == "A" || part == "both")
-{
-    translate([ 0, 0, substrate_height ]) half(part);
+if (part == "A" || part == "both") {
+    translate([0, 0, substrate_height]) half(part);
     if (label)
         tab(footprint[1], name);
-}
-else
-{
+} else {
     // Turned over about X, so the assembled +y edge lies at -footprint[2]
-    translate([ 0, 0, height + substrate_height ]) rotate([ 180, 0, 0 ]) half("B");
+    translate([0, 0, height + substrate_height]) rotate([180, 0, 0]) half("B");
     if (label)
         tab(-footprint[2], name);
 }

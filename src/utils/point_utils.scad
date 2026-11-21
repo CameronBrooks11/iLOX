@@ -28,12 +28,12 @@ function sort_centers(centers) = sorted(centers, key=function(p) [p[1], p[0]]); 
  * @return The height difference between rows, or undef if not applicable.
  */
 function point_row_height(sorted_centers) =
-  let (
-    row_heights = [
-      for (i = [1:len(sorted_centers) - 1]) if (sorted_centers[i][1] != sorted_centers[i - 1][1]) abs(sorted_centers[i][1] - sorted_centers[i - 1][1]),
-    ]
-  ) (len(row_heights) > 0) ? row_heights[0]
-  : undef;
+    let (
+        row_heights = [
+            for (i = [1:len(sorted_centers) - 1]) if (sorted_centers[i][1] != sorted_centers[i - 1][1]) abs(sorted_centers[i][1] - sorted_centers[i - 1][1]),
+        ]
+    ) (len(row_heights) > 0) ? row_heights[0]
+    : undef;
 
 /**
  * @brief Finds the midpoints between adjacent points in each row and returns the new points.
@@ -45,23 +45,23 @@ function point_row_height(sorted_centers) =
  * @return An array of new points placed between adjacent points in each row.
  */
 function square_midpoints(centers) =
-  let (sorted_centers = sort_centers(centers)) let (tri_centers = []) concat(
-    // Flatten the array and filter out empty entries
-    [
-      for (i = [0:len(sorted_centers) - 2]) // for loop i
-      let (p1 = sorted_centers[i], p2 = sorted_centers[i + 1]) // end let
-      if (
-        abs(p1[1] - p2[1]) < EPSILON && // p1 and p2 are in the same row
-        p2[0] > p1[0] // p2 x-coordinate is greater than p1
-      ) // end if
-      (
+    let (sorted_centers = sort_centers(centers)) let (tri_centers = []) concat(
+        // Flatten the array and filter out empty entries
         [
-          (p1[0] + p2[0]) / 2, // x-coordinate of midpoint center
-          (p1[1] + p2[1]) / 2, // y-coordinate of midpoint center
+            for (i = [0:len(sorted_centers) - 2]) // for loop i
+            let (p1 = sorted_centers[i], p2 = sorted_centers[i + 1]) // end let
+            if (
+                abs(p1[1] - p2[1]) < EPSILON && // p1 and p2 are in the same row
+                p2[0] > p1[0] // p2 x-coordinate is greater than p1
+            ) // end if
+            (
+                [
+                    (p1[0] + p2[0]) / 2, // x-coordinate of midpoint center
+                    (p1[1] + p2[1]) / 2, // y-coordinate of midpoint center
+                ]
+            ),
         ]
-      ),
-    ]
-  );
+    );
 
 /**
  * @brief Calculates the centers of triangles formed by adjacent points.
@@ -72,33 +72,33 @@ function square_midpoints(centers) =
  * @return An array of triangulated center points.
  */
 function triangulated_center_points(centers) =
-  let (
-    sorted_centers = sort_centers(centers),
-    row_height = point_row_height(sorted_centers)
-  ) let (tri_centers = []) concat(
-    // Flatten the array and filter out empty entries
-    [
-      for (i = [0:len(sorted_centers) - 2]) // for loop i
-      for (j = [0:len(sorted_centers) - 1]) // for loop j
-      let (
-        p1 = sorted_centers[i],
-        p2 = sorted_centers[i + 1],
-        p3 = sorted_centers[j]
-      ) // end let
-      if (
-        abs(p1[1] - p2[1]) < EPSILON && // p1 and p2 are in the same row
-        abs(p3[1] - p1[1] - row_height) < EPSILON && // p3 is in the next row
-        p3[0] > p1[0] && // p3 x-coordinate is greater than p1
-        p3[0] < p2[0] // p3 x-coordinate is less than p2
-      ) // end if
-      (
+    let (
+        sorted_centers = sort_centers(centers),
+        row_height = point_row_height(sorted_centers)
+    ) let (tri_centers = []) concat(
+        // Flatten the array and filter out empty entries
         [
-          (p1[0] + p2[0] + p3[0]) / 3, // x-coordinate of triangle center
-          (p1[1] + p2[1] + p3[1]) / 3, // y-coordinate of triangle center
+            for (i = [0:len(sorted_centers) - 2]) // for loop i
+            for (j = [0:len(sorted_centers) - 1]) // for loop j
+            let (
+                p1 = sorted_centers[i],
+                p2 = sorted_centers[i + 1],
+                p3 = sorted_centers[j]
+            ) // end let
+            if (
+                abs(p1[1] - p2[1]) < EPSILON && // p1 and p2 are in the same row
+                abs(p3[1] - p1[1] - row_height) < EPSILON && // p3 is in the next row
+                p3[0] > p1[0] && // p3 x-coordinate is greater than p1
+                p3[0] < p2[0] // p3 x-coordinate is less than p2
+            ) // end if
+            (
+                [
+                    (p1[0] + p2[0] + p3[0]) / 3, // x-coordinate of triangle center
+                    (p1[1] + p2[1] + p3[1]) / 3, // y-coordinate of triangle center
+                ]
+            ),
         ]
-      ),
-    ]
-  );
+    );
 
 // ----------------------------------------------------------------------
 // REPLACE WITH FUNCTIONALOPENSCAD LIBRARY
@@ -121,16 +121,16 @@ function triangulated_center_points(centers) =
  * @return A list of [x, y] points representing the arc, or [x, y, z_val] points if z_val is given.
  */
 function arc_points(diameter, start_angle, end_angle, num_points, z_val = undef) =
-  let (
-    radius = diameter / 2
-  ) [
-      for (i = [0:num_points]) let (
-        p = [
-          radius * cos(start_angle + (end_angle - start_angle) * i / num_points),
-          radius * sin(start_angle + (end_angle - start_angle) * i / num_points),
-        ]
-      ) is_undef(z_val) ? p : concat(p, z_val),
-  ];
+    let (
+        radius = diameter / 2
+    ) [
+            for (i = [0:num_points]) let (
+                p = [
+                    radius * cos(start_angle + (end_angle - start_angle) * i / num_points),
+                    radius * sin(start_angle + (end_angle - start_angle) * i / num_points),
+                ]
+            ) is_undef(z_val) ? p : concat(p, z_val),
+    ];
 /**
  * @brief Shifts a list of points by a given offset.
  *
@@ -147,7 +147,7 @@ function arc_points(diameter, start_angle, end_angle, num_points, z_val = undef)
  * @return A new array of points, each shifted by the specified amounts.
  */
 function shift_points(points, shift_x, shift_y, shift_z = 0) =
-  [
-    for (p = points) (len(p) == 3) ? [p[0] + shift_x, p[1] + shift_y, p[2] + shift_z]
-    : [p[0] + shift_x, p[1] + shift_y],
-  ];
+    [
+        for (p = points) (len(p) == 3) ? [p[0] + shift_x, p[1] + shift_y, p[2] + shift_z]
+        : [p[0] + shift_x, p[1] + shift_y],
+    ];

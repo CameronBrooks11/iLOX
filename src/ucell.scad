@@ -20,7 +20,7 @@
  * @param height The scaling factor for the y-coordinate.
  * @return An array of transformed points.
  */
-function transformPoints(points, width, height) = [for (p = points)[width * p[0], height *p[1]]];
+function transformPoints(points, width, height) = [for (p = points) [width * p[0], height * p[1]]];
 
 /**
  * @brief Transforms a list of normalized points by scaling with width and height.
@@ -42,7 +42,7 @@ function transformPointsList(points, width, height) = [for (p = points) transfor
  * @param points Array of points to be mirrored, each point as [x, y].
  * @return An array of mirrored points.
  */
-function mirrorPoints(points) = [for (p = points)[1 - p[0], 1 - p[1]]];
+function mirrorPoints(points) = [for (p = points) [1 - p[0], 1 - p[1]]];
 
 /**
  * @brief Mirrors a list of points across the lines x = 1 and y = 1.
@@ -81,13 +81,19 @@ function dedupePolyline(points) =
  * @return The offset polyline, with the same number of points.
  */
 function offsetPolyline(points, d) =
-    let(n = len(points),
-        dirs = [for (i = [0:n - 2])(points[i + 1] - points[i]) / norm(points[i + 1] - points[i])],
-        normals = [for (u = dirs)[-u[1], u[0]]])
-    [for (i = [0:n - 1])
-        let(m = i == 0 ? normals[0] : i == n - 1 ? normals[n - 2] : normals[i - 1] + normals[i],
-            k = i == 0 || i == n - 1 ? 1 : 1 + normals[i - 1] * normals[i])
-        assert(k > 1e-9, "ERROR: Div line folds back on itself") points[i] + m * d / k];
+    let (
+        n = len(points),
+        dirs = [for (i = [0:n - 2]) (points[i + 1] - points[i]) / norm(points[i + 1] - points[i])],
+        normals = [for (u = dirs) [-u[1], u[0]]]
+    )
+    [
+            for (i = [0:n - 1])
+            let (
+                m = i == 0 ? normals[0] : i == n - 1 ? normals[n - 2] : normals[i - 1] + normals[i],
+                k = i == 0 || i == n - 1 ? 1 : 1 + normals[i - 1] * normals[i]
+            )
+            assert(k > 1e-9, "ERROR: Div line folds back on itself") points[i] + m * d / k,
+    ];
 
 /**
  * @brief Clips a polygon to one side of an axis-aligned line (one Sutherland-Hodgman step).
@@ -99,10 +105,13 @@ function offsetPolyline(points, d) =
  * @return The clipped polygon.
  */
 function clipToAxis(poly, axis, bound, side) =
-    let(n = len(poly), s = [for (p = poly) side * (p[axis] - bound)])
-    [for (i = [0:n - 1]) let(j = (i + 1) % n) each concat(
-        s[i] >= 0 ? [poly[i]] : [],
-        (s[i] >= 0) != (s[j] >= 0) ? [poly[i] + (poly[j] - poly[i]) * s[i] / (s[i] - s[j])] : [])];
+    let (n = len(poly), s = [for (p = poly) side * (p[axis] - bound)])
+    [
+            for (i = [0:n - 1]) let (j = (i + 1) % n) each concat(
+                s[i] >= 0 ? [poly[i]] : [],
+                (s[i] >= 0) != (s[j] >= 0) ? [poly[i] + (poly[j] - poly[i]) * s[i] / (s[i] - s[j])] : []
+            ),
+    ];
 
 /**
  * @brief Calculates the part of the unit cell left of a division line, a distance d clear of it.
@@ -118,26 +127,30 @@ function clipToAxis(poly, axis, bound, side) =
  */
 function cellLeftOf(line, d, width, height) =
     assert(line[1][1] > 1e-9, "ERROR: Div line must rise off the bottom edge")
-    let(o = offsetPolyline(line, d),
+    let (
+        o = offsetPolyline(line, d),
         n = len(o),
-        center = [ width, height ] / 2,
-        r = 2 * norm([ width, height ]) + d, // far enough that the closing arc stays clear of the cell
+        center = [width, height] / 2,
+        r = 2 * norm([width, height]) + d, // far enough that the closing arc stays clear of the cell
         start = o[0] + (o[0] - o[1]) / norm(o[0] - o[1]) * r,
         end = o[n - 1] + (o[n - 1] - o[n - 2]) / norm(o[n - 1] - o[n - 2]) * r,
         a0 = atan2(end[1] - center[1], end[0] - center[0]),
         a1 = atan2(start[1] - center[1], start[0] - center[0]),
-        arc = [for (a = [a0:10:a1 < a0 ? a1 + 360 : a1]) center + r * [ cos(a), sin(a) ]],
+        arc = [for (a = [a0:10:a1 < a0 ? a1 + 360 : a1]) center + r * [cos(a), sin(a)]],
         shape = concat([start], o, [end], arc),
-        part = clipToAxis(clipToAxis(clipToAxis(clipToAxis(shape, 0, 0, 1), 0, width, -1), 1, 0, 1), 1, height, -1))
-        // The end segments set the extensions, so the offset must not shorten them to nothing or turn them round
-        assert((o[1] - o[0]) * (line[1] - line[0]) > 1e-9 && (o[n - 1] - o[n - 2]) * (line[n - 1] - line[n - 2]) > 1e-9,
-               "ERROR: clearance too large for the div line")
-        assert(len(part) >= 3, "ERROR: clearance leaves nothing of the cell") dropCollinear(part);
+        part = clipToAxis(clipToAxis(clipToAxis(clipToAxis(shape, 0, 0, 1), 0, width, -1), 1, 0, 1), 1, height, -1)
+    )
+    // The end segments set the extensions, so the offset must not shorten them to nothing or turn them round
+    assert(
+        (o[1] - o[0]) * (line[1] - line[0]) > 1e-9 && (o[n - 1] - o[n - 2]) * (line[n - 1] - line[n - 2]) > 1e-9,
+        "ERROR: clearance too large for the div line"
+    )
+    assert(len(part) >= 3, "ERROR: clearance leaves nothing of the cell") dropCollinear(part);
 
 /**
  * @brief Gives the side of the line through a and b that p lies on: 1 left, -1 right, 0 on the line.
  */
-function turn(a, b, p) = let(v = (b - a)[0] * (p - a)[1] - (b - a)[1] * (p - a)[0]) abs(v) < 1e-9 ? 0 : sign(v);
+function turn(a, b, p) = let (v = (b - a) [0] * (p - a) [1] - (b - a) [1] * (p - a) [0]) abs(v) < 1e-9 ? 0 : sign(v);
 
 /**
  * @brief Tests whether segments a-b and c-d cross at a point inside both.
@@ -148,24 +161,25 @@ function segmentsCross(a, b, c, d) = turn(a, b, c) * turn(a, b, d) < 0 && turn(c
  * @brief Tests whether segments a-b and c-d lie on one line and overlap by more than a point.
  */
 function segmentsOverlap(a, b, c, d) =
-    turn(a, b, c) == 0 && turn(a, b, d) == 0 &&
-    (let(u = (b - a) / norm(b - a), s = [ (c - a) * u, (d - a) * u ]) min(max(s), norm(b - a)) - max(min(s), 0) > 1e-9);
+    turn(a, b, c) == 0 && turn(a, b, d) == 0 && ( let (u = (b - a) / norm(b - a), s = [(c - a) * u, (d - a) * u]) min(max(s), norm(b - a)) - max(min(s), 0) > 1e-9);
 
 /**
  * @brief Removes polygon vertices that lie on the line through their neighbours, including duplicates and the
  * zero-area spikes clipping leaves along the cell's edges.
  */
 function dropCollinear(poly) =
-    let(n = len(poly),
-        d = [for (i = [0:n - 1]) if (norm(poly[i] - poly[(i + 1) % n]) > 1e-9) poly[i]], // repeats first
+    let (
+        n = len(poly),
+        d = [for (i = [0:n - 1]) if (norm(poly[i] - poly[ (i + 1) % n]) > 1e-9) poly[i]], // repeats first
         m = len(d),
-        keep = [for (i = [0:m - 1]) if (turn(d[(i + m - 1) % m], d[i], d[(i + 1) % m]) != 0) d[i]])
-        len(keep) == n ? poly : dropCollinear(keep);
+        keep = [for (i = [0:m - 1]) if (turn(d[ (i + m - 1) % m], d[i], d[ (i + 1) % m]) != 0) d[i]]
+    )
+    len(keep) == n ? poly : dropCollinear(keep);
 
 /**
  * @brief Calculates the distance from p to the segment a-b.
  */
-function segmentDistance(p, a, b) = let(ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - a - ab * t);
+function segmentDistance(p, a, b) = let (ab = b - a, t = max(0, min(1, (p - a) * ab / (ab * ab)))) norm(p - a - ab * t);
 
 /**
  * @brief Tests whether p lies on the segment a-b.
@@ -175,12 +189,12 @@ function onSegment(p, a, b) = turn(a, b, p) == 0 && (p - a) * (b - a) >= -1e-9 &
 /**
  * @brief Lists a polygon's edges, each as [start, end].
  */
-function polygonEdges(poly) = [for (i = [0:len(poly) - 1])[poly[i], poly[(i + 1) % len(poly)]]];
+function polygonEdges(poly) = [for (i = [0:len(poly) - 1]) [poly[i], poly[ (i + 1) % len(poly)]]];
 
 /**
  * @brief Gives the bounding box of a segment as [xmin, xmax, ymin, ymax].
  */
-function segmentBox(e) = [ min(e[0][0], e[1][0]), max(e[0][0], e[1][0]), min(e[0][1], e[1][1]), max(e[0][1], e[1][1]) ];
+function segmentBox(e) = [min(e[0][0], e[1][0]), max(e[0][0], e[1][0]), min(e[0][1], e[1][1]), max(e[0][1], e[1][1])];
 
 /**
  * @brief Tests whether two bounding boxes come within m of each other.
@@ -222,26 +236,30 @@ function isPolygonList(polys) = is_list(polys) && len([for (q = polys) if (!isPo
  *         - [ncell_pointsA, ncell_pointsB]: The void polygons of cells A and B, each a list, empty without voids.
  */
 function calc_ucell(width, height, div, clearance, voids = [], tip_clearance = undef) =
-    let(tip = is_undef(tip_clearance) ? clearance : tip_clearance)
+    let (tip = is_undef(tip_clearance) ? clearance : tip_clearance)
     assert(is_num(width) && width > 0, str("ERROR: width must be a number > 0, got: ", width))
     assert(is_num(height) && height > 0, str("ERROR: height must be a number > 0, got: ", height))
     assert(is_num(clearance) && clearance >= 0, "ERROR: clearance must be a number >= 0")
-    assert(is_num(tip) && tip >= 0 && tip < height / 2,
-           "ERROR: tip_clearance (default: the clearance) must be a number >= 0 and below half the cell height")
+    assert(
+        is_num(tip) && tip >= 0 && tip < height / 2,
+        "ERROR: tip_clearance (default: the clearance) must be a number >= 0 and below half the cell height"
+    )
     assert(is_list(div) && len(div) >= 2, str("ERROR: div must be a list of at least 2 [x, y] points, got: ", div))
     assert(len([for (p = div) if (len(p) != 2) p]) == 0, "ERROR: Div points must be [x, y]")
-    assert(isPolygonList(voids),
-           "ERROR: voids must be a list of polygons, each at least 3 [x, y] points; wrap a single polygon in [ ]")
-    let(y_val = div[0][1],
-        subdiv = (y_val == 0)   ? 0                                                                 // minor
-                 : (y_val == 1) ? 1                                                                 // major
-                                : assert(undef, "ERROR: Div start must be 0 (minor) or 1 (major)"), // error
-        div_mirrored =
-            subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
+    assert(
+        isPolygonList(voids),
+        "ERROR: voids must be a list of polygons, each at least 3 [x, y] points; wrap a single polygon in [ ]"
+    )
+    let (
+        y_val = div[0][1],
+        subdiv = (y_val == 0) ? 0 // minor
+        : (y_val == 1) ? 1 // major
+        : assert(undef, "ERROR: Div start must be 0 (minor) or 1 (major)"), // error
+        div_mirrored = subdiv ? concat(mirrorPoints(div), reverseArray(div)) : concat(div, mirrorPoints(reverseArray(div))),
         div_line = dedupePolyline(transformPoints(div_mirrored, width, height)), // full line, bottom to top
-        fullA = cellLeftOf(div_line, clearance / 2, width, height),             // cell A before the tip clip
+        fullA = cellLeftOf(div_line, clearance / 2, width, height), // cell A before the tip clip
         cell_pointsA = dropCollinear(clipToAxis(fullA, 1, height - tip, -1)), // cell A points
-        cell_pointsB = [for (p = cell_pointsA)[width - p[0], height - p[1]]],    // cell A turned 180 degrees
+        cell_pointsB = [for (p = cell_pointsA) [width - p[0], height - p[1]]], // cell A turned 180 degrees
         ncell_points = calc_ucell_voids(width, height, voids), // void polygons of A and B
         // Cell B is cell A turned 180 degrees, so checking A covers both
         edgesA = polygonEdges(cell_pointsA),
@@ -249,24 +267,39 @@ function calc_ucell(width, height, div, clearance, voids = [], tip_clearance = u
         boxA = [for (e = edgesA) segmentBox(e)],
         boxB = [for (e = edgesB) segmentBox(e)],
         n = len(edgesA),
-        gaps = [for (p = cell_pointsA, k = [0:n - 1]) if (boxesNear([ p[0], p[0], p[1], p[1] ], boxB[k], clearance))
-                segmentDistance(p, edgesB[k][0], edgesB[k][1])])
-        // A split cell shows up as edges doubling back along the unit cell's border, or touching at a point
-        assert(len([for (i = [0:n - 1], j = [i + 1:1:n - 1]) let(e = edgesA[i], f = edgesA[j])
-                   if (boxesNear(boxA[i], boxA[j], 1e-9) &&
-                       (segmentsCross(e[0], e[1], f[0], f[1]) || segmentsOverlap(e[0], e[1], f[0], f[1]) ||
-                        j != i + 1 && !(i == 0 && j == n - 1) &&
-                            (onSegment(f[0], e[0], e[1]) || onSegment(f[1], e[0], e[1]) ||
-                             onSegment(e[0], f[0], f[1]) || onSegment(e[1], f[0], f[1])))) 1]) == 0,
-               "ERROR: Div line folds or splits the cells at this clearance and tip_clearance")
-        assert(len([for (e = edgesA) if (abs(e[0][1]) < 1e-9 && abs(e[1][1]) < 1e-9 && norm(e[1] - e[0]) > 1e-9) 1]),
-               "ERROR: Div line leaves cell A off its substrate")
-        assert(len([for (i = [0:n - 1], k = [0:n - 1]) let(e = edgesA[i], f = edgesB[k])
-                       if (boxesNear(boxA[i], boxB[k], 1e-9) && segmentsCross(e[0], e[1], f[0], f[1])) 1]) == 0 &&
-                   (len(gaps) == 0 || min(gaps) > clearance - 1e-6),
-               "ERROR: Div line brings the cells closer than the clearance")
+        gaps = [
+            for (p = cell_pointsA, k = [0:n - 1]) if (boxesNear([p[0], p[0], p[1], p[1]], boxB[k], clearance)) segmentDistance(p, edgesB[k][0], edgesB[k][1]),
+        ]
+    )
+    // A split cell shows up as edges doubling back along the unit cell's border, or touching at a point
+    assert(
+        len(
+            [
+                for (i = [0:n - 1], j = [i + 1:1:n - 1]) let (e = edgesA[i], f = edgesA[j]) if (
+                    boxesNear(boxA[i], boxA[j], 1e-9) && (
+                        segmentsCross(e[0], e[1], f[0], f[1]) || segmentsOverlap(e[0], e[1], f[0], f[1]) || j != i + 1 && !(i == 0 && j == n - 1) && (
+                            onSegment(f[0], e[0], e[1]) || onSegment(f[1], e[0], e[1]) || onSegment(e[0], f[0], f[1]) || onSegment(e[1], f[0], f[1])
+                        )
+                    )
+                ) 1,
+            ]
+        ) == 0,
+        "ERROR: Div line folds or splits the cells at this clearance and tip_clearance"
+    )
+    assert(
+        len([for (e = edgesA) if (abs(e[0][1]) < 1e-9 && abs(e[1][1]) < 1e-9 && norm(e[1] - e[0]) > 1e-9) 1]),
+        "ERROR: Div line leaves cell A off its substrate"
+    )
+    assert(
+        len(
+            [
+                for (i = [0:n - 1], k = [0:n - 1]) let (e = edgesA[i], f = edgesB[k]) if (boxesNear(boxA[i], boxB[k], 1e-9) && segmentsCross(e[0], e[1], f[0], f[1])) 1,
+            ]
+        ) == 0 && (len(gaps) == 0 || min(gaps) > clearance - 1e-6),
+        "ERROR: Div line brings the cells closer than the clearance"
+    )
 
-            [cell_pointsA, cell_pointsB, ncell_points];
+    [cell_pointsA, cell_pointsB, ncell_points];
 
 /**
  * @brief Calculates the void polygons of unit cells A and B.
@@ -279,7 +312,7 @@ function calc_ucell(width, height, div, clearance, voids = [], tip_clearance = u
  * @return [ncell_pointsA, ncell_pointsB]: the polygons for cells A and B, each a list, empty if poly is.
  */
 function calc_ucell_voids(width, height, poly) =
-    [ transformPointsList(poly, width, height), transformPointsList(mirrorPointsList(poly), width, height) ];
+    [transformPointsList(poly, width, height), transformPointsList(mirrorPointsList(poly), width, height)];
 
 /**
  * @brief Renders unit cells with optional negative border offset.
@@ -294,26 +327,23 @@ function calc_ucell_voids(width, height, poly) =
  *               3 -> ncell_pointsB.
  * @param void_border Width of the border drawn for each void. Defaults to 0.05.
  */
-module render_ucells(cells, colors = [ "GreenYellow", "Aqua", "ForestGreen", "Navy" ], void_border = 0.05)
-{
+module render_ucells(cells, colors = ["GreenYellow", "Aqua", "ForestGreen", "Navy"], void_border = 0.05) {
     // Draw the main cell polygons
-    color(colors[0]) polygon(points = cells[0]);
-    color(colors[1]) polygon(points = cells[1]);
+    color(colors[0]) polygon(points=cells[0]);
+    color(colors[1]) polygon(points=cells[1]);
 
     // Draw each void as a border inside its cell
-    translate([ 0, 0, 0.005 ]) for (k = [0:1])
-        color(colors[2 + k]) for (v = cells[2][k]) difference()
-        {
-            intersection()
-            {
-                polygon(points = v);
-                polygon(points = cells[k]);
-            }
+    translate([0, 0, 0.005])for (k = [0:1])
+        color(colors[2 + k])for (v = cells[2][k])
+            difference() {
+                intersection() {
+                    polygon(points=v);
+                    polygon(points=cells[k]);
+                }
 
-            offset(r = -void_border) intersection()
-            {
-                polygon(points = v);
-                polygon(points = cells[k]);
+                offset(r=-void_border) intersection() {
+                        polygon(points=v);
+                        polygon(points=cells[k]);
+                    }
             }
-        }
 }

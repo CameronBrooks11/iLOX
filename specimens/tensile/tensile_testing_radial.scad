@@ -34,7 +34,7 @@ max_y = max([for (center = tess_points) center[1]]); // Maximum y-coordinate in 
 connection_width = (max_y + tessellation_radius) * 2;
 // connection_length = standard_tensile_specimen_length + extra_length_tensile_connector; // Length of the specimen
 connection_length =
-    (standard_tensile_specimen_length + extra_length_tensile_connector) / 2; // cut short for testing samples
+(standard_tensile_specimen_length + extra_length_tensile_connector) / 2; // cut short for testing samples
 
 // Adjust from the center of the cells to the edge of the cells
 min_y_edge = min_y - tessellation_radius;
@@ -56,63 +56,62 @@ cut_tol = 0.2;
 tensile_ilox_specimen();
 
 // Render the tensile test specimen with integrated cells
-module tensile_ilox_specimen()
-{
+module tensile_ilox_specimen() {
     connection_length_edge = connection_length + max_x + tessellation_radius;
 
-    difference()
-    {
+    difference() {
         // Begin rendering the tensile test specimen with integrated cells
-        union()
-        {
+        union() {
             // Translate upwards by the substrate height to position the cells correctly
-            translate([ 0, 0, substrate_height ])
+            translate([0, 0, substrate_height])
                 // Place cell A instances at the filtered tessellation points with rotation
-                scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points * cos(30), n = 6,
-                                                 width = width_x, rotate = true, cell_type = "A", color = "Teal");
+                scale(widen) place_rotated_cells(
+                        cells=base_ucell_cells, positions=tess_points * cos(30), n=6,
+                        width=width_x, rotate=true, cell_type="A", color="Teal"
+                    );
 
             // Extrude the tensile test specimen shape to the substrate height
             for (i = [0:1])
-                mirror([ i, 0, 0 ])
-                {
-                    color("Teal") linear_extrude(height = substrate_height) polygon(points = [
-                        [ -connection_length_edge / 2, connection_width / 2 ],  // Left top corner
-                        [ -connection_length_edge / 2, -connection_width / 2 ], // Left bottom corner
-                        [ min_x, min_y_edge ], // Bottom corner at min_x and min_y of the cells
-                        [ 0, min_y_edge ],     // Bottom corner at x = 0
-                        [ 0, max_y_edge ],     // Top corner at x = 0
-                        [ min_x, max_y_edge ], // Top corner at min_x and max_y of the cells
-                    ]);
+                mirror([i, 0, 0]) {
+                    color("Teal") linear_extrude(height=substrate_height) polygon(
+                                points=[
+                                    [-connection_length_edge / 2, connection_width / 2], // Left top corner
+                                    [-connection_length_edge / 2, -connection_width / 2], // Left bottom corner
+                                    [min_x, min_y_edge], // Bottom corner at min_x and min_y of the cells
+                                    [0, min_y_edge], // Bottom corner at x = 0
+                                    [0, max_y_edge], // Top corner at x = 0
+                                    [min_x, max_y_edge], // Top corner at min_x and max_y of the cells
+                                ]
+                            );
                 }
         }
 
         // cut slots at the min and max x positions
         for (i = [0:1])
         {
-            mirror([ i, 0, 0 ]) color("Salmon")
-                translate([ max_x + tessellation_radius + cut_width / 2, 0, substrate_height / 2 + cut_depth ])
+            mirror([i, 0, 0]) color("Salmon")
+                    translate([max_x + tessellation_radius + cut_width / 2, 0, substrate_height / 2 + cut_depth])
 
-                    cube([ cut_width, max_y_edge * 2 + z_fight, substrate_height ], center = true);
+                        cube([cut_width, max_y_edge * 2 + z_fight, substrate_height], center=true);
         }
     }
 }
 
 // Render the holder for the tensile specimen
-module tensile_ilox_holder()
-{
-    translate([ 0, 0, -holder_width ]) difference()
-    {
-        // Base rectangle for the holder
-        color("DarkGrey") cube(
-            [ max_x * 2 + tessellation_radius * 2 + holder_width * 2, max_x * 2 + holder_width * 2, holder_thickness ],
-            center = true);
+module tensile_ilox_holder() {
+    translate([0, 0, -holder_width]) difference() {
+            // Base rectangle for the holder
+            color("DarkGrey") cube(
+                    [max_x * 2 + tessellation_radius * 2 + holder_width * 2, max_x * 2 + holder_width * 2, holder_thickness],
+                    center=true
+                );
 
-        // cut slots at the min and max x positions
-        for (i = [0:1])
-        {
-            mirror([ i, 0, 0 ]) color("Salmon")
-                translate([ max_x + tessellation_radius + cut_width / 2, 0, holder_thickness / 2 ])
-                    cube([ cut_width * 2 + cut_tol, max_y_edge * 2, holder_thickness * 2 + z_fight ], center = true);
+            // cut slots at the min and max x positions
+            for (i = [0:1])
+            {
+                mirror([i, 0, 0]) color("Salmon")
+                        translate([max_x + tessellation_radius + cut_width / 2, 0, holder_thickness / 2])
+                            cube([cut_width * 2 + cut_tol, max_y_edge * 2, holder_thickness * 2 + z_fight], center=true);
+            }
         }
-    }
 }

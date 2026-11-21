@@ -24,11 +24,10 @@
  *             has no z-value, 0 is used.
  * @param fn Number of facets used to render the sphere.
  */
-module place_spheres(points, d, color = "DarkGrey", zGap = undef, fn = 6)
-{
+module place_spheres(points, d, color = "DarkGrey", zGap = undef, fn = 6) {
     for (p = points)
     {
-        translate([ p[0], p[1], (zGap == undef) ? (len(p) == 3 ? p[2] : 0) : zGap ]) color(color)
-            sphere(d = d, $fn = fn);
+        translate([p[0], p[1], (zGap == undef) ? (len(p) == 3 ? p[2] : 0) : zGap]) color(color)
+                sphere(d=d, $fn=fn);
     }
 }

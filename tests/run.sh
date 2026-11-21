@@ -8,7 +8,9 @@ out=$(mktemp -d)
 trap 'rm -rf "$out"' EXIT
 failed=0
 
-run() { "$scad" "$@" -o "$out/out.stl" >"$out/log" 2>&1; }
+# A failed assert leaves the exit status at 0 while something is left to export, so a WARNING or ERROR line fails a
+# run too.
+run() { "$scad" "$@" -o "$out/out.stl" >"$out/log" 2>&1 && ! grep -qE '^(WARNING|ERROR)' "$out/log"; }
 ok() { echo "ok    $1"; }
 fail() {
     echo "FAIL  $1"

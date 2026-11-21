@@ -28,11 +28,10 @@
  * @param reverse (Optional) If true, the list elements are sorted in descending order.
  * @return A sorted list.
  */
-function sorted(lt, cmp = undef, key = undef, reverse = false) = let(is_cmp_undef = is_undef(cmp)) is_cmp_undef &&
-                                                                         is_undef(key)
-                                                                     ? _sorted_default(lt, reverse)
-                                                                 : is_cmp_undef ? _sorted_key(lt, key, reverse)
-                                                                                : _sorted_cmp(lt, cmp, reverse);
+function sorted(lt, cmp = undef, key = undef, reverse = false) =
+    let (is_cmp_undef = is_undef(cmp)) is_cmp_undef && is_undef(key) ? _sorted_default(lt, reverse)
+    : is_cmp_undef ? _sorted_key(lt, key, reverse)
+    : _sorted_cmp(lt, cmp, reverse);
 
 // Helper functions from _sorted_impl.scad
 
@@ -51,12 +50,21 @@ function sorted(lt, cmp = undef, key = undef, reverse = false) = let(is_cmp_unde
  * @param j (Optional) The current index in the list `lt`, starting from 1.
  * @return A tuple [before, after], where `before` is a list of elements less than the pivot, and `after` is the rest.
  */
-function before_after(lt, pivot, less, leng, before = [], after = [],
-                      j = 1) = j == leng
-                                   ? [ before, after ]
-                                   : let(is_less = less(lt[j], pivot))
-                                         before_after(lt, pivot, less, leng, is_less ? [ each before, lt[j] ] : before,
-                                                      is_less ? after : [ each after, lt[j] ], j + 1);
+function before_after(
+    lt,
+    pivot,
+    less,
+    leng,
+    before = [],
+    after = [],
+    j = 1
+) =
+    j == leng ? [before, after]
+    : let (is_less = less(lt[j], pivot))
+    before_after(
+        lt, pivot, less, leng, is_less ? [each before, lt[j]] : before,
+        is_less ? after : [each after, lt[j]], j + 1
+    );
 
 /**
  * @brief Identity function that returns the element as is.
@@ -88,11 +96,13 @@ function elems(lt, elem) = [for (e = lt) elem(e)];
  * @return A sorted list.
  */
 function _sorted(lt, less, elem = identity) =
-    let(leng = len(lt)) leng <= 1 ? elems(lt, elem)
-    : leng == 2
-        ? less(lt[0], lt[1]) ? elems(lt, elem) : [ elem(lt[1]), elem(lt[0]) ]
-        : let(pivot = lt[0], b_a = before_after(lt, pivot, less, leng))[each _sorted(b_a[0], less, elem), elem(pivot),
-                                                                        each _sorted(b_a[1], less, elem)];
+    let (leng = len(lt)) leng <= 1 ? elems(lt, elem)
+    : leng == 2 ? less(lt[0], lt[1]) ? elems(lt, elem) : [elem(lt[1]), elem(lt[0])]
+    : let (pivot = lt[0], b_a = before_after(lt, pivot, less, leng)) [
+            each _sorted(b_a[0], less, elem),
+            elem(pivot),
+            each _sorted(b_a[1], less, elem)
+    ];
 
 /**
  * @brief Default sorting function using natural order.
@@ -115,8 +125,11 @@ function _sorted_default(lt, reverse) = _sorted(lt, reverse ? function(a, b) a >
  * @param reverse If true, reverses the sorting order.
  * @return A sorted list.
  */
-function _sorted_cmp(lt, cmp, reverse) = _sorted(lt,
-                                                 reverse ? function(a, b) cmp(a, b) > 0 : function(a, b) cmp(a, b) < 0);
+function _sorted_cmp(lt, cmp, reverse) =
+    _sorted(
+        lt,
+        reverse ? function(a, b) cmp(a, b) > 0 : function(a, b) cmp(a, b) < 0
+    );
 
 /**
  * @brief Sorting function using a key extraction function.
@@ -128,5 +141,6 @@ function _sorted_cmp(lt, cmp, reverse) = _sorted(lt,
  * @param reverse If true, sorts the list in descending order based on the keys.
  * @return A sorted list.
  */
-function _sorted_key(lt, key, reverse) = let(key_elem_lt = [for (elem = lt)[key(elem), elem]])
+function _sorted_key(lt, key, reverse) =
+    let (key_elem_lt = [for (elem = lt) [key(elem), elem]])
     _sorted(key_elem_lt, reverse ? function(a, b) a[0] > b[0] : function(a, b) a[0] < b[0], function(elem) elem[1]);

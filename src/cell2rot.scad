@@ -25,8 +25,7 @@ use <utils/regpoly_utils.scad>;
  * @param cell_type (Optional) Type of cell to place, either "A" or "B", default is "A".
  * @param color (Optional) The color of the cells, default is "CadetBlue".
  */
-module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type = "A", color = undef)
-{
+module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type = "A", color = undef) {
     // Determine rotation angle
     rot = rotate ? half_central_angle(n) : 0;
 
@@ -35,17 +34,13 @@ module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type
     // Iterate over positions
     for (pos = positions)
     {
-        translate([ pos[0], pos[1], 0 ]) rotate([ 0, 0, rot ])
-        {
-            if (cell_type == "A")
-            {
-                ucell_rotX_A(cells = cells, n = n, color = ccolor);
+        translate([pos[0], pos[1], 0]) rotate([0, 0, rot]) {
+                if (cell_type == "A") {
+                    ucell_rotX_A(cells=cells, n=n, color=ccolor);
+                } else if (cell_type == "B") {
+                    ucell_rotX_B(cells=cells, n=n, width=width, color=ccolor);
+                }
             }
-            else if (cell_type == "B")
-            {
-                ucell_rotX_B(cells = cells, n = n, width = width, color = ccolor);
-            }
-        }
     }
 }
 
@@ -58,14 +53,13 @@ module place_rotated_cells(cells, positions, n, width, rotate = false, cell_type
  * @param n The number of sides for the rotation.
  * @param color (Optional) The color of the cell, default is "Green".
  */
-module ucell_rotX_A(cells, n, angle = 360, color = "Green")
-{
-    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude(angle = angle, $fn = n) difference()
-    {
-        polygon(points = cells[0]); // Main cell polygon
-        for (v = cells[2][0])
-            polygon(points = v); // Voids
-    }
+module ucell_rotX_A(cells, n, angle = 360, color = "Green") {
+    color(color) rotate([0, 0, half_central_angle(n)]) rotate_extrude(angle=angle, $fn=n) difference() {
+                    polygon(points=cells[0]); // Main cell polygon
+                    for (v = cells[2][0])
+                        polygon(points=v);
+                    // Voids
+                }
 }
 
 /**
@@ -79,13 +73,12 @@ module ucell_rotX_A(cells, n, angle = 360, color = "Green")
  * @param color (Optional) The color of the cell, default is "Blue".
  * @param angle (Optional) The angle of rotation, default is 360.
  */
-module ucell_rotX_B(cells, n, width, angle = 360, color = "Blue")
-{
-    color(color) rotate([ 0, 0, half_central_angle(n) ]) rotate_extrude(angle = angle, $fn = n)
-        translate([ -width, 0, 0 ]) difference()
-    {
-        polygon(points = cells[1]); // Main cell polygon
-        for (v = cells[2][1])
-            polygon(points = v); // Voids
-    }
+module ucell_rotX_B(cells, n, width, angle = 360, color = "Blue") {
+    color(color) rotate([0, 0, half_central_angle(n)]) rotate_extrude(angle=angle, $fn=n)
+                translate([-width, 0, 0]) difference() {
+                        polygon(points=cells[1]); // Main cell polygon
+                        for (v = cells[2][1])
+                            polygon(points=v);
+                        // Voids
+                    }
 }

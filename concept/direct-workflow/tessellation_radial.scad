@@ -19,31 +19,38 @@ substrate_height = 2;
 tessellation_radius = width_x;
 
 // Generate hexagon centers for tessellation
-tess_points = hexagons_centers_radial(radius = tessellation_radius, levels = levels);
+tess_points = hexagons_centers_radial(radius=tessellation_radius, levels=levels);
 
 // Generate triangulated center points for cell B instances
 tess_points_tri = triangulated_center_points(tess_points);
 
 // Generate hexagon vertices for tessellation
-tess_hex_vertices = hexagons_vertices(radius = tessellation_radius, centers = tess_points, angular_offset = 30);
+tess_hex_vertices = hexagons_vertices(radius=tessellation_radius, centers=tess_points, angular_offset=30);
 
-if (radial_tess_render)
-{
+if (radial_tess_render) {
     // Place cell A instances at tessellation points with rotation
-    scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points * cos(30), n = 6,
-                                     width = width_x, rotate = true, cell_type = "A", color = "ForestGreen");
+    scale(widen) place_rotated_cells(
+            cells=base_ucell_cells, positions=tess_points * cos(30), n=6,
+            width=width_x, rotate=true, cell_type="A", color="ForestGreen"
+        );
 
     // Render substrate as solid hexagons beneath cells
-    color("ForestGreen") translate([ 0, 0, -substrate_height ])
-        generic_poly(vertices = tess_hex_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]], centers = tess_points,
-                     alpha = 0.5, extrude = substrate_height);
+    color("ForestGreen") translate([0, 0, -substrate_height])
+            generic_poly(
+                vertices=tess_hex_vertices, paths=[[0, 1, 2, 3, 4, 5, 0]], centers=tess_points,
+                alpha=0.5, extrude=substrate_height
+            );
 
     // Place cell B instances at triangulated tessellation points with rotation
-    scale(widen) place_rotated_cells(cells = base_ucell_cells, positions = tess_points_tri * cos(30), n = 6,
-                                     width = width_x, rotate = true, cell_type = "B", color = "MidnightBlue");
+    scale(widen) place_rotated_cells(
+            cells=base_ucell_cells, positions=tess_points_tri * cos(30), n=6,
+            width=width_x, rotate=true, cell_type="B", color="MidnightBlue"
+        );
 
     // Render substrate as solid hexagons beneath cells
-    color("MidnightBlue") translate([ 0, 0, height_y ])
-        generic_poly(vertices = tess_hex_vertices, paths = [[ 0, 1, 2, 3, 4, 5, 0 ]], centers = tess_points_tri,
-                     alpha = 0.5, extrude = substrate_height);
+    color("MidnightBlue") translate([0, 0, height_y])
+            generic_poly(
+                vertices=tess_hex_vertices, paths=[[0, 1, 2, 3, 4, 5, 0]], centers=tess_points_tri,
+                alpha=0.5, extrude=substrate_height
+            );
 }
