@@ -246,6 +246,11 @@ syntax error.
 
 ## 2024-01-05 to 2024-05-14: SnapTessSCAD snap surfaces
 
+![SnapTessSCAD snap surface, 2024](assets/history/snaptess-2024.png)
+
+The snap surface of `snap_tess_example2.scad`: tricho pins between two hexagon
+substrates ([animation](assets/history/snaptess-2024.gif)).
+
 ### Added
 
 - Snap surfaces: a tricho feature placed on hexagon centres, with the mating
